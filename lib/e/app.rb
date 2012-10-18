@@ -29,6 +29,15 @@ class EApp
     include ::AppetiteUtils
     include ::AppetiteHelpers
 
+    # set base URL to be prepended to all controllers
+    def map url
+      @base_url = rootify_url(url).freeze
+    end
+
+    def base_url
+      @base_url || ''
+    end
+
     # set/get app root
     def root path = nil
       @root = ('%s/' % path).sub(/\/+\Z/, '/').freeze if path
@@ -275,7 +284,7 @@ class EApp
     map = {}
     @controllers.each do |c|
       c.url_map.each_pair do |r, s|
-        s.each_pair { |rm, as| (map[r] ||= {})[rm] = as.dup.unshift(c) }
+        s.each_pair { |rm, as| (map[base_url + r] ||= {})[rm] = as.dup.unshift(c) }
       end
     end
 
@@ -334,7 +343,7 @@ class EApp
     @controllers.each do |ctrl|
 
       ctrl.url_map.each_pair do |route, rest_map|
-        builder.map route do
+        builder.map app.base_url + route do
           ctrl.use?.each { |w| use w[:ware], *w[:args], &w[:proc] }
           run lambda { |env| ctrl.new(nil, rest_map).call env }
         end
