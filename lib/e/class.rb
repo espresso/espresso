@@ -360,6 +360,10 @@ class << E
     @app
   end
 
+  def base_url
+    @base_url ||= app ? app.base_url + super : super
+  end
+
   # @api semi-public
   #
   # remap served root(s) by prepend given path to controller's root and canonical paths
