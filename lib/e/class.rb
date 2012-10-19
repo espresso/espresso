@@ -361,7 +361,7 @@ class << E
   end
 
   def base_url
-    @base_url ||= app ? app.base_url + super : super
+    app ? app.base_url + super : super
   end
 
   # @api semi-public

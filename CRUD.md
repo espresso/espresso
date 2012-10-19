@@ -73,7 +73,7 @@ crudify Resource, :exclude => ['__stream_uuid__', 'user']
 ## Root
 
 
-By default, `crudify` will create actions that respond to controllers root.
+By default, `crudify` will create actions that respond to controllers root path.
 
 ```ruby
 class App < E
@@ -81,15 +81,22 @@ class App < E
 
     crudify SomeModel
 end
-
-# App controller will respond to
-# GET /
-# POST /
-# PUT /
-# etc.
 ```
 
-To route CRUD actions to a different root, simply pass the root as second argument:
+This will create following actions:
+
+    - get_index
+    - head_index
+    - post_index
+    - put_index
+    - patch_index
+    - delete_index
+    - options_index
+
+Each action will respond to corresponding request method.
+
+
+To route CRUD actions to a different path, simply pass the path as second argument:
 
 ```ruby
 class App < E
@@ -97,13 +104,91 @@ class App < E
 
     crudify UsersModel, :users
 end
-
-# now App controller will respond to
-# GET /users
-# POST /users
-# PUT /users
-# etc.
 ```
+
+This will create following actions:
+
+    - get_users
+    - head_users
+    - post_users
+    - put_users
+    - patch_users
+    - delete_users
+    - options_users
+
+
+*IMPORTANT!* The common pitfall here is to define a method that will override 
+the actions created by crudifier.
+
+```ruby
+class App < E
+    map '/'
+
+    crudify SomeModel
+
+    def index
+        # Bad Idea!
+    end
+end
+```
+
+The `index` method here will override all actions created by `crudify SomeModel`,
+thus CRUD WONT WORK on this controller!
+
+Why so?
+
+Cause actions defined without a verb will listen on all request methods.
+
+So if we define `index` or just `whatever` without `get_`, `post_` etc. prefix,
+it will override any actions previously defined with an explicit verb.
+
+```ruby
+def get_index
+    # ...
+end
+
+def post_index
+    # ...
+end
+
+def index
+    # this will OVERRIDE `get_index` and `post_index`
+end
+
+def get_read
+    # ...
+end
+
+def post_read
+    # ...
+end
+
+def read
+    # this will OVERRIDE `get_read` and `post_read`
+end
+```
+
+In case of CRUD actions, when you need to override some action, define the method with a verb.
+
+For ex. you want "GET /index" requests to be served by your `index` method, 
+not by one created by crudifier.
+
+Then you simply define `get_index` method:
+
+```ruby
+class App < E
+    map '/'
+
+    crudify SomeModel
+
+    def get_index
+        # Good Idea!
+    end
+end
+```
+
+*Please Note* that you'll have to name your template "get_index.ext" instead of just "index.ext"
+
 
 **[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
 

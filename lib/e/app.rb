@@ -233,58 +233,49 @@ class EApp
   include Setup
 
   def initialize automount = false, &proc
-    @controllers = []
-    automount ? discover_controllers.each { |c| mount c } : []
+    @automount = automount
+    @controllers, @mounted_controllers = [], []
     proc && self.instance_exec(&proc)
   end
 
-  # proc given here will be executed inside each controller
+  # add controller/namespace to be mounted when app starts.
+  # proc given here will be executed inside given controller/namespace.
   def mount namespace, *roots, &setup
-    umount namespace
+    @controllers << [namespace, roots, setup]
+    self
+  end
+
+  # mount controller/namespace right away rather than at app starting.
+  # proc given here will be executed inside given controller/namespace.
+  def mount! namespace, *roots, &setup
     extract_controllers(namespace).each do |ctrl|
-      # setup controllers at mount time
       (root = roots.shift) && ctrl.remap!(root, *roots)
       ctrl.app = self
       ctrl.setup!
       ctrl.global_setup!(&setup) if setup
       ctrl.global_setup!(&@global_setup) if @global_setup
       ctrl.map!
-      
-      @controllers << ctrl
+      @mounted_controllers << ctrl
     end
     self
   end
 
-  # umount given slices/controllers.
-  # if called without args, will umount all controllers.
-  def umount *namespaces
-    if namespaces.size > 0
-      namespaces.each do |ns|
-        controllers = extract_controllers ns
-        @controllers.reject! { |c| controllers.include? c }
-      end
-    else
-      @controllers.clear
-    end
-    self
-  end
-
-  # proc given here will be executed inside each controller,
-  # ones already mounted and ones to be mounted
+  # proc given here will be executed inside ALL CONTROLLERS!
   def setup_controllers &proc
     @global_setup = proc
-    @controllers.each { |c| c.global_setup! &proc }
+    self
   end
   alias setup setup_controllers
 
   # displays URLs the app will respond to,
   # with controller and action that serving each URL.
   def url_map opts = {}
-    app
+    mount_controllers!
+    
     map = {}
-    @controllers.each do |c|
+    @mounted_controllers.each do |c|
       c.url_map.each_pair do |r, s|
-        s.each_pair { |rm, as| (map[base_url + r] ||= {})[rm] = as.dup.unshift(c) }
+        s.each_pair { |rm, as| (map[r] ||= {})[rm] = as.dup.unshift(c) }
       end
     end
 
@@ -340,10 +331,11 @@ class EApp
   def builder
     app, builder = self, ::Rack::Builder.new
     use.each { |w| builder.use w[:ware], *w[:args], &w[:proc] }
-    @controllers.each do |ctrl|
-
+    mount_controllers!
+    @mounted_controllers.each do |ctrl|
+      
       ctrl.url_map.each_pair do |route, rest_map|
-        builder.map app.base_url + route do
+        builder.map route do
           ctrl.use?.each { |w| use w[:ware], *w[:args], &w[:proc] }
           run lambda { |env| ctrl.new(nil, rest_map).call env }
         end
@@ -359,6 +351,17 @@ class EApp
     rewrite_rules.size > 0 ?
         ::AppetiteRewriter.new(rewrite_rules, builder.to_app) :
         builder.to_app
+  end
+
+  def mount_controllers!
+    @automount &&
+      @controllers += discover_controllers.map { |c| [c, ['/'], nil] }
+    
+    @controllers.each do |ctrl_setup|
+      ctrl, roots, setup = ctrl_setup
+      next if @mounted_controllers.include?(ctrl)
+      mount! ctrl, *roots, &setup
+    end
   end
 
   def discover_controllers namespace = nil
