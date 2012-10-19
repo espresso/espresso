@@ -354,14 +354,14 @@ class << E
   def app= app
     return if locked?
     @app = app
+    # overriding @base_url by prepending app's base URL.
+    # IMPORTANT: @base_url is a var set by Appetite,
+    # so make sure when this name is changed in Appetite it is also changed here
+    @base_url = @app.base_url + base_url
   end
 
   def app
     @app
-  end
-
-  def base_url
-    app ? app.base_url + super : super
   end
 
   # @api semi-public
