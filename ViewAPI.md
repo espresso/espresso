@@ -129,6 +129,8 @@ class News < E
 end
 ```
 
+
+
 **[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
 
 ## Layouts path
@@ -224,7 +226,7 @@ class App < E
 end
 ```
 
-*=== Important ===* Template name should exactly match the name of current action, including REST verb, if any.
+**=== Important ===** Template name should exactly match the name of current action, including REST verb, if any.
 
 ```ruby
 def get_latest
@@ -263,6 +265,23 @@ render_partial 'some_action.xml'  # will render base/views/news/some_action.xml.
 render 'some-template'            # will render base/views/news/some-template.haml
 
 render_p 'some-template.html'     # will render base/views/news/some-template.html.haml
+```
+
+
+To render a template located higher than your current action, use `../`:
+
+```ruby
+class App < E
+  map :pages
+
+  view_path 'templates'
+  
+  def some_meth
+    render                   # will render templates/pages/some_meth
+    render '../some-file'    # will render templates/pages/some-file
+    render '../../some-file' # will render templates/some-file
+  end
+end
 ```
 
 
@@ -308,7 +327,7 @@ If block given, the template will not be searched/rendered.<br/>
 Instead, the string returned by the block will be rendered.<br/>
 This way you'll can render data from DB directly, without saving it to file system.
 
-*=== Important ===* If custom controller given, rendering methods will use the path, engine and layout set by given controller.
+**=== Important ===** If custom controller given, rendering methods will use the path, engine and layout set by given controller.
 
 **[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
 
