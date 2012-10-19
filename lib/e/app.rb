@@ -311,6 +311,7 @@ class EApp
   #
   # @param [Hash] opts
   def run opts = {}
+    mount_controllers!
     server = opts.delete(:server)
     server && ::Rack::Handler.const_defined?(server) || (server = :WEBrick)
     ::Rack::Handler.const_get(server).run self, opts
