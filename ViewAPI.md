@@ -278,8 +278,7 @@ class App < E
   
   def some_meth
     render                   # will render templates/pages/some_meth
-    render '../some-file'    # will render templates/pages/some-file
-    render '../../some-file' # will render templates/some-file
+    render '../some-file'    # will render templates/some-file
   end
 end
 ```

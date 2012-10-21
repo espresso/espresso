@@ -109,6 +109,20 @@ class EApp
       use(*args)
     end
 
+    # set authorization at app level.
+    # any controller/action will be protected.
+    def basic_auth opts = {}, &proc
+      use ::Rack::Auth::Basic, opts, &proc
+    end
+    alias auth basic_auth
+
+    # (see #basic_auth)
+    def digest_auth opts = {}, &proc
+      opts[:realm]  ||= 'AccessRestricted'
+      opts[:opaque] ||= opts[:realm]
+      use ::Rack::Auth::Digest::MD5, opts, &proc
+    end
+
     # middleware declared here will be used on all controllers.
     #
     # especially, here should go middleware that changes app state,

@@ -29,72 +29,80 @@ module ECoreTest__Auth
 
   Spec.new App do
 
+    def protected?
+      check { last_response.status } == 401
+    end
+
+    def authorized?
+      check { last_response.status } == 200
+    end
+
     Testing 'Basic via GET' do
-      r = get :basic
-      expect(r.status) == 401
+      get :basic
+      protected?
 
       authorize 'b', 'b'
 
-      r = get :basic
-      expect(r.status) == 200
+      get :basic
+      authorized?
 
       reset_basic_auth!
 
-      r = get :basic
-      expect(r.status) == 401
+      get :basic
+      protected?
     end
 
     Testing 'Basic via POST' do
       reset_basic_auth!
 
-      r = post :basic
-      expect(r.status) == 401
+      post :basic
+      protected?
 
       authorize 'b', 'b'
 
-      r = post :basic
-      expect(r.status) == 200
+      post :basic
+      authorized?
 
       reset_basic_auth!
 
-      r = post :basic
-      expect(r.status) == 401
+      post :basic
+      protected?
     end
 
     Testing 'Digest via GET' do
 
       reset_digest_auth!
 
-      r = get :digest
-      expect(r.status) == 401
+      get :digest
+      protected?
 
       digest_authorize 'd', 'd'
 
-      r = get :digest
-      expect(r.status) == 200
+      get :digest
+      authorized?
 
       reset_digest_auth!
 
-      r = get :digest
-      expect(r.status) == 401
+      get :digest
+      protected?
     end
 
     Testing 'Digest via POST' do
 
       reset_digest_auth!
 
-      r = post :digest
-      expect(r.status) == 401
+      post :digest
+      protected?
 
       digest_authorize 'd', 'd'
 
-      r = post :digest
-      expect(r.status) == 200
+      post :digest
+      authorized?
 
       reset_digest_auth!
 
-      r = post :digest
-      expect(r.status) == 401
+      post :digest
+      protected?
     end
   end
 

@@ -318,7 +318,7 @@ class << E
           args << (opts[:realm] || 'AccessRestricted')
         when :digest
           cls = ::Rack::Auth::Digest::MD5
-          opts[:realm] ||= 'AccessRestricted'
+          opts[:realm]  ||= 'AccessRestricted'
           opts[:opaque] ||= opts[:realm]
           args = [opts]
         else
