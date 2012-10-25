@@ -185,7 +185,7 @@ class << E
   #
   # if you want to use a different pool, set it by using `compiler_pool` at class level.
   # make sure your pool behaves just like a Hash,
-  # meant it responds to `[]=`, `[]`, `delete`, `delete_if` and `clear` methods.
+  # meant it responds to `[]=`, `[]`, `delete` and `clear` methods.
   # also, the pool SHOULD accept ARRAYS as keys.
   def compiler_pool pool
     compiler_pool! pool, true
@@ -347,13 +347,6 @@ class E
       else
         raise "#%s only accepts arrays and regexps" % __method__
       end
-    end
-  end
-
-  # see (#clear_cache_if!)
-  def clear_compiler_if! &proc
-    compiler_pool.keys.each do |k|
-      proc.call(k.first) && compiler_pool.delete(k)
     end
   end
 

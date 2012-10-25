@@ -85,6 +85,7 @@ class E
   # clear cache that's matching given regexp(s) or array(s).
   # if regexp given it will match only String and Symbol keys.
   # if array given it will match only Array keys.
+  #
   def clear_cache_like! *keys
     keys.each do |key|
       if key.is_a? Array
@@ -107,26 +108,4 @@ class E
     end
   end
 
-  # clear cache only if given proc returns true.
-  # def index
-  #   # ...
-  #   @procedures = cache [user, :procedures] do
-  #     # ...
-  #   end
-  #   @actions = cache [user, :actions] do
-  #     # ...
-  #   end
-  #   render
-  # end
-  #
-  # private
-  # def clear_user_cache
-  #   clear_cache_if! do |k|
-  #     k.is_a?(Array) && k.first == user
-  #   end
-  # end
-  #
-  def clear_cache_if! &proc
-    cache_pool.keys.each { |k| proc.call(k) && cache_pool.delete(k) }
-  end
 end

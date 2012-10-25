@@ -1157,33 +1157,8 @@ end
 ```
 
 
-Or clear by a given proc via `clear_cache_if!`.<br/>
-The proc will receive the key to match as first argument:
-
-```ruby
-def index
-    # ...
-    @procedures = cache [user, :procedures] do
-      # ...
-    end
-    @actions = cache [user, :actions] do
-      # ...
-    end
-    render
-end
-
-private
-def clear_user_cache
-
-    # clearing [user, :procedures] and [user, :actions] cache
-    clear_cache_if! do |k|
-      k.is_a?(Array) && k.first == user
-    end
-end
-```
-
 By default the cache will be kept in memory.<br/>
-If you want to use a different pool, set it by using `cache_pool` at class level.
+If you want to use a different pool, set it by using `cache_pool` at app level.
 Just make sure your pool behaves like a Hash,
 Meant it should respond to `[]=`, `[]`, `delete` and `clear`
 

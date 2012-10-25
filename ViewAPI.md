@@ -494,29 +494,6 @@ def clear_compiled_templates
 end
 ```
 
-It is also possible to clear compiler by a given proc, via `clear_compiler_if!`.<br/>
-The proc will receive the key to match as first argument:
-
-```ruby
-def index
-    @procedures = render :procedures,      '' => [user, :procedures]
-    @actions    = render :actions,         '' => [user, :actions]
-    @banners    = render_partial :banners, '' => :user_banners
-    render
-end
-
-private
-def clear_compiled_templates
-
-    # clearing [user, :procedures] and [user, :actions]
-    clear_compiler_if! do |k|
-      k.is_a?(Array) && k.first == user
-    end
-end
-```
 
 **[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
-
-
-
 

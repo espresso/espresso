@@ -50,23 +50,6 @@ module EHelpersTest__Cache
       updated
     end
 
-    def clear_cache_if
-      updated = false
-      case params[:test]
-        when 'array'
-          clear_cache_if! { |k| k.is_a?(Array) && k.include?(params[:key]) }
-        when 'match'
-          clear_cache_if! { |k| k.is_a?(String) && k =~ /#{params[:key]}/ }
-      end
-      cache 'clear_cache_if' do
-        updated = true
-      end
-      cache ['a', 'b', 'c'] do
-        updated = true
-      end
-      updated
-    end
-
     private
     def content
       ::Digest::MD5.hexdigest rand(1024**1024).to_s
@@ -143,31 +126,6 @@ module EHelpersTest__Cache
         r = get :heavy_render, :banners => rand.to_s, :items => new_items
         expect(r.body) == [new_banners, new_items].join('/')
       end
-    end
-
-    Should 'clear by given proc' do
-      get :clear_cache_if
-      expect(last_response.body) == 'true'
-      get :clear_cache_if
-      expect(last_response.body) == 'false'
-
-      %w[a b c].each do |key|
-        get :clear_cache_if, :test => 'array', :key => key
-        expect(last_response.body) == 'true'
-      end
-
-      %w[d e f].each do |key|
-        get :clear_cache_if, :test => 'array', :key => key
-        expect(last_response.body) == 'false'
-      end
-
-      %w[clear cache if].each do |key|
-        get :clear_cache_if, :test => 'match', :key => key
-        expect(last_response.body) == 'true'
-      end
-
-      get :clear_cache_if, :test => 'match', :key => 'blah'
-      expect(last_response.body) == 'false'
     end
 
     Should 'clear by given array' do
