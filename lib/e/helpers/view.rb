@@ -17,6 +17,10 @@ class EApp
     end
   end
 
+  def compiler_cache key, &proc
+    compiler_pool[key] ||= proc.call
+  end
+
   # call `clear_compiler!` without args to update all compiled templates.
   # to update only specific templates pass as arguments the IDs you used to enable compiler.
   #
@@ -345,6 +349,10 @@ class E
 
   private
 
+  def compiler_cache key, &proc
+    self.class.app.send __method__, key, &proc
+  end
+
   def clear_compiler! *args
     self.class.app.send __method__, *args
   end
@@ -373,7 +381,9 @@ class E
 
   def __e__engine_instance compiler_key, engine, *args, &proc
     return engine.new(*args, &proc) unless compiler_key
-    self.class.app.compiler_pool[ [compiler_key, engine, args, proc] ] ||= engine.new(*args, &proc)
+    compiler_cache [compiler_key, engine.__id__, args.hash, proc && proc.__id__] do
+      engine.new(*args, &proc)
+    end
   end
 
   def __e__template controller, action_or_template, ext = nil
