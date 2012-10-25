@@ -10,6 +10,14 @@ class E < Appetite
   
 end
 
+class EApp
+  module Setup
+    
+    include ::AppetiteUtils
+    include ::AppetiteHelpers    
+  end
+end
+
 class Module
   def mount *roots, &setup
     ::EApp.new.mount self, *roots, &setup

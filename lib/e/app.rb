@@ -26,9 +26,6 @@ class EApp
 
   module Setup
 
-    include ::AppetiteUtils
-    include ::AppetiteHelpers
-
     # set base URL to be prepended to all controllers
     def map url
       @base_url = rootify_url(url).freeze
@@ -43,7 +40,6 @@ class EApp
       @root = ('%s/' % path).sub(/\/+\Z/, '/').freeze if path
       @root ||= (::Dir.pwd << '/').freeze
     end
-
     alias app_root root
 
     # allow app to use sessions.

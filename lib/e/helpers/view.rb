@@ -176,29 +176,26 @@ class << E
   def layouts_path?
     @view__layouts_path ||= ''.freeze
   end
+  
+end
 
-  # for most apps, most expensive operations are fs operations and template compilation.
-  # to avoid these operations compiled templates are stored into memory
-  # and just rendered on consequent requests.
-  #
-  # by default, compiled templates are kept in memory.
-  #
-  # if you want to use a different pool, set it by using `compiler_pool` at class level.
-  # make sure your pool behaves just like a Hash,
-  # meant it responds to `[]=`, `[]`, `delete` and `clear` methods.
-  # also, the pool SHOULD accept ARRAYS as keys.
-  def compiler_pool pool
-    compiler_pool! pool, true
-  end
-
-  def compiler_pool! pool, keep_existing = nil
-    return if locked?
-    return if @compiler__pool && keep_existing
-    @compiler__pool = pool
-  end
-
-  def compiler_pool?
-    @compiler__pool ||= Hash.new
+class EApp
+  module Setup
+    # for most apps, most expensive operations are fs operations and template compilation.
+    # to avoid these operations compiled templates are stored into memory
+    # and just rendered on consequent requests.
+    #
+    # by default, compiled templates are kept in memory.
+    #
+    # if you want to use a different pool, set it by using `compiler_pool` at class level.
+    # make sure your pool behaves just like a Hash,
+    # meant it responds to `[]=`, `[]`, `delete` and `clear` methods.
+    # also, the pool SHOULD accept ARRAYS as keys.
+    def compiler_pool pool = nil
+      return @compiler_pool if @compiler_pool
+      @compiler_pool = pool if pool
+      @compiler_pool ||= Hash.new
+    end
   end
 end
 
@@ -286,7 +283,7 @@ class E
   end
 
   def compiler_pool
-    self.class.compiler_pool?
+    self.class.app.compiler_pool
   end
 
   # call `clear_compiler!` without args to update all compiled templates.

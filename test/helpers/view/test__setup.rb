@@ -7,8 +7,6 @@ EViewTest__Setup__SliceSetup = lambda do
   view_path! 'slice'
   layouts_path! 'slice'
 
-  compiler_pool Hash.new.merge(:set_by => :slice)
-
   setup :overridden do
     engine! :Liquid
     engine_ext! '.Liquid'
@@ -27,8 +25,6 @@ module EViewTest__SetupByController
 
     view_path 'controller'
     layouts_path 'controller'
-
-    compiler_pool Hash.new.merge(:set_by => :controller)
 
     setup :overridden do
       engine :ERB
@@ -75,8 +71,6 @@ module EViewTest__SetupByController
       end
     end
 
-    expect(App.compiler_pool?[:set_by]) == :controller
-
   end
 
 end
@@ -97,7 +91,6 @@ module EViewTest__SetupBySlice
     expect(App.layout?.first) == 'slice'
     expect(App.view_path?) =~ /slice\/\Z/
     expect(App.layouts_path?) == 'slice/'
-    expect(App.compiler_pool?[:set_by]) == :slice
 
   end
 

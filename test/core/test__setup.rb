@@ -31,8 +31,6 @@ module ECoreTest__Setup
       format :txt
     end
 
-    cache_pool Hash.new.merge(:set_by => :slice)
-
   end
 
   ControllerSetup = lambda do
@@ -64,8 +62,6 @@ module ECoreTest__Setup
     setup :test_format do
       format :test_local
     end
-
-    cache_pool Hash.new.merge(:set_by => :controller)
 
     setup :a1, :a2 do
       charset 'ISO-8859-2'
@@ -148,8 +144,6 @@ module ECoreTest__Setup
       end
     end
 
-    expect(ControllerTest.cache_pool?[:set_by]) == :controller
-
     Describe 'both a1 and a2 has ISO-8859-2 charset' do
 
       a1 = get :a1
@@ -191,7 +185,6 @@ module ECoreTest__Setup
     expect(SliceTest.format?) == [".xml", ".json"]
     expect(SliceTest.format? :blah) == [".txt"]
 
-    expect(SliceTest.cache_pool?[:set_by]) == :slice
   end
 
   class LockTest < E

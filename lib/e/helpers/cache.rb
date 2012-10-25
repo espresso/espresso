@@ -1,22 +1,15 @@
-class << E
-
-  # very basic cache implementation.
-  # by default the cache will be kept in memory.
-  # if you want to use a different pool, set it by using `cache_pool` at class level.
-  # make sure your pool behaves just like a Hash,
-  # meant it responds to `[]=`, `[]`, `delete` and `clear`
-  def cache_pool pool
-    cache_pool! pool, true
-  end
-
-  def cache_pool! pool, keep_existing = nil
-    return if locked?
-    return if @cache__pool && keep_existing
-    @cache__pool = pool
-  end
-
-  def cache_pool?
-    @cache__pool ||= Hash.new
+class EApp
+  module Setup
+    # very basic cache implementation.
+    # by default the cache will be kept in memory.
+    # if you want to use a different pool, set it by using `cache_pool` at class level.
+    # make sure your pool behaves just like a Hash,
+    # meant it responds to `[]=`, `[]`, `delete` and `clear`
+    def cache_pool pool = nil
+      return @cache_pool if @cache_pool
+      @cache_pool = pool if pool
+      @cache_pool ||= Hash.new
+    end
   end
 end
 
@@ -40,7 +33,7 @@ class E
   end
 
   def cache_pool
-    self.class.cache_pool?
+    self.class.app.cache_pool
   end
 
   # a simple way to manage stored cache.

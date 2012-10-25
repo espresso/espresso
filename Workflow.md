@@ -1159,6 +1159,7 @@ end
 
 By default the cache will be kept in memory.<br/>
 If you want to use a different pool, set it by using `cache_pool` at app level.
+
 Just make sure your pool behaves like a Hash,
 Meant it should respond to `[]=`, `[]`, `delete` and `clear`
 
