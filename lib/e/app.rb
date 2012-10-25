@@ -239,6 +239,7 @@ class EApp
     def rewrite_rules
       @rewrite_rules ||= []
     end
+
   end
   include Setup
 

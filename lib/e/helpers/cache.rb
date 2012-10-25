@@ -10,10 +10,17 @@ class EApp
       @cache_pool = pool if pool
       @cache_pool ||= Hash.new
     end
-  end
-end
 
-class E
+    def cache_path path = nil
+      return @cache_path if @cache_path
+      if path
+        @cache_path = ((path =~ /\A\// ? path : root + path) + '/').freeze
+      else
+        @cache_path = (root + 'tmp/cache/').freeze
+      end
+      FileUtils.mkdir_p @cache_path
+    end
+  end
 
   # simply running a block and store returned value.
   # on next request the stored value will be returned.
@@ -21,19 +28,16 @@ class E
   # @note
   #   value is not stored if block returns false or nil
   #
-  def cache key = nil, &proc
-    unless key
-      if ::AppetiteConstants::RESPOND_TO__SOURCE_LOCATION # ruby1.9
-        key = proc.source_location
-      else # ruby1.8
-        key = proc.to_s.split('@').last
-      end
+  if ::AppetiteConstants::RESPOND_TO__SOURCE_LOCATION # ruby1.9
+    def cache key = nil, &proc
+      key ||= proc.source_location
+      cache_pool[key] || ( (val = proc.call) && (cache_pool[key] = val) )
     end
-    cache_pool[key] || ( (val = proc.call) && (cache_pool[key] = val) )
-  end
-
-  def cache_pool
-    self.class.app.cache_pool
+  else # ruby1.8
+    def cache key = nil, &proc
+      key ||= proc.to_s.split('@').last
+      cache_pool[key] || ( (val = proc.call) && (cache_pool[key] = val) )
+    end
   end
 
   # a simple way to manage stored cache.
@@ -100,5 +104,19 @@ class E
       end
     end
   end
+end
 
+class E
+  private
+  def cache *args, &proc
+    self.class.app.send __method__, *args, &proc
+  end
+
+  def clear_cache! *args
+    self.class.app.send __method__, *args
+  end
+
+  def clear_cache_like! *args
+    self.class.app.send __method__, *args
+  end
 end

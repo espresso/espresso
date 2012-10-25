@@ -42,7 +42,7 @@ module EViewTest__Compiler
         clear_compiler_like! keys
       end
 
-      compiler_pool.keys.select { |k| k.first == compiler_key }.size > 0
+      self.class.app.compiler_pool.keys.select { |k| k.first == compiler_key }.size > 0
     end
 
     def clear_compiler_like_regexp
@@ -56,7 +56,7 @@ module EViewTest__Compiler
         clear_compiler_like! /#{key}/
       end
 
-      compiler_pool.keys.select { |k| k.first == compiler_key }.size > 0
+      self.class.app.compiler_pool.keys.select { |k| k.first == compiler_key }.size > 0
     end
 
   end
