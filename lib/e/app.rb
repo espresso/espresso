@@ -240,6 +240,14 @@ class EApp
       @rewrite_rules ||= []
     end
 
+    def pids_reader &proc
+      return @pids_reader if @pids_reader
+      if proc.is_a?(Proc)
+        @pids_reader = proc
+        register_ipcm_signal
+      end
+    end
+    alias pids pids_reader
   end
   include Setup
 

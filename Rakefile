@@ -57,6 +57,13 @@ namespace :test do
     puts session.summary
     session.exit_code == 0 || fail
   end
+
+  task :ipcm do
+    puts "\n**\nTesting InterProcess Cache Manager"
+    session = Specular.new
+    puts session.run /EIPCMTest/, :trace => true
+    session.exit_code == 0 || fail
+  end
 end
 
 task :test => ['test:core', 'test:view', 'test:helpers']

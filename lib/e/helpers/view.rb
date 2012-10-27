@@ -48,17 +48,28 @@ class EApp
   # @note using of non-unique keys will lead to templates clashing
   #
   def clear_compiler! *keys
+    clear_compiler *keys
+    ipcm_trigger :clear_compiler, *keys
+  end
+
+  # same as clear_compiler! except it work only on current process
+  def clear_compiler *keys
     keys.size == 0 ?
-        compiler_pool.clear :
-        keys.each do |key|
-          compiler_pool.keys.each { |k| k.first == key && compiler_pool.delete(k) }
-        end
+      compiler_pool.clear :
+      keys.each do |key|
+        compiler_pool.keys.each { |k| k.first == key && compiler_pool.delete(k) }
+      end
   end
 
   # clear compiler of keys that matching given regexp(s) or array(s).
   # if regexp given it will match only String and Symbol keys.
   # if array given it will match only Array keys.
   def clear_compiler_like! *keys
+    clear_compiler_like *keys
+    ipcm_trigger :clear_compiler_like, *keys
+  end
+
+  def clear_compiler_like *keys
     keys.each do |key|
       if key.is_a? Array
         compiler_pool.keys.each do |k|

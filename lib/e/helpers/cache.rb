@@ -1,25 +1,14 @@
 class EApp
-  module Setup
-    # very basic cache implementation.
-    # by default the cache will be kept in memory.
-    # if you want to use a different pool, set it by using `cache_pool` at class level.
-    # make sure your pool behaves just like a Hash,
-    # meant it responds to `[]=`, `[]`, `delete` and `clear`
-    def cache_pool pool = nil
-      return @cache_pool if @cache_pool
-      @cache_pool = pool if pool
-      @cache_pool ||= Hash.new
-    end
-
-    def cache_path path = nil
-      return @cache_path if @cache_path
-      if path
-        @cache_path = ((path =~ /\A\// ? path : root + path) + '/').freeze
-      else
-        @cache_path = (root + 'tmp/cache/').freeze
-      end
-      FileUtils.mkdir_p @cache_path
-    end
+  # very basic cache implementation.
+  # by default the cache will be kept in memory.
+  # if you want to use a different pool, 
+  # set it by using `cache_pool` at app level.
+  # make sure your pool behaves just like a Hash,
+  # meant it responds to `[]=`, `[]`, `delete` and `clear`
+  def cache_pool pool = nil
+    return @cache_pool if @cache_pool
+    @cache_pool = pool if pool
+    @cache_pool ||= Hash.new
   end
 
   # simply running a block and store returned value.
@@ -41,6 +30,7 @@ class EApp
   end
 
   # a simple way to manage stored cache.
+  #
   # @example
   #    class App < E
   #
@@ -74,9 +64,15 @@ class EApp
   #  end
   #
   def clear_cache! *keys
+    clear_cache *keys
+    ipcm_trigger :clear_cache, *keys
+  end
+
+  # same as `clear_cache!` except it is working only on current process
+  def clear_cache *keys
     keys.size == 0 ?
-        cache_pool.clear :
-        keys.each { |key| cache_pool.delete key }
+      cache_pool.clear :
+      keys.each { |key| cache_pool.delete key }
   end
 
   # clear cache that's matching given regexp(s) or array(s).
@@ -84,6 +80,11 @@ class EApp
   # if array given it will match only Array keys.
   #
   def clear_cache_like! *keys
+    clear_cache_like *keys
+    ipcm_trigger :clear_cache_like, *keys
+  end
+
+  def clear_cache_like *keys
     keys.each do |key|
       if key.is_a? Array
         cache_pool.keys.each do |k|
@@ -104,10 +105,13 @@ class EApp
       end
     end
   end
+
 end
 
 class E
+
   private
+
   def cache *args, &proc
     self.class.app.send __method__, *args, &proc
   end
