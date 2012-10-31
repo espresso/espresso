@@ -1,1 +1,4 @@
-.git/*
+.git
+*.lock
+*.md
+*.gem

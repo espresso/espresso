@@ -108,7 +108,7 @@ class EApp
     # set authorization at app level.
     # any controller/action will be protected.
     def basic_auth opts = {}, &proc
-      use ::Rack::Auth::Basic, opts, &proc
+      use ::Rack::Auth::Basic, opts[:realm] || opts['realm'], &proc
     end
     alias auth basic_auth
 
