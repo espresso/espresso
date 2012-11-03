@@ -47,10 +47,6 @@ module EHelpersTest__Assets
       end
     end
 
-    def post_load_assets
-      load_assets *params[:assets] << {:from => params[:from]}
-    end
-
   end
 
   Spec.new self do
@@ -105,12 +101,12 @@ module EHelpersTest__Assets
 
     Testing :AssetsLoader do
       Testing :js do
-        Should 'prepend baseurl' do
+        Should 'use assets_url' do
           get :assets_loader, :js, :url => 'master'
           expect(last_response.body) =~ /src="\/assets\/master\.js"/
         end
 
-        Should 'skip baseurl' do
+        Should 'skip assets_url' do
           get :assets_loader, :js, :baseurl => './', :url => 'master'
           expect(last_response.body) =~ /src="\.\/master\.js"/
           
@@ -128,7 +124,7 @@ module EHelpersTest__Assets
       end
 
       Testing :css do
-        Should 'prepend baseurl' do
+        Should 'use assets_url' do
           get :assets_loader, :css, :url => 'master'
           expect(last_response.body) =~ /href="\/assets\/master\.css"/
         end
@@ -149,37 +145,30 @@ module EHelpersTest__Assets
           expect(last_response.body) =~ /href="master\.css"/
         end
       end
-    end
 
-    Testing :load_assets do
+      Testing :png do
+        Should 'use assets_url' do
+          get :assets_loader, :png, :url => 'master'
+          expect(last_response.body) =~ /src="\/assets\/master\.png"/
+        end
 
-      post :load_assets, :assets => ['master.js', 'styles.css']
-      is(last_response.body) == '<script src="/assets/master.js" type="text/javascript"></script>
-<link href="/assets/styles.css" rel="stylesheet" />
-'
- 
-      post :load_assets, :assets => ['jquery.js', 'reset.css', 'bootstrap/js/bootstrap.js'], 
-        :from => 'vendor/'
-      is(last_response.body) == '<script src="/assets/vendor/jquery.js" type="text/javascript"></script>
-<link href="/assets/vendor/reset.css" rel="stylesheet" />
-<script src="/assets/vendor/bootstrap/js/bootstrap.js" type="text/javascript"></script>
-'
- 
-      Ensure 'path not mapped when it is starting with a slash or protocol' do
-        post :load_assets, :assets => ['jquery.js', 'reset.css', 'bootstrap/js/bootstrap.js'], 
-          :from => '/vendor/'
-        is(last_response.body) == '<script src="/vendor/jquery.js" type="text/javascript"></script>
-<link href="/vendor/reset.css" rel="stylesheet" />
-<script src="/vendor/bootstrap/js/bootstrap.js" type="text/javascript"></script>
-'
+        Should 'skip assets_url' do
+          get :assets_loader, :png, :baseurl => './', :url => 'master'
+          expect(last_response.body) =~ /src="\.\/master\.png"/
+          
+          get :assets_loader, :png, :baseurl => '/', :url => 'master'
+          expect(last_response.body) =~ /src="\/master\.png"/
 
-        post :load_assets, :assets => ['jquery.js', 'blah/doh.js', 'styles.css'], 
-          :from => 'http://cdn.mysite.com/'
-        is(last_response.body) == '<script src="http://cdn.mysite.com/jquery.js" type="text/javascript"></script>
-<script src="http://cdn.mysite.com/blah/doh.js" type="text/javascript"></script>
-<link href="http://cdn.mysite.com/styles.css" rel="stylesheet" />
-'     
+          get :assets_loader, :png, :baseurl => 'http://some.cdn', :url => 'master'
+          expect(last_response.body) =~ /src="http:\/\/some\.cdn\/master\.png"/
+        end
+
+        Should 'skip assets_url and given baseurl' do
+          get :assets_loader, :png, :src => 'master', :baseurl => 'skipit'
+          expect(last_response.body) =~ /src="master\.png"/
+        end
       end
     end
+
   end
 end
