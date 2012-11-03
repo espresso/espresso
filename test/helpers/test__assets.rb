@@ -38,6 +38,15 @@ module EHelpersTest__Assets
       end
     end
 
+    def get_assets_loader type
+      loader = assets_loader params[:baseurl] 
+      if src = params[:src]
+        loader.send(type, :src => src)
+      else
+        loader.send(type, params[:url])
+      end
+    end
+
     def post_load_assets
       load_assets *params[:assets] << {:from => params[:from]}
     end
@@ -45,8 +54,9 @@ module EHelpersTest__Assets
   end
 
   Spec.new self do
+    assets_url = '/assets'
     app = EApp.new do
-      assets_url '/assets'
+      assets_url(assets_url)
     end.mount(App)
     app(app)
     map App.base_url
@@ -91,6 +101,54 @@ module EHelpersTest__Assets
       check(lines[0]) =~ /type="text\/css"/
       check(lines[1]) == '{"some"=>"param"}'
       check(lines[2]) == '</style>'
+    end
+
+    Testing :AssetsLoader do
+      Testing :js do
+        Should 'prepend baseurl' do
+          get :assets_loader, :js, :url => 'master'
+          expect(last_response.body) =~ /src="\/assets\/master\.js"/
+        end
+
+        Should 'skip baseurl' do
+          get :assets_loader, :js, :baseurl => './', :url => 'master'
+          expect(last_response.body) =~ /src="\.\/master\.js"/
+          
+          get :assets_loader, :js, :baseurl => '/', :url => 'master'
+          expect(last_response.body) =~ /src="\/master\.js"/
+
+          get :assets_loader, :js, :baseurl => 'http://some.cdn', :url => 'master'
+          expect(last_response.body) =~ /src="http:\/\/some\.cdn\/master\.js"/
+        end
+
+        Should 'skip assets_url and given baseurl' do
+          get :assets_loader, :js, :src => 'master', :baseurl => 'skipit'
+          expect(last_response.body) =~ /src="master\.js"/
+        end
+      end
+
+      Testing :css do
+        Should 'prepend baseurl' do
+          get :assets_loader, :css, :url => 'master'
+          expect(last_response.body) =~ /href="\/assets\/master\.css"/
+        end
+
+        Should 'skip assets_url' do
+          get :assets_loader, :css, :baseurl => './', :url => 'master'
+          expect(last_response.body) =~ /href="\.\/master\.css"/
+          
+          get :assets_loader, :css, :baseurl => '/', :url => 'master'
+          expect(last_response.body) =~ /href="\/master\.css"/
+
+          get :assets_loader, :css, :baseurl => 'http://some.cdn', :url => 'master'
+          expect(last_response.body) =~ /href="http:\/\/some\.cdn\/master\.css"/
+        end
+
+        Should 'skip assets_url and given baseurl' do
+          get :assets_loader, :css, :src => 'master', :baseurl => 'skipit'
+          expect(last_response.body) =~ /href="master\.css"/
+        end
+      end
     end
 
     Testing :load_assets do

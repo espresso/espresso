@@ -318,7 +318,7 @@ class E
   end.each_pair do |suffix, engine|
 
     # this can be easily done via `define_method`,
-    # however, ruby 1.8 does not support default params for procs
+    # however, ruby 1.8 does not support args with default values on procs
     # TODO: use `define_method` when 1.8 support dropped.
     class_eval <<-RUBY
 
