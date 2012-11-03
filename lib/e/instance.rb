@@ -327,8 +327,12 @@ class E
     halt send_file path, opts.merge(:attachment => true)
   end
 
+  def app
+    self.class.app
+  end
+
   def app_root
-    self.class.app.root
+    app.root
   end
 
   def escape_html *args

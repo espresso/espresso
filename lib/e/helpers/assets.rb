@@ -1,6 +1,6 @@
 class EAssetsLoader
 
-  attr_reader :baseurl
+  attr_reader :baseurl, :app
   alias :path :baseurl
 
   def initialize app, baseurl = nil
@@ -40,10 +40,6 @@ class EAssetsLoader
   end
 
   private
-  def assets_url path = nil
-    base = @app.assets_url.dup
-    path ? base << path : base
-  end
 
   def urlify url
     @trail_slash ? 
@@ -52,7 +48,7 @@ class EAssetsLoader
   end
 
   module Mixin
-    # building HTML script tag from given URL and opts.
+    # building HTML script tag from given URL and/or opts.
     # if passing URL as first argument, 
     # it will be appended to the assets base URL, set via `assets_url` at app level.
     # 
@@ -110,6 +106,11 @@ class EAssetsLoader
     alias img_tag image_tag
 
     private
+    def assets_url path = nil
+      base = app.assets_url.dup
+      path ? base << path : base
+    end
+
     def __e__assets__opts_to_s opts
       (@__e__assets__opts_to_s ||= {})[opts.hash] = opts.keys.inject([]) do |f, k|
         f << '%s="%s"' % [k, ::CGI.escapeHTML(opts[k])]
@@ -234,11 +235,5 @@ class E
   def assets_loader baseurl = nil
     EAssetsLoader.new self.class.app, baseurl
   end
-
-  def assets_url path = nil
-    base = self.class.app.assets_url.dup
-    path ? base << path : base
-  end
-  
 
 end
