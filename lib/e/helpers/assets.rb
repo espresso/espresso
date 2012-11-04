@@ -1,29 +1,53 @@
+
+#
+# asl = assets_loader :vendor
+#  
+# asl.js :jquery
+# #=> <script src="/vendor/jquery.js" ...
+# 
+# # change dir to vendor/jquery-ui
+# asl.chdir 'jquery-ui'
+#
+# asl.js 'js/jquery-ui.min'
+# #=> <script src="/vendor/jquery-ui/js/jquery-ui.min.js" ...
+#
+# asl.css 'css/jquery-ui.min'
+# #=> <link href="/vendor/jquery-ui/css/jquery-ui.min.css" ...
+#
+# # change dir to vendor/bootstrap
+# asl.cd '../bootstrap'
+#
+# asl.js 'js/bootstrap.min'
+# #=> <script src="/vendor/bootstrap/js/bootstrap.min.js" ...
+#
+# asl.css 'css/bootstrap'
+# #=> <link href="/vendor/bootstrap/css/bootstrap.css" ...
+#
 class EAssetsLoader
 
-  attr_reader :baseurl, :app
+  attr_reader :baseurl, :wd, :app, :to_s
   alias :path :baseurl
 
   def initialize app, baseurl = nil
-    @app = app
-    baseurl = baseurl.to_s
-    if baseurl =~ /\A[\w|\d]+\:\/\/|\A\/|\A\.\//
-      @baseurl = baseurl.freeze
-    else
-      @baseurl = (app.assets_url + baseurl).freeze
-    end
-    @trail_slash = (@baseurl =~ /\/\Z/)
+    @app, @wd, @to_s = app, nil, ''
+    baseurl = baseurl.to_s.strip
+    baseurl = app.assets_url + baseurl unless baseurl =~ /\A[\w|\d]+\:\/\/|\A\/|\A\.\//
+    baseurl << '/' unless baseurl =~ /\/\Z/
+    @baseurl = baseurl.freeze
   end
 
   def js url = nil, opts = {}
-    opts = url if url.is_a?(Hash)
-    opts[:src] ||= urlify(url)
-    script_tag opts.merge(:ext => '.js')
+    url.is_a?(Hash) ? opts = url : opts[:src] ||= urlify(url)
+    html = script_tag opts.merge(:ext => '.js')
+    to_s << html
+    html
   end
 
   def css url = nil, opts = {}
-    opts = url if url.is_a?(Hash)
-    opts[:src] ||= urlify(url)
-    style_tag opts.merge(:ext => '.css')
+    url.is_a?(Hash) ? opts = url : opts[:src] ||= urlify(url)
+    html = style_tag opts.merge(:ext => '.css')
+    to_s << html
+    html
   end
 
   %w[.jpg .jpeg .png .gif .tif .tiff .bmp .svg .ico .xpm .icon].each do |ext|
@@ -32,19 +56,34 @@ class EAssetsLoader
     # TODO: use `define_method` when 1.8 support dropped.
     class_eval <<-RUBY
       def #{ext.delete('.')} url = nil, opts = {}
-        opts = url if url.is_a?(Hash)
-        opts[:src] ||= urlify(url)
-        image_tag opts.merge(:ext => '#{ext}')
+        url.is_a?(Hash) ? opts = url : opts[:src] ||= urlify(url)
+        html = image_tag opts.merge(:ext => '#{ext}')
+        to_s << html
+        html
       end
     RUBY
   end
 
+  def chdir path = nil
+    return @wd = nil unless path
+    dirs_back, path = path.to_s.split(/\/+/).partition { |c| c == '..' }
+    if wd
+      wd_chunks = wd.split(/\/+/)
+      wd = wd_chunks[0, wd_chunks.size - dirs_back.size] || []
+    else
+      wd = []
+    end
+    @wd = (wd + path << '').
+      compact. # `compact` is faster than `nil.to_s`
+      join('/').freeze
+    self
+  end
+  alias :cd :chdir
+
   private
 
   def urlify url
-    @trail_slash ? 
-      baseurl + url||'' :
-      [baseurl, url]*'/'
+    baseurl + (wd||'') + (url||'')
   end
 
   module Mixin
@@ -107,8 +146,7 @@ class EAssetsLoader
 
     private
     def assets_url path = nil
-      base = app.assets_url.dup
-      path ? base << path : base
+      app.assets_url + (path||'')
     end
 
     def __e__assets__opts_to_s opts
@@ -184,7 +222,7 @@ class EApp
     #     # this action wont work cause "/assets" URL is reserved for assets
     #   end
     #
-    #   # other actions will work normally
+    #   # other actions will work properly
     #  
     # end
     #
@@ -233,7 +271,7 @@ class E
   include EAssetsLoader::Mixin
 
   def assets_loader baseurl = nil
-    EAssetsLoader.new self.class.app, baseurl
+    EAssetsLoader.new app, baseurl
   end
 
 end

@@ -39,12 +39,26 @@ module EHelpersTest__Assets
     end
 
     def get_assets_loader type
-      loader = assets_loader params[:baseurl] 
+      loader = assets_loader params[:baseurl]
       if src = params[:src]
         loader.send(type, :src => src)
       else
         loader.send(type, params[:url])
       end
+    end
+
+    def assets_loader_chdir type
+      loader = assets_loader params[:baseurl]
+      params[:scenario].each do |scenario|
+        path, file = scenario.split
+        if file.nil?
+          file = path
+          path = nil
+        end
+        loader.cd path
+        loader.send(type, file)
+      end
+      loader
     end
 
   end
@@ -57,23 +71,26 @@ module EHelpersTest__Assets
     app(app)
     map App.base_url
 
+    def match? response, str
+      check(last_response.body) =~ (str.is_a?(Regexp) ? str : Regexp.new(Regexp.escape str))
+    end
 
     Testing :image_tag do
 
       get :image_with_url, 'image.jpg'
-      is(last_response.body) == '<img src="/assets/image.jpg" alt="image" />' << "\n"
+      does(last_response).match? '<img src="/assets/image.jpg" alt="image" />'
 
       get :image_with_src, 'image.jpg'
-      is(last_response.body) == '<img src="image.jpg" alt="image" />' << "\n"
+      does(last_response).match? '<img src="image.jpg" alt="image" />'
     end
 
     Testing :script_tag do
 
       get :script_with_url, 'url.js'
-      check(last_response.body) == '<script src="/assets/url.js" type="text/javascript"></script>' << "\n"
+      does(last_response).match?  '<script src="/assets/url.js" type="text/javascript"></script>'
 
       get :script_with_src, 'src.js'
-      check(last_response.body) == '<script src="src.js" type="text/javascript"></script>' << "\n"
+      does(last_response).match? '<script src="src.js" type="text/javascript"></script>'
 
       get :script_with_block, :some => 'param'
       lines = last_response.body.split("\n").map { |s| s.strip }
@@ -86,10 +103,10 @@ module EHelpersTest__Assets
     Testing :style_tag do
 
       get :style_with_url, 'url.css'
-      check(last_response.body) == '<link href="/assets/url.css" rel="stylesheet" />' << "\n"
+      does(last_response).match? '<link href="/assets/url.css" rel="stylesheet" />'
 
       get :style_with_src, 'src.css'
-      check(last_response.body) == '<link href="src.css" rel="stylesheet" />' << "\n"
+      does(last_response).match? '<link href="src.css" rel="stylesheet" />'
 
       get :style_with_block, :some => 'param'
       lines = last_response.body.split("\n").map { |s| s.strip }
@@ -103,71 +120,129 @@ module EHelpersTest__Assets
       Testing :js do
         Should 'use assets_url' do
           get :assets_loader, :js, :url => 'master'
-          expect(last_response.body) =~ /src="\/assets\/master\.js"/
+          does(last_response).match? 'src="/assets/master.js"'
         end
 
         Should 'skip assets_url' do
           get :assets_loader, :js, :baseurl => './', :url => 'master'
-          expect(last_response.body) =~ /src="\.\/master\.js"/
+          does(last_response).match? 'src="./master.js"'
           
           get :assets_loader, :js, :baseurl => '/', :url => 'master'
-          expect(last_response.body) =~ /src="\/master\.js"/
+          does(last_response).match? 'src="/master.js"'
 
           get :assets_loader, :js, :baseurl => 'http://some.cdn', :url => 'master'
-          expect(last_response.body) =~ /src="http:\/\/some\.cdn\/master\.js"/
+          does(last_response).match? 'src="http://some.cdn/master.js"'
         end
 
         Should 'skip assets_url and given baseurl' do
           get :assets_loader, :js, :src => 'master', :baseurl => 'skipit'
-          expect(last_response.body) =~ /src="master\.js"/
+          does(last_response).match? 'src="master.js"'
         end
       end
 
       Testing :css do
         Should 'use assets_url' do
           get :assets_loader, :css, :url => 'master'
-          expect(last_response.body) =~ /href="\/assets\/master\.css"/
+          does(last_response).match? 'href="/assets/master.css"'
         end
 
         Should 'skip assets_url' do
           get :assets_loader, :css, :baseurl => './', :url => 'master'
-          expect(last_response.body) =~ /href="\.\/master\.css"/
+          does(last_response).match? 'href="./master.css"'
           
           get :assets_loader, :css, :baseurl => '/', :url => 'master'
-          expect(last_response.body) =~ /href="\/master\.css"/
+          does(last_response).match? 'href="/master.css"'
 
           get :assets_loader, :css, :baseurl => 'http://some.cdn', :url => 'master'
-          expect(last_response.body) =~ /href="http:\/\/some\.cdn\/master\.css"/
+          does(last_response).match? 'href="http://some.cdn/master.css"'
         end
 
         Should 'skip assets_url and given baseurl' do
           get :assets_loader, :css, :src => 'master', :baseurl => 'skipit'
-          expect(last_response.body) =~ /href="master\.css"/
+          does(last_response).match? 'href="master.css"'
         end
       end
 
       Testing :png do
         Should 'use assets_url' do
           get :assets_loader, :png, :url => 'master'
-          expect(last_response.body) =~ /src="\/assets\/master\.png"/
+          does(last_response).match? 'src="/assets/master.png"'
         end
 
         Should 'skip assets_url' do
           get :assets_loader, :png, :baseurl => './', :url => 'master'
-          expect(last_response.body) =~ /src="\.\/master\.png"/
+          does(last_response).match? 'src="./master.png"'
           
           get :assets_loader, :png, :baseurl => '/', :url => 'master'
-          expect(last_response.body) =~ /src="\/master\.png"/
+          does(last_response).match? 'src="/master.png"'
 
           get :assets_loader, :png, :baseurl => 'http://some.cdn', :url => 'master'
-          expect(last_response.body) =~ /src="http:\/\/some\.cdn\/master\.png"/
+          does(last_response).match? 'src="http://some.cdn/master.png"'
         end
 
         Should 'skip assets_url and given baseurl' do
           get :assets_loader, :png, :src => 'master', :baseurl => 'skipit'
-          expect(last_response.body) =~ /src="master\.png"/
+          does(last_response).match? 'src="master.png"'
         end
       end
+    end
+
+    Testing :AssetsLoaderChdir do
+      Should 'use baseurl when redundant backdirs provided' do
+        get :assets_loader_chdir, :js, :scenario => [ '../../etc/passwd jquery' ]
+        does(last_response).match? 'src="/assets/etc/passwd/jquery.js"'
+
+        get :assets_loader_chdir, :js, :scenario => [ '../etc/passwd jquery' ]
+        does(last_response).match? 'src="/assets/etc/passwd/jquery.js"'
+
+        get :assets_loader_chdir, :js, :scenario => ['vendor/jquery jquery', '../../../../ master']
+        does(last_response).match? 'src="/assets/master.js"'
+      end
+
+      Should 'cd to vendor/jquery and load vendor/jquery/jquery.js' do
+        get :assets_loader_chdir, :js, :scenario => ['vendor/jquery jquery', '.. master']
+        does(last_response).match? 'src="/assets/vendor/jquery/jquery.js"'
+        Then 'cd to .. and load vendor/master.js' do
+          does(last_response).match? 'src="/assets/vendor/master.js"'
+        end
+      end
+
+      Should 'cd to vendor/jquery and load vendor/jquery/jquery.js' do
+        get :assets_loader_chdir, :js, :scenario => ['vendor/jquery jquery', '../.. master']
+        does(last_response).match? 'src="/assets/vendor/jquery/jquery.js"'
+        Then 'cd to ../.. and load master.js' do
+          does(last_response).match? 'src="/assets/master.js"'
+        end
+      end
+
+      Should 'cd to css/themes and load css/themes/black.css' do
+        get :assets_loader_chdir, :css, :scenario => ['css/themes black', ' master']
+        does(last_response).match? 'href="/assets/css/themes/black.css"'
+        Then 'cd to root and load master.css' do
+          does(last_response).match? 'href="/assets/master.css"'
+        end
+      end
+
+      Should 'behave well with rooted baseurls' do
+        Should 'cd to vendor/icons/16x16 and load vendor/icons/16x16/file.png' do
+          get :assets_loader_chdir, :png, :baseurl => '/public', :scenario => ['vendor/icons/16x16 file', '../.. sprite']
+          does(last_response).match? 'src="/public/vendor/icons/16x16/file.png"'
+          Then 'cd to ../.. and load vendor/sprite.png' do
+            does(last_response).match? 'src="/public/vendor/sprite.png"'
+          end
+        end
+      end
+
+      Should 'behave well with protocoled baseurls' do
+        Should 'cd to icons/16x16 and load icons/16x16/file.png' do
+          get :assets_loader_chdir, :png, :baseurl => 'http://some.cdn', :scenario => ['icons/16x16 file', '.. sprite']
+          does(last_response).match? 'src="http://some.cdn/icons/16x16/file.png"'
+          Then 'cd to .. and load sprite.png' do
+            does(last_response).match? 'src="http://some.cdn/icons/sprite.png"'
+          end
+        end
+      end
+
     end
 
   end
