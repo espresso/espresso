@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 
-version = '0.2.5'
+version = '0.2.6'
 Gem::Specification.new do |s|
 
   s.name = 'e'
@@ -18,7 +18,7 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency 'rake', '~> 0.9.2'
   s.add_development_dependency 'specular', '~> 0.1.2'
-  s.add_development_dependency 'sonar', '~> 0.1'
+  s.add_development_dependency 'sonar', '~> 0.1.1'
   s.add_development_dependency 'haml'
 
   s.require_paths = ['lib']
