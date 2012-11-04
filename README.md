@@ -41,7 +41,7 @@ App.run
 Espresso in the wild?
 ---
 
-Yes, [CIBox](http://cibox.org) is built entirely on Espresso Framework.
+Yes, [CIBox](http://cibox.org) service is built entirely on Espresso Framework.
 
 [Source Code](https://github.com/slivu/cibox.org)
 
