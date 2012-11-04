@@ -1,5 +1,5 @@
-
 #
+# @example
 # asl = assets_loader :vendor
 #  
 # asl.js :jquery
@@ -23,17 +23,41 @@
 # asl.css 'css/bootstrap'
 # #=> <link href="/vendor/bootstrap/css/bootstrap.css" ...
 #
+# @example using blocks. blocks are converted to string automatically
+#
+# # `assets_url` is set to /vendor at app level
+#
+# assets_loader do
+#   
+#   js :jquery
+#
+#   chdir 'jquery-ui'
+#   js 'js/jquery-ui.min'
+#   css 'css/jquery-ui.min'
+#
+#   cd '../bootstrap'
+#   js 'js/bootstrap.min'
+#   css 'css/bootstrap'
+# end
+#
+# #=> <script src="/vendor/jquery.js" ...
+# #=> <script src="/vendor/jquery-ui/js/jquery-ui.min.js" ...
+# #=> <link href="/vendor/jquery-ui/css/jquery-ui.min.css" ...
+# #=> <script src="/vendor/bootstrap/js/bootstrap.min.js" ...
+# #=> <link href="/vendor/bootstrap/css/bootstrap.css" ...
+#
 class EAssetsLoader
 
   attr_reader :baseurl, :wd, :app, :to_s
   alias :path :baseurl
 
-  def initialize app, baseurl = nil
-    @app, @wd, @to_s = app, nil, ''
+  def initialize ctrl, baseurl = nil, &proc
+    @ctrl, @app, @wd, @to_s = ctrl, ctrl.app, nil, ''
     baseurl = baseurl.to_s.strip
     baseurl = app.assets_url + baseurl unless baseurl =~ /\A[\w|\d]+\:\/\/|\A\/|\A\.\//
     baseurl << '/' unless baseurl =~ /\/\Z/
     @baseurl = baseurl.freeze
+    proc && self.instance_exec(&proc)
   end
 
   def js url = nil, opts = {}
@@ -79,6 +103,10 @@ class EAssetsLoader
     self
   end
   alias :cd :chdir
+
+  def method_missing *args, &proc
+    @ctrl.send *args, &proc
+  end
 
   private
 
@@ -270,8 +298,8 @@ end
 class E
   include EAssetsLoader::Mixin
 
-  def assets_loader baseurl = nil
-    EAssetsLoader.new app, baseurl
+  def assets_loader baseurl = nil, &proc
+    EAssetsLoader.new self, baseurl, &proc
   end
 
 end

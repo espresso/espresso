@@ -61,6 +61,11 @@ module EHelpersTest__Assets
       loader
     end
 
+    def assets_loader_with_block type
+      assets_loader params[:baseurl] do
+        send type, params[:url]
+      end
+    end
   end
 
   Spec.new self do
@@ -185,6 +190,17 @@ module EHelpersTest__Assets
           does(last_response).match? 'src="master.png"'
         end
       end
+    end
+
+    Testing :AssetsLoaderWithBlock do
+      get :assets_loader_with_block, :js, :url => 'master'
+      does(last_response).match? 'src="/assets/master.js"'
+      
+      get :assets_loader_with_block, :css, :url => 'master', :baseurl => '/'
+      does(last_response).match? 'href="/master.css"'
+
+      get :assets_loader_with_block, :png, :url => 'master', :baseurl => 'http://some.cdn'
+      does(last_response).match? 'src="http://some.cdn/master.png"'
     end
 
     Testing :AssetsLoaderChdir do
