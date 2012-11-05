@@ -37,23 +37,24 @@ will look like `src="script.js"` / `href="style.css"`
 
 To have them mapped to some URL, use assets mapper.
 
+**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
+
 Assets Mapper
 ---
 
 `assets_map` is a method of dual meaning:
 
   - it defines a baseurl for assets loader
-  - it may instruct your app to act as an assets server
+  - and it may instruct your app to act as an assets server
 
 As said above, by default assets will be loaded from current folder.
 
-To define a baseurl to load assets from use `assets_map`(or `assets_url` alias) at app level:
+To define a baseurl to load assets from, use `assets_map`(or `assets_url` alias) at app level:
 
 
 ```ruby
 class App < E
   map :/
-
   ...
 end
 
@@ -73,7 +74,6 @@ Example:
 
 ```ruby
 script_tag 'script.js'
-
 # or
 js 'script'
 ```
@@ -99,6 +99,7 @@ png 'image'
 
 both will return `<img src="/assets/image.png" ...`
 
+**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
 
 Assets Server
 ---
@@ -130,6 +131,7 @@ app = EApp.new do
 
   assets_path :static
 end
+```
 
 Now your app will serve files found under `static/` folder inside app root.
 
@@ -151,11 +153,12 @@ Now your app will serve files found under `/full/path/to/Shared-assets/` folder.
 
 So `<script src="/assets/script.js" ...` will serve `/full/path/to/Shared-assets/script.js`
 
+**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
 
 Assets Helpers
 ---
 
-For now Espresso offers 3 helper methods:
+For now, Espresso offers 3 helper methods:
 
   - `script_tag`
   - `style_tag`
@@ -170,7 +173,7 @@ script_tag 'some-file.js', :async => true, :charset => 'UTF-8'
 # <script src="some-file.js" async="true" charset="UTF-8" ...
 ```
 
-You can also omit the first argument and pass file via :src option.
+You can also omit the first argument and pass file via `:src` option.
 
 This is useful when you need to skip assets mapper setup and load file directly.
 
@@ -189,7 +192,7 @@ script_tag 'script.js'
 
 Same for rooted URLs inside your app.
 
-Let's suppose baseurl is set to `vendor/` but we need to load a stylesheet from root:
+Let's suppose baseurl is set to `/vendor` but we need to load a stylesheet from root:
 
 ```ruby
 style_tag :src => '/themes/black.css'
@@ -197,7 +200,7 @@ style_tag :src => '/themes/black.css'
 
 # without :src option
 
-style_tag :src => 'bootstrap/bootstrap.css'
+style_tag 'bootstrap/bootstrap.css'
 # <link href="/vendor/bootstrap/bootstrap.css" ...
 ```
 
@@ -215,67 +218,15 @@ img_tag 'banner.png'
 # <img src="/static/banner.png" ...
 ```
 
-
-Basic Example:
-
-```ruby
-
-asl = assets_loader :vendor
- 
-asl.js :jquery
-#=> <script src="/vendor/jquery.js" ...
-
-# change dir to vendor/jquery-ui
-asl.chdir 'jquery-ui'
-
-asl.js 'js/jquery-ui.min'
-#=> <script src="/vendor/jquery-ui/js/jquery-ui.min.js" ...
-
-asl.css 'css/jquery-ui.min'
-#=> <link href="/vendor/jquery-ui/css/jquery-ui.min.css" ...
-
-# change dir to vendor/bootstrap
-asl.cd '../bootstrap'
-
-asl.js 'js/bootstrap.min'
-#=> <script src="/vendor/bootstrap/js/bootstrap.min.js" ...
-
-asl.css 'css/bootstrap'
-#=> <link href="/vendor/bootstrap/css/bootstrap.css" ...
-```
-
-@example using blocks. blocks are converted to string automatically
-
-```ruby
-# `assets_url` is set to /vendor at app level
-
-assets_loader do
-  
-  js :jquery
-
-  chdir 'jquery-ui'
-  js 'js/jquery-ui.min'
-  css 'css/jquery-ui.min'
-
-  cd '../bootstrap'
-  js 'js/bootstrap.min'
-  css 'css/bootstrap'
-end
-
-#=> <script src="/vendor/jquery.js" ...
-#=> <script src="/vendor/jquery-ui/js/jquery-ui.min.js" ...
-#=> <link href="/vendor/jquery-ui/css/jquery-ui.min.css" ...
-#=> <script src="/vendor/bootstrap/js/bootstrap.min.js" ...
-#=> <link href="/vendor/bootstrap/css/bootstrap.css" ...
-```
+**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
 
 Assets Loader
 ---
 
-Assets loader allow to save time and line space 
+Assets loader allow to save time and space 
 by avoiding repetitive and redundant path typing.
 
-It is like a mapper for a set of assets.
+It is like a mapper for a local set of assets.
 
 Let's suppose we need to load N files from `/assets/vendor` 
 and another M files from `/assets/app`
@@ -361,13 +312,12 @@ assets_loader :app do
 end
 ```
 
-If you need to load multiple files from same folder, you can pass multiple files as arguments:
+You can also pass multiple files as arguments:
 
 ```ruby
 assets_loader :app do
 
   cd 'js'
-
   js :boot, :setup, :app
 end
 #=> <script src="/app/js/boot.js" ...
@@ -391,12 +341,12 @@ end.to_a
 
 # joining and displaying tags
 
-tags.join("  \n")
+tags.join("\n  \n")
 ```
 
 
 **Worth to note** that assets loader can skip assets mapper setup,
-that's it, you can load assets from an arbitrary location.
+that's it, you can load assets from any location.
 
 This will basically work for locations starting with:
   
@@ -404,7 +354,7 @@ This will basically work for locations starting with:
   - a slash: `/`
   - a dot slash notation: `./` meant to load assets from current folder
 
-This will load assets from `http://my.cdn`, regardless assets mapper setup:
+**Example:** load assets from `http://my.cdn`, regardless assets mapper setup:
 
 ```ruby
 assets_loader 'http://my.cdn' do
@@ -421,7 +371,7 @@ assets_loader 'http://my.cdn' do
 end
 ```
 
-This will load assets from current folder, regardless assets mapper setup:
+**Example:** load assets from current folder, regardless assets mapper setup:
 
 ```ruby
 assets_loader './app' do
@@ -461,7 +411,7 @@ assets_loader '/vendor' do
 end
 ```
 
-
+**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
 
 
 
