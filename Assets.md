@@ -148,6 +148,7 @@ app = EApp.new do
 
   assets_fullpath '/full/path/to/Shared-assets'
 end
+```
 
 Now your app will serve files found under `/full/path/to/Shared-assets/` folder.
 
