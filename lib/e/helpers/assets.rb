@@ -52,40 +52,27 @@ class EAssetsLoader
   alias :path :baseurl
 
   def initialize ctrl, baseurl = nil, &proc
-    @ctrl, @app, @wd, @to_s = ctrl, ctrl.app, nil, ''
+    @ctrl, @app  = ctrl, ctrl.app
+    @tags, @to_s = [], ''
     baseurl = baseurl.to_s.strip
     baseurl = app.assets_url + baseurl unless baseurl =~ /\A[\w|\d]+\:\/\/|\A\/|\A\.\//
     baseurl << '/' unless baseurl =~ /\/\Z/
-    @baseurl = baseurl.freeze
+    @baseurl, @wd = baseurl.freeze, nil
     proc && self.instance_exec(&proc)
   end
 
-  def js url = nil, opts = {}
-    url.is_a?(Hash) ? opts = url : opts[:src] ||= urlify(url)
-    html = script_tag opts.merge(:ext => '.js')
-    to_s << html
-    html
+  def js *args
+    to_html :script_tag, '.js', *args
   end
 
-  def css url = nil, opts = {}
-    url.is_a?(Hash) ? opts = url : opts[:src] ||= urlify(url)
-    html = style_tag opts.merge(:ext => '.css')
-    to_s << html
-    html
+  def css *args
+    to_html :style_tag, '.css', *args
   end
 
   %w[.jpg .jpeg .png .gif .tif .tiff .bmp .svg .ico .xpm .icon].each do |ext|
-    # this can be easily done via `define_method`,
-    # however, ruby 1.8 does not support args with default values on procs
-    # TODO: use `define_method` when 1.8 support dropped.
-    class_eval <<-RUBY
-      def #{ext.delete('.')} url = nil, opts = {}
-        url.is_a?(Hash) ? opts = url : opts[:src] ||= urlify(url)
-        html = image_tag opts.merge(:ext => '#{ext}')
-        to_s << html
-        html
-      end
-    RUBY
+    define_method ext.delete('.') do |*args|
+      to_html :image_tag, ext, *args
+    end
   end
 
   def chdir path = nil
@@ -104,11 +91,37 @@ class EAssetsLoader
   end
   alias :cd :chdir
 
+  def to_a
+    @tags.map { |e| e.strip }
+  end
+
   def method_missing *args, &proc
     @ctrl.send *args, &proc
   end
 
   private
+  def to_html meth, ext, *args
+    opts = args.last.is_a?(Hash) ? args.pop : {}
+    if args.size > 0
+      opts.delete :src
+    else
+      args = [opts[:src]] || raise(ArgumentError, 'Please provide file(s) to load via arguments or via :src option')
+    end
+    html = ''
+    args.each do |url|
+      url_opts = opts.merge(:ext => ext)
+      url_opts[:src] ||= urlify(url)
+      # url not passed cause files always explicitly loaded via :src option
+      tag = send(meth, url_opts)
+      @tags << tag
+      # we could simply do `@to_a.join` 
+      # but  this becomes expensive as number of tags grows.
+      # `<<` instead is cheap enough to be used on each tag.
+      @to_s << tag
+      html  << tag
+    end
+    html
+  end
 
   def urlify url
     baseurl + (wd||'') + (url||'')

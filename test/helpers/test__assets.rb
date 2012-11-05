@@ -66,6 +66,18 @@ module EHelpersTest__Assets
         send type, params[:url]
       end
     end
+
+    def assets_loader_with_multiple_urls type
+      loader = assets_loader params[:baseurl]
+      loader.send(type, *params[:urls] << (params[:opts] || {}))
+      loader
+    end
+
+    def assets_loader_returning_an_array type
+      loader = assets_loader params[:baseurl]
+      loader.send(type, *params[:urls])
+      ([''] + loader.to_a).join(params[:glue])
+    end
   end
 
   Spec.new self do
@@ -199,6 +211,9 @@ module EHelpersTest__Assets
       get :assets_loader_with_block, :css, :url => 'master', :baseurl => '/'
       does(last_response).match? 'href="/master.css"'
 
+      get :assets_loader_with_block, :css, :url => 'master', :baseurl => './'
+      does(last_response).match? 'href="./master.css"'
+
       get :assets_loader_with_block, :png, :url => 'master', :baseurl => 'http://some.cdn'
       does(last_response).match? 'src="http://some.cdn/master.png"'
     end
@@ -258,7 +273,81 @@ module EHelpersTest__Assets
           end
         end
       end
+    end
 
+    Testing :assets_loader_with_multiple_urls do
+
+      urls = ['boot', 'setup', 'load']
+
+      Testing :js do
+        Should 'work well without opts' do
+          get :assets_loader_with_multiple_urls, :js, :baseurl => '/static', :urls => urls
+          urls.each do |url|
+            does(last_response).match? 'src="/static/%s.js"' % url
+          end
+        end
+        Should 'apply given opts to all tags' do
+          get :assets_loader_with_multiple_urls, :js, :urls => urls, :opts => {:charset => 'UTF-8'}
+          urls.each do |url|
+            does(last_response).match? 'src="/assets/%s.js" charset="UTF-8"' % url
+          end
+        end
+      end
+
+      Testing :css do
+        Should 'work well without opts' do
+          get :assets_loader_with_multiple_urls, :css, :baseurl => './', :urls => urls
+          urls.each do |url|
+            does(last_response).match? 'href="./%s.css"' % url
+          end
+        end
+        Should 'apply given opts to all tags' do
+          get :assets_loader_with_multiple_urls, :css, :urls => urls, :opts => {:charset => 'UTF-8'}
+          urls.each do |url|
+            does(last_response).match? 'href="/assets/%s.css" charset="UTF-8"' % url
+          end
+        end
+      end
+
+      Testing :img do
+        Should 'work well without opts' do
+          get :assets_loader_with_multiple_urls, :png, :baseurl => 'http://blah.cdn', :urls => urls
+          urls.each do |url|
+            does(last_response).match? 'src="http://blah.cdn/%s.png"' % url
+          end
+        end
+        Should 'apply given opts to all tags' do
+          get :assets_loader_with_multiple_urls, :jpg, :urls => urls, :opts => {:alt => 'blah'}
+          urls.each do |url|
+            does(last_response).match? 'src="/assets/%s.jpg" alt="blah"' % url
+          end
+        end
+      end
+
+    end
+
+    Testing :assets_loader_returning_an_array do
+      urls, glue = ['boot', 'setup', 'load'], '|||'
+
+      get :assets_loader_returning_an_array, :js, :urls => urls, :glue => glue
+      urls.each do |url|
+        does(last_response).match? '%s<script src="/assets/%s.js"' % [glue, url]
+      end
+
+      get :assets_loader_returning_an_array, :css, :urls => urls, :glue => glue
+      urls.each do |url|
+        does(last_response).match? '%s<link href="/assets/%s.css"' % [glue, url]
+      end
+
+      get :assets_loader_returning_an_array, :png, :urls => urls, :glue => glue
+      urls.each do |url|
+        does(last_response).match? '%s<img src="/assets/%s.png"' % [glue, url]
+      end
+
+      get :assets_loader_returning_an_array, :jpg, :urls => urls, :glue => glue
+      urls.each do |url|
+        does(last_response).match? '%s<img src="/assets/%s.jpg"' % [glue, url]
+      end
     end
 
   end
