@@ -39,7 +39,7 @@ To have them mapped to some URL, use assets mapper.
 
 **[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
 
-Assets Mapper
+Mapper
 ---
 
 `assets_map` is a method of dual meaning:
@@ -53,7 +53,7 @@ To define a baseurl to load assets from, use `assets_map`(or `assets_url` alias)
 
 
 ```ruby
-class App < E
+class App &lt; E
   map :/
   ...
 end
@@ -101,7 +101,7 @@ both will return `<img src="/assets/image.png" ...`
 
 **[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
 
-Assets Server
+Server
 ---
 
 The second meaning of assets mapper is to instruct your app to act as an assets server, that's it, your app will serve static files.
@@ -156,7 +156,7 @@ So `<script src="/assets/script.js" ...` will serve `/full/path/to/Shared-assets
 
 **[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
 
-Assets Helpers
+Helpers
 ---
 
 For now, Espresso offers 3 helper methods:
@@ -171,7 +171,7 @@ Usually first argument is the file to be loaded and the second the options to be
 
 ```ruby
 script_tag 'some-file.js', :async => true, :charset => 'UTF-8'
-# <script src="some-file.js" async="true" charset="UTF-8" ...
+#=&gt; &lt;script src="some-file.js" async="true" charset="UTF-8" ...
 ```
 
 You can also omit the first argument and pass file via `:src` option.
@@ -183,12 +183,12 @@ but we need to load a script from our CDN:
 
 ```ruby
 script_tag :src => 'http://some.cdn/script.js'
-# <script src="http://some.cdn/script.js" ...
+#=&gt; &lt;script src="http://some.cdn/script.js" ...
 
 # without :src option
 
 script_tag 'script.js'
-# <script src="/assets/script.js" ...
+#=&gt; &lt;script src="/assets/script.js" ...
 ```
 
 Same for rooted URLs inside your app.
@@ -197,12 +197,12 @@ Let's suppose baseurl is set to `/vendor` but we need to load a stylesheet from 
 
 ```ruby
 style_tag :src => '/themes/black.css'
-# <link href="/themes/black.css" ...
+#=&gt; &lt;link href="/themes/black.css" ...
 
 # without :src option
 
 style_tag 'bootstrap/bootstrap.css'
-# <link href="/vendor/bootstrap/bootstrap.css" ...
+#=&gt; &lt;link href="/vendor/bootstrap/bootstrap.css" ...
 ```
 
 Same when you need to load a file from current folder.
@@ -211,17 +211,17 @@ Let's suppose baseurl is set to `/static` but we need to load a image from curre
 
 ```ruby
 img_tag :src => 'banner.png'
-# <img src="banner.png" ...
+#=&gt; &lt;img src="banner.png" ...
 
 # without :src option
 
 img_tag 'banner.png'
-# <img src="/static/banner.png" ...
+#=&gt; &lt;img src="/static/banner.png" ...
 ```
 
 **[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
 
-Assets Loader
+Loader
 ---
 
 Assets loader allow to save time and space 
@@ -321,9 +321,9 @@ assets_loader :app do
   cd 'js'
   js :boot, :setup, :app
 end
-#=> <script src="/app/js/boot.js" ...
-#=> <script src="/app/js/setup.js" ...
-#=> <script src="/app/js/app.js" ...
+#=&gt; &lt;script src="/app/js/boot.js" ...
+#=&gt; &lt;script src="/app/js/setup.js" ...
+#=&gt; &lt;script src="/app/js/app.js" ...
 ```
 
 Blocks will automatically return a string containing generated tags.
@@ -405,10 +405,10 @@ end
 assets_loader '/vendor' do
 
   js 'jquery'
-  # <script src="/assets/vendor/jquery.js" ...
+  #=&gt; &lt;script src="/assets/vendor/jquery.js" ...
 
   js :src => '/master'
-  # <script src="/master.js" ...
+  #=&gt; &lt;script src="/master.js" ...
 end
 ```
 
