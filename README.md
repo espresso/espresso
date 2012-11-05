@@ -120,6 +120,11 @@ Yes, [CIBox](http://cibox.org) service is built entirely on Espresso Framework.
 
 ### Assets
 
+[Intro](https://github.com/slivu/espresso/blob/master/Assets.md#intro) |
+[Mapper](https://github.com/slivu/espresso/blob/master/Assets.md#assets-mapper) |
+[Server](https://github.com/slivu/espresso/blob/master/Assets.md#assets-server) |
+[Helpers](https://github.com/slivu/espresso/blob/master/Assets.md#helpers) |
+[Loader](https://github.com/slivu/espresso/blob/master/Assets.md#loader)
 
 
 ### CRUD
