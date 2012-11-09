@@ -3,7 +3,8 @@ module ECoreTest__Accept
   class App < E
 
     def index field
-      self.send field == 'accept' ? field : 'accept_' + field
+      meth = field == 'accept' ? field : 'accept_' + field
+      self.send meth.to_sym
     end
 
     def match field
@@ -19,7 +20,7 @@ module ECoreTest__Accept
     Testing 'content type' do
       field, val = 'accept', Rack::Mime::MIME_TYPES.fetch('.txt')
       headers['Accept'] = val
-      get field
+      get :index, field
       is?(last_response.body) == val
       get :match, field, :val => val
       is?(last_response.body) == val

@@ -1,2 +1,2 @@
 push
-rake --trace
+rake -t

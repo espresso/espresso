@@ -19,7 +19,7 @@ class E
       (self.class.hooks?(:a, action_with_format)||[]).each { |m| self.send m }
       super
       (self.class.hooks?(:z, action_with_format)||[]).each { |m| self.send m }
-    rescue => e
+    rescue Exception => e
       # if a handler defined at class level, use it
       if handler = self.class.error?(500, action)
         body = handler.last > 0 ? self.send(handler.first, e) : self.send(handler.first)
@@ -77,8 +77,7 @@ class E
   #
   ['', '_charset', '_encoding', '_language', '_ranges'].each do |field|
     define_method 'accept' << field do
-      __e__.send(__method__) ||
-          __e__.send('%s=' % __method__, env['HTTP_ACCEPT' << field.upcase].to_s)
+      env['HTTP_ACCEPT' << field.upcase].to_s
     end
 
     define_method 'accept%s?' % field do |value|
@@ -354,7 +353,7 @@ class E
   # The response object. See Rack::Response and Rack::ResponseHelpers for more info:
   # http://rack.rubyforge.org/doc/classes/Rack/Response.html
   # http://rack.rubyforge.org/doc/classes/Rack/Response/Helpers.html
-  class EspressoFrameworkResponse < ::Rack::Response # class kindly borrowed from [Sinatra Framework](https://github.com/sinatra/sinatra)
+  class EspressoFrameworkResponse < ::Rack::Response # kindly borrowed from [Sinatra Framework](https://github.com/sinatra/sinatra)
     def body=(value)
       value = value.body while Rack::Response === value
       @body = String === value ? [value.to_str] : value
@@ -369,7 +368,11 @@ class E
         headers.delete "Content-Length"
         headers.delete "Content-Type"
       elsif Array === body and not [204, 304].include?(status.to_i)
-        headers["Content-Length"] = body.inject(0) { |l, p| l + Rack::Utils.bytesize(p) }.to_s
+        # needed on rbx as it raises an exception on body with nil chunks
+        @body = @body.compact
+        # if some other code has already set Content-Length, don't muck with it
+        # currently, this would be the static file-handler
+        headers["Content-Length"] ||= body.inject(0) { |l, p| l + ::Rack::Utils.bytesize(p) }.to_s
       end
 
       # Rack::Response#finish sometimes returns self as response body. We don't want that.
@@ -617,6 +620,18 @@ class E
       raise ArgumentError, "unable to convert #{value.inspect} to a Time object"
     end
 
+    def forwarded?
+      @env.include? "HTTP_X_FORWARDED_HOST"
+    end
+
+    def safe?
+      get? or head? or options? or trace?
+    end
+
+    def idempotent?
+      safe? or put? or delete?
+    end
+
     private
     # Helper method checking if a ETag value list includes the current ETag.
     def etag_matches?(list, new_resource = request.post?)
@@ -631,9 +646,7 @@ class E
 
     include ::Rack::Utils
 
-    attr_accessor :response, :params,
-                  :accept, :accept_charset, :accept_encoding, :accept_language, :accept_ranges,
-                  :explicit_charset
+    attr_accessor :response, :params, :explicit_charset
 
     def initialize ctrl
       @ctrl = ctrl

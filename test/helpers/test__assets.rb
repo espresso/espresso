@@ -89,7 +89,8 @@ module EHelpersTest__Assets
     map App.base_url
 
     def match? response, str
-      check(last_response.body) =~ (str.is_a?(Regexp) ? str : Regexp.new(Regexp.escape str))
+      check(response.respond_to?(:body) ? response.body : response) =~
+        (str.is_a?(Regexp) ? str : Regexp.new(Regexp.escape str))
     end
 
     Testing :image_tag do
@@ -289,7 +290,7 @@ module EHelpersTest__Assets
         Should 'apply given opts to all tags' do
           get :assets_loader_with_multiple_urls, :js, :urls => urls, :opts => {:charset => 'UTF-8'}
           urls.each do |url|
-            does(last_response).match? 'src="/assets/%s.js" charset="UTF-8"' % url
+            does(last_response).match? /src="\/assets\/#{Regexp.escape url}\.js([^\n]*)charset="UTF\-8"/m
           end
         end
       end
@@ -304,7 +305,7 @@ module EHelpersTest__Assets
         Should 'apply given opts to all tags' do
           get :assets_loader_with_multiple_urls, :css, :urls => urls, :opts => {:charset => 'UTF-8'}
           urls.each do |url|
-            does(last_response).match? 'href="/assets/%s.css" charset="UTF-8"' % url
+            does(last_response).match? /href="\/assets\/#{Regexp.escape url}\.css"([^\n]*)charset="UTF\-8"/
           end
         end
       end

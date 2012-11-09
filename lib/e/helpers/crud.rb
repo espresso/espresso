@@ -1,5 +1,25 @@
 class << E
 
+  #
+  # automatically creates POST/PUT/DELETE actions
+  # and map them to corresponding methods of given resource,
+  # so sending a POST request to the controller
+  # resulting in creating new object of given resource.
+  #
+  # PUT/PATCH requests will update objects by given id.
+  # DELETE requests will delete objects by given id.
+  #
+  # @params [Array] path_or_opts
+  # @option path_or_opts [String || Array] :exclude
+  #   sometimes forms sending extra params. exclude them using :exclude option
+  # @option path_or_opts [Integer] :halt_with
+  #   when resource are not created/updated because of errors,
+  #   Espresso will halt operation with 500 error status code.
+  #   use :halt_with option to set a custom error status code.
+  # @option path_or_opts [String] :join_with
+  #   if resource thrown some errors, Espresso will join them using a coma.
+  #   use :join_with option to set a custom glue.
+  #
   def crud resource, *path_or_opts, &proc
     opts = path_or_opts.last.is_a?(Hash) ? path_or_opts.pop : {}
     if opts[:exclude]
@@ -10,13 +30,49 @@ class << E
     path = path_or_opts.first
     action = '%s_' << (path || :index).to_s
     resource_method = {
-        :get => opts.fetch(:get, :get),
-        :post => opts.fetch(:post, :create),
-        :put => opts.fetch(:put, :update),
-        :patch => opts.fetch(:patch, :update),
-        :delete => opts.fetch(:delete, :delete),
+      :get => opts.fetch(:get, :get),
+      :post => opts.fetch(:post, :create),
+      :put => opts.fetch(:put, :update),
+      :patch => opts.fetch(:patch, :update),
+      :delete => opts.fetch(:delete, :delete),
     }
-    presenter = lambda { |controller_instance, obj| proc ? controller_instance.instance_exec(obj, &proc) : obj }
+    presenter = lambda do |controller_instance, obj|
+      if proc 
+        controller_instance.instance_exec(obj, &proc)
+      else
+        if obj.respond_to?(:errors) && (errors = obj.errors) &&
+          errors.respond_to?(:size) && errors.size > 0
+
+          join_with = opts[:join_with] || ', '
+
+          if errors.respond_to?(:join)
+            # seems error is an Array
+            error_message = errors.join(join_with)
+          else
+            if errors.respond_to?(:each_pair) # seems error is a Hash
+              # some objects may respond to `each_pair` but not to `inject`,
+              # so using trivial looping to extract error messages
+              error_message = []
+              # on 1.8 you'll occasionally see a warn like:
+              #   warning: multiple values for a block parameter (2 for 1)
+              # do not worry, it is not fatal and will go away when 1.8 support dropped
+              errors.each_pair { |e| error_message << '%s: %s' % e }
+              error_message = error_message.join(join_with)
+            elsif errors.respond_to?(:to_a) # convertible to Array
+              # converting error to Array and joining
+              error_message = errors.to_a.join(join_with)
+            else
+              # otherwise simply force converting the error to String
+              error_message = errors.to_s
+            end
+          end
+          controller_instance.halt opts[:halt_with] || 500, error_message
+        else
+          # no proc given and no errors detected, so returning the object as is
+          obj
+        end
+      end
+    end
     fetch_object = lambda do |controller_instance, id|
       resource.send(resource_method[:get], id) ||
           controller_instance.halt(404, 'object with ID %s not found' % controller_instance.escape_html(id))

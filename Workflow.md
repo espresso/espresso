@@ -26,13 +26,13 @@ class App < E
     end
 end
 
-Index.route
+App.route
 #=> /
 
-Index.route :read
+App.route :read
 #=> /books/read
 
-Index.route :blah
+App.route :blah
 #=> /books/blah
 ```
 

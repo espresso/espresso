@@ -1,3 +1,14 @@
+class Hash
+  def errors
+    error = 'someErrorOccurred'
+    # alternating returned error type 
+    # cause various resources may throw errors of various types
+    rand(1000) % 2 == 0 ? 
+      [error]           :
+      rand(1000) % 2 == 0 ? {:error => error} : error
+  end
+end
+
 module EHelpersTest__CRUD
 
   class Resource
@@ -52,7 +63,6 @@ module EHelpersTest__CRUD
         [u, p] == ['user', 'pass']
       end
     end
-
   end
 
   Spec.new App do
@@ -78,16 +88,15 @@ module EHelpersTest__CRUD
 
       Test 'create and update' do
         Should 'create new records' do
-          # 0.upto(10).each do
+          0.upto(5).each do
             name = rand.to_s
             rsp = post :name => name
             id = rsp.body
             is(id.to_i) > 0
-          # end
+          end
 
           And 'update last record by PUT', &update(:put)
           And 'update last record by PATCH', &update(:patch)
-
         end
       end
 
@@ -185,4 +194,40 @@ module EHelpersTest__CRUD
     end
   end
 
+  class TestBuiltinErrorHandler < E
+    map :/
+
+    crudify Resource.new
+  end
+
+  Spec.new TestBuiltinErrorHandler do
+    app TestBuiltinErrorHandler
+    post :foo => :bar
+    is(last_response.status) == 500
+    does(last_response.body) =~ /someErrorOccurred/
+  end
+
+  class TestBuiltinErrorHandlerWithCustomStatusCode < E
+    map :/
+
+    crudify Resource.new, :halt_with => 501
+  end
+
+  Spec.new TestBuiltinErrorHandlerWithCustomStatusCode do
+    app TestBuiltinErrorHandlerWithCustomStatusCode
+    post :foo => :bar
+    is(last_response.status) == 501
+    expect(last_response.body) =~ /someErrorOccurred/
+  end
+
 end
+
+
+
+
+
+
+
+
+
+

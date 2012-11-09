@@ -191,7 +191,7 @@ class EAssetsLoader
     end
 
     def __e__assets__opts_to_s opts
-      (@__e__assets__opts_to_s ||= {})[opts.hash] = opts.keys.inject([]) do |f, k|
+      (@__e__assets__opts_to_s ||= {})[opts] = opts.keys.inject([]) do |f, k|
         f << '%s="%s"' % [k, ::CGI.escapeHTML(opts[k])]
       end.join(' ')
     end
