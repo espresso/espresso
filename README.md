@@ -55,6 +55,7 @@ Yes, [CIBox](http://cibox.org) service is built entirely on Espresso Framework.
 [Controllers](https://github.com/slivu/espresso/blob/master/Intro.md#controllers) |
 [Slices](https://github.com/slivu/espresso/blob/master/Intro.md#slices) |
 [MVC?](https://github.com/slivu/espresso/blob/master/Intro.md#mvc)
+[Models?](https://github.com/slivu/espresso/blob/master/Intro.md#models)
 
 ### Routing
 

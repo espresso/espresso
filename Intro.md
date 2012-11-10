@@ -168,3 +168,31 @@ You are the creator and you are free to choose how to develop your app.
 The "Controller" term in Espresso Framework does not necessarily refers to the "Controller" term in MVC.
 
 **[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
+
+## Models
+
+Espresso by itself does not deal with models, migrations etc.
+
+It is a job of used ORM.
+
+The only way Espresso interacting with models are the `CRUD` helper.
+
+It will automatically map HTTP requests to corresponding methods in given model so items are created/updated/deleted seamlessly. [Details here](http://e.github.com/CRUD.html)
+
+
+Also it is planed to create a gem apart that will generate a generic Espresso project.
+
+The project will presumably contain rake/thor tasks for creating/migrating models.
+
+
+**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
+
+
+
+
+
+
+
+
+
+
