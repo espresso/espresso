@@ -918,6 +918,19 @@ Can be set exactly as Content-Type, at class and/or instance level.
 
 **Important:** - `charset` will update only the header, so make sure that returned body is of same charset as header, if that needed at all.
 
+
+```ruby
+class App < E
+    charset 'UTF-8'
+
+    setup /_jp\Z/ do    # setting JIS charset for actions ending in _jp
+        charset 'Shift_JIS-2004'
+    end
+
+    # ...
+end
+```
+
 **[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
 
 
@@ -950,11 +963,7 @@ Values:
 
 ```ruby
 class App < E
-    charset 'UTF-8'
-
-    setup /_jp\Z/ do    # setting JIS charset for actions ending in _jp
-        charset 'Shift_JIS-2004'
-    end
+    cache_control :private, :max_age => 60
 
     # ...
 end
@@ -964,11 +973,19 @@ end
 
 ```ruby
 def some_action
+
     cache_control! :public, :must_revalidate, :max_age => 60
     # Cache-Control header will be set to "Cache-Control: public, must-revalidate, max-age=60"
 
+    # ...
+end
+
+def another_action
+
     cache_control! :public, :must_revalidate, :proxy_revalidate, :max_age => 500
     # Cache-Control header will be set to "Cache-Control: public, must-revalidate, proxy-revalidate, max-age=500"
+
+    # ...
 end
 ```
 
