@@ -421,7 +421,7 @@ render_haml_l      # will render only the layout of current action using Haml en
 Espresso looking for templates in the following way:
 
 <code>
-view path / controller's base URL / action name
+view path / controller's base URL / action name or given template
 </code>
 
 Sample Example:
@@ -433,7 +433,7 @@ class Index < E
   def index
     render_partial 'layouts/_header'
     # will render ./templates/layouts/_header.erb as path is built like:
-    # templates(view path) + '/'(controller's base URL) + 'layouts/_header'(given path)
+    # templates(view path) + /(controller's base URL) + layouts/_header(given path)
   end
 end
 
@@ -443,7 +443,7 @@ class Products < E
   def index
     render_partial 'layouts/_header'
     # will try to render ./templates/products/layouts/_header.erb and fail cause path is built like:
-    # templates(view path) + '/products'(controller's base URL) + layouts/_header(given path)
+    # templates(view path) + products(controller's base URL) + layouts/_header(given path)
   end
 end
 
@@ -458,7 +458,7 @@ end
 There are 2 reasons why `Products#render_partial` is failing:
 
   - real - template not found
-  - conceptual - using same strings repeatedly is a Unacceptable bad practice
+  - conceptual - using strings repeatedly is a Unacceptable bad practice
 
 Just imagine what happens if you want to change `layouts_path` from `layouts` to something else.
 
@@ -482,7 +482,7 @@ class Products < E
 end
 ```
 
-**Worth to note** that both methods accept multiple arguments that will be joined and appended to returned path:
+**Worth to note:** both methods accept multiple arguments that will be joined and appended to returned path:
 
 ```ruby
 view_path 'some', 'path', 'to', 'some-file' # view/some/path/to/some-file
