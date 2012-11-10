@@ -20,7 +20,7 @@ module ECoreTest__Hooks
 
     setup :get_params do
       after do
-        body = RUBY_VERSION.to_f == 1.8 ? action_params[0] : action_params[:id]
+        body = action_params.is_a?(Hash) ? action_params[:id] : action_params[0]
         response.body = [body]
       end
     end

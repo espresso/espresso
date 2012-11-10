@@ -19,12 +19,12 @@ module EViewTest__RenderERB
         render_erb_p
       end
 
-      def given template
-        render_erb template
+      def given
+        render_erb params[:tpl]
       end
 
-      def given_partial template
-        render_erb_p template
+      def given_partial
+        render_erb_p params[:tpl]
       end
 
       def inline greeting
@@ -151,19 +151,32 @@ module EViewTest__RenderERB
 
       Testing 'given template' do
         Should 'render with layout' do
-          get :given, :index
+          get :given, :tpl => :index
           is?(last_response.body) == 'master layout - given'
-          
-          get 'given.html', :partial
-          is?(last_response.body) == 'master layout - given.html'
+
+          Should 'compute format extension cause given template is actually an effective action' do
+            get 'given.html', :tpl => :partial
+            is?(last_response.body) == 'master layout - given.html'
+          end
+
+          get :given, :tpl => '../../inner-templates/some-file'
+          expect(last_response.body) == 'master layout - some-file.erb'
+
+          Should 'render template as is, without computing format extension' do
+            get 'given.html', :tpl => '../../inner-templates/some-file'
+            expect(last_response.body) == 'master layout - some-file.erb'
+          end
         end
 
         Should 'render without layout' do
-          get :given_partial, :partial
+          get :given_partial, :tpl => :partial
           is?(last_response.body) == 'given_partial'
           
-          get 'given_partial.html', :index
+          get 'given_partial.html', :tpl => :index
           is?(last_response.body) == 'given_partial.html'
+
+          get :given_partial, :tpl => '../../inner-templates/some-file'
+          expect(last_response.body) == 'some-file.erb'
         end
       end
 

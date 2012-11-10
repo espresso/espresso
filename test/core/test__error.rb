@@ -33,17 +33,19 @@ module ECoreTest__Error
   Spec.new App do
 
     Testing 404 do
-      r = get :blah!
-      expect(r.status) == 404
-      is?(r.body) == 'NoLuckTryAgain'
+      get :blah!
+      expect(last_response.status) == 404
+      is?(last_response.body) == 'NoLuckTryAgain'
     end
 
-    r = get :raise_error
-    expect(r.status) == 500
-    expect(r.body) =~ /FatalErrorOccurred: undefined local variable or method `code'/
+    Testing 500 do
+      get :raise_error
+      expect(last_response.status) == 500
+      expect(last_response.body) =~ /FatalErrorOccurred: undefined local variable or method `code'/
 
-    r = get :json
-    expect(r.status) == 500
-    expect(r.body) =~ /status\:0, error:undefined method `blah!'/
+      get :json
+      expect(last_response.status) == 500
+      expect(last_response.body) =~ /status\:0, error:undefined method `blah!'/
+    end
   end
 end

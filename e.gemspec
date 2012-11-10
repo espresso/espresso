@@ -13,12 +13,12 @@ Gem::Specification.new do |s|
 
   s.required_ruby_version = '>= 1.8.7'
 
-  s.add_dependency 'appetite', '~> 0.0.5'
+  s.add_dependency 'appetite', '>= 0.0.6'
   s.add_dependency 'tilt', '~> 1.3'
 
   s.add_development_dependency 'rake', '~> 0.9.2'
-  s.add_development_dependency 'specular', '~> 0.1.2'
-  s.add_development_dependency 'sonar', '~> 0.1.1'
+  s.add_development_dependency 'specular', '>= 0.1.6'
+  s.add_development_dependency 'sonar', '>= 0.1.2'
   s.add_development_dependency 'haml'
 
   s.require_paths = ['lib']

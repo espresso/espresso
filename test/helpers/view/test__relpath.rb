@@ -1,4 +1,5 @@
 module EViewTest__Relpath
+
   class App < E
     map '/'
 
@@ -9,7 +10,6 @@ module EViewTest__Relpath
     setup :get_render_layout_action do
       layout :layout__format
     end
-
 
     def index
       @greeting = 'World'
@@ -24,8 +24,12 @@ module EViewTest__Relpath
       render action.to_sym
     end
 
-    def given_tpl tpl
-      render tpl
+    def given_tpl
+      render params[:tpl]
+    end
+
+    def given_partial
+      render_p params[:tpl]
     end
 
     def get_render_layout_action action
@@ -34,7 +38,8 @@ module EViewTest__Relpath
       end
     end
 
-    def get_render_layout_file file
+    def get_render_layout_file
+      file = params[:file]
       render_layout file do
         file
       end
@@ -54,14 +59,23 @@ module EViewTest__Relpath
     get :given_action, :blah
     expect(last_response.body) == "Hello blah.erb - given_action!"
 
-    get :given_tpl, :partial
+    get :given_tpl, :tpl => :partial
     expect(last_response.body) == "Hello partial!"
+    
+    get :given_tpl, :tpl => '../inner-templates/some-file'
+    expect(last_response.body) == "Hello some-file.erb!"
+
+    get :given_partial, :tpl => '../inner-templates/some_partial'
+    expect(last_response.body) == "some_partial.erb"
 
     get :render_layout_action, :get_render_layout_action
     expect(last_response.body) == "format-less layout/get_render_layout_action"
 
-    get :render_layout_file, :layout__format
+    get :render_layout_file, :file => :layout__format
     expect(last_response.body) == "format-less layout/layout__format"
+
+    get :render_layout_file, :file => '../inner-templates/layout'
+    expect(last_response.body) =~ /header.*\.\.\/inner-templates\/layout.*footer/m
 
   end
 end

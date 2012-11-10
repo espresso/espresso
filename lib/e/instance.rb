@@ -17,9 +17,9 @@ class E
 
     begin
       (self.class.hooks?(:a, action_with_format)||[]).each { |m| self.send m }
-      super
+      super      
       (self.class.hooks?(:z, action_with_format)||[]).each { |m| self.send m }
-    rescue Exception => e
+    rescue => e
       # if a handler defined at class level, use it
       if handler = self.class.error?(500, action)
         body = handler.last > 0 ? self.send(handler.first, e) : self.send(handler.first)

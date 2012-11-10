@@ -55,7 +55,7 @@ class << E
               error_message = []
               # on 1.8 you'll occasionally see a warn like:
               #   warning: multiple values for a block parameter (2 for 1)
-              # do not worry, it is not fatal and will go away when 1.8 support dropped
+              # do not worry, it is not fatal and will go away when 1.8 support finally dropped
               errors.each_pair { |e| error_message << '%s: %s' % e }
               error_message = error_message.join(join_with)
             elsif errors.respond_to?(:to_a) # convertible to Array
