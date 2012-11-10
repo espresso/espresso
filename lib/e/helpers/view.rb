@@ -241,7 +241,7 @@ class << E
   end
 
   def view_path?
-    @view__deducted_path ||= (p = view_fullpath?) ? p : ('' << app.root << (@view__path || 'view/')).freeze
+    @view__computed_path ||= (p = view_fullpath?) ? p : ('' << app.root << (@view__path || 'view/')).freeze
   end
 
   def view_fullpath path
@@ -277,6 +277,19 @@ end
 
 class E
 
+  # returns the path defined at class level.
+  # if some path given it will be appended to global path.
+  # if multiple paths given they will be `File.join`-ed and appended to global path.
+  def view_path *args
+    ::EViewPathProxy.new ::File.join(self.class.view_path?, *args)
+  end
+
+  # returns full path to layouts.
+  # if any args given they are `File.join`-ed and appended to returned path.
+  def layouts_path *args
+    ::EViewPathProxy.new ::File.join(self.class.view_path?, self.class.layouts_path?, *args)
+  end
+
   def render *args, &proc
     controller, action_or_template, scope, locals, compiler_key = __e__engine_params(*args)
     engine_class, engine_opts = controller.engine?(action_or_template)
@@ -305,7 +318,7 @@ class E
     engine_class, engine_opts = controller.engine?(action_or_template)
     # render layout of given action
     # or use given action_or_template as template name
-    layout, layout_proc = controller[action_or_template] ? controller.layout?(action_or_template) : action_or_template.to_s
+    layout, layout_proc = controller[action_or_template] ? controller.layout?(action_or_template) : action_or_template
     layout || layout_proc || raise('seems there are no layout defined for %s#%s action' % [controller, action_or_template])
     engine_args = layout_proc ? [engine_opts] : [__e__layout_template(controller, layout, controller.engine_ext?(action_or_template)), engine_opts]
     __e__engine_instance(compiler_key, engine_class, *engine_args, &layout_proc).render(scope, locals, &(proc || proc() { '' }))
@@ -398,17 +411,36 @@ class E
   end
 
   def __e__template controller, action_or_template, ext = nil
-    '' << controller.view_path?  <<                        # controller's path to templates
-      controller.base_url << '/' <<                        # controller's route
-      action_or_template.to_s <<                           # given template
-      (ext || controller.engine_ext?(action_or_template))  # given or deducted extension
+    if action_or_template.instance_of?(::EViewPathProxy)
+      action_or_template
+    else
+      ::File.join controller.view_path?, # controller's path to templates
+        controller.base_url,             # controller's route
+        action_or_template.to_s          # given template
+    end << (ext || controller.engine_ext?(action_or_template))  # given or computed extension
   end
 
   def __e__layout_template controller, layout, ext
-    '' << controller.view_path? <<     # controller's path to templates
-      controller.layouts_path?  <<     # controller's path to layouts
-      layout <<                        # given template
-      (ext || '')                      # given or deducted extension
+    if layout.instance_of?(EViewPathProxy)
+      layout
+    else
+      ::File.join controller.view_path?, # controller's path to templates
+        controller.layouts_path?,        # controller's path to layouts
+        layout.to_s                      # given template
+    end << (ext || '')                   # given or computed extension
   end
 
 end
+
+# `instance_of?` is 3x faster than `match` and 1x faster than `is_a?`
+# so using it to check whether given path is a full path.
+class EViewPathProxy < String
+  def initialize str
+    super str
+  end
+end
+
+
+
+
+

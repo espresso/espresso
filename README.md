@@ -117,6 +117,7 @@ Yes, [CIBox](http://cibox.org) service is built entirely on Espresso Framework.
 [Rendering Templates](https://github.com/slivu/espresso/blob/master/ViewAPI.md#rendering-templates) |
 [Rendering Layouts](https://github.com/slivu/espresso/blob/master/ViewAPI.md#rendering-layouts) |
 [Ad hoc Rendering](https://github.com/slivu/espresso/blob/master/ViewAPI.md#ad-hoc-rendering) |
+[Path Resolver](https://github.com/slivu/espresso/blob/master/ViewAPI.md#path-resolver) |
 [Templates Compilation](https://github.com/slivu/espresso/blob/master/ViewAPI.md#templates-compilation)
 
 ### Assets

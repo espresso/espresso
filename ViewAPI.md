@@ -416,6 +416,81 @@ render_haml_l      # will render only the layout of current action using Haml en
 **[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
 
 
+## Path Resolver
+
+Espresso looking for templates in the following way:
+
+<code>
+view path / controller's base URL / action name
+</code>
+
+Sample Example:
+
+```ruby
+class Index < E
+  map :/
+
+  def index
+    render_partial 'layouts/_header'
+    # will render ./templates/layouts/_header.erb as path is built like:
+    # templates(view path) + '/'(controller's base URL) + 'layouts/_header'(given path)
+  end
+end
+
+class Products < E
+  map 'products'
+
+  def index
+    render_partial 'layouts/_header'
+    # will try to render ./templates/products/layouts/_header.erb and fail cause path is built like:
+    # templates(view path) + '/products'(controller's base URL) + layouts/_header(given path)
+  end
+end
+
+app = EApp.new :automount
+app.setup do |ctrl|
+  view_path 'templates'
+  layouts_path 'layouts'
+  layout :base
+end
+```
+
+There are 2 reasons why `Products#render_partial` is failing:
+
+  - real - template not found
+  - conceptual - using same strings repeatedly is a Unacceptable bad practice
+
+Just imagine what happens if you want to change `layouts_path` from `layouts` to something else.
+
+You then have to search/replace all related paths in your templates!
+
+To sort this out, Espresso offers 2 instance methods: `view_path` and `layouts_path` 
+that will return path to templates ignoring controller's base URL, 
+that's it, full path to templates without controller's base URL.
+
+So to make previous `Products#render_partial` to work we do like this:
+
+```ruby
+class Products < E
+  map 'products'
+
+  def index
+    render_partial layouts_path('_header')
+    # will render ./templates/layouts/_header.erb cause path is built like:
+    # templates(view path) + layouts(layouts path) + _header(given path)
+  end
+end
+```
+
+**Worth to note** that both methods accept multiple arguments that will be joined and appended to returned path:
+
+```ruby
+view_path 'some', 'path', 'to', 'some-file' # view/some/path/to/some-file
+```
+
+**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
+
+
 ## Templates Compilation
 
 
