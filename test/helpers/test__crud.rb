@@ -5,7 +5,7 @@ class Hash
     # cause various resources may throw errors of various types
     rand(1000) % 2 == 0 ? 
       [error]           :
-      rand(1000) % 2 == 0 ? {:error => error} : error
+      rand(1000) % 2 == 0 ? {:error => [error]} : error
   end
 end
 
