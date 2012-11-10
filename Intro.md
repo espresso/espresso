@@ -169,7 +169,7 @@ The "Controller" term in Espresso Framework does not necessarily refers to the "
 
 **[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
 
-## Models
+## Models?
 
 Espresso by itself does not deal with models, migrations etc.
 
