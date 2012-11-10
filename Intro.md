@@ -175,8 +175,7 @@ Espresso by itself does not deal with models, migrations etc.
 
 It is a job of used ORM.
 
-The only way Espresso interacting with models are the `CRUD` helper.
-
+The only way Espresso interacting with models are the `CRUD` helper.<br/>
 It will automatically map HTTP requests to corresponding methods in given model so items are created/updated/deleted seamlessly. [Details here](http://e.github.com/CRUD.html)
 
 
