@@ -428,7 +428,7 @@ Sample Example:
 
 ```ruby
 class Index < E
-  map :/
+  map '/'
 
   def index
     render_partial 'layouts/_header'

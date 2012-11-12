@@ -30,7 +30,7 @@ If it does, `delete` action will rely on it when deleting objects.<br/>
 Otherwise, it will fetch the object by given ID and call `delete` on it.
 
 If your resource/objects behaves differently, you can map its methods by passing them as options.<br/>
-Let's suppose you are CRUDifying an DataMapper model.<br/>
+Let's suppose you are CRUDifying a DataMapper model.<br/>
 To delete an DataMapper object you should call `destroy` on it,
 so we simply mapping `delete` action to `destroy` method:
 
@@ -195,10 +195,27 @@ end
 
 ## Response
 
+Crudifier will try to return the value of primary key of extracted/created/updated object.
 
-By default, objects are returned to client as they fetched from resource.<br/>
-To prepare them accordingly before sending to client, use a block.<br/>
-The block will receive the object as first argument.
+By default `:id` is used as primary key.
+
+To use a custom primary key, pass it via `:pkey` option:
+
+```ruby
+crudify Resource, :pkey => 'prodID'
+```
+
+If objects created by your resource does respond to `:[]` and does contain the pkey column, the value of `object[pkey column]` will be returned.
+
+
+Otherwise if objects created by your resource does respond to pkey column
+the value of `object.pkey_column` will be returned.
+
+Otherwise the object itself will be returned.
+
+However, if you have a custom logic rather than simply return primary key, use a block.
+
+The block will receive the object as first argument:
 
 ```ruby
 crudify UsersModel do |obj|
@@ -214,7 +231,7 @@ crudify UsersModel do |obj|
 end
 ```
 
-In the example above, we return object ID on POST, PUT, and PATCH requests.<br/>
+This will return object ID on POST, PUT, and PATCH requests.<br/>
 
 On HEAD requests, the framework is always sending an empty body,
 so we only update the headers.<br/>
@@ -227,6 +244,23 @@ DELETE action does not need a handler cause it ever returns an empty string.
 
 **[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
 
+## Error Handler
+
+If your objects responds to `:errors` method, 
+crudifier will try to extract and format errors accordingly.
+
+In case of errors, crudifier will behave depending on given options and proc.
+
+If a proc given, crudifier will NOT halt the request.<br/>
+It will pass error to given proc via second argument instead.
+
+To halt the request when a proc given, set `:halt_on_errors` to true.
+
+If no proc given, request will be halted unconditionally.
+
+By default the 500 status code will be used when halting.
+
+To use a custom status code pass it via `:halt_with` option.
 
 ## Access Restriction
 

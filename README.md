@@ -136,6 +136,7 @@ Yes, [CIBox](http://cibox.org) service is built entirely on Espresso Framework.
 [Excluded Params](https://github.com/slivu/espresso/blob/master/CRUD.md#excluded-params) |
 [Root](https://github.com/slivu/espresso/blob/master/CRUD.md#root) |
 [Response](https://github.com/slivu/espresso/blob/master/CRUD.md#response) |
+[Error Handler](https://github.com/slivu/espresso/blob/master/CRUD.md#error-handler) |
 [Access Restriction](https://github.com/slivu/espresso/blob/master/CRUD.md#access-restriction)
 
 ### Deploy

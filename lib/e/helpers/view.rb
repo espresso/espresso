@@ -263,6 +263,7 @@ class << E
   def layouts_path path
     layouts_path!(path, :keep_existing)
   end
+  alias :layout_path :layouts_path
 
   def layouts_path! path, keep_existing = false
     return if locked? || (@view__layouts_path == false && keep_existing)
@@ -289,6 +290,7 @@ class E
   def layouts_path *args
     ::EViewPathProxy.new ::File.join(self.class.view_path?, self.class.layouts_path?, *args)
   end
+  alias :layout_path :layouts_path
 
   def render *args, &proc
     controller, action_or_template, scope, locals, compiler_key = __e__engine_params(*args)

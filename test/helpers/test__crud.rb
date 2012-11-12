@@ -1,13 +1,3 @@
-class Hash
-  def errors
-    error = 'someErrorOccurred'
-    # alternating returned error type 
-    # cause various resources may throw errors of various types
-    rand(1000) % 2 == 0 ? 
-      [error]           :
-      rand(1000) % 2 == 0 ? {:error => [error]} : error
-  end
-end
 
 module EHelpersTest__CRUD
 
@@ -22,6 +12,9 @@ module EHelpersTest__CRUD
     end
 
     def create object
+      if obj_id = object.delete('id')
+        object[:id] = obj_id
+      end
       id = (@objects.size + 1).to_s
       @objects[id] = object.update('__id__' => id)
     end
@@ -38,6 +31,25 @@ module EHelpersTest__CRUD
       @objects.keys
     end
   end
+
+  class ResourceWithErrors < Resource
+    def create object
+      id = (@objects.size + 1).to_s
+      @objects[id] = HashWithErrors[object.merge('__id__' => id)]
+    end
+
+    class HashWithErrors < Hash
+      def errors
+        error = 'someErrorOccurred'
+        # alternating returned error type 
+        # cause various resources may throw errors of various types
+        rand(1000) % 2 == 0 ? 
+          [error]           :
+          rand(1000) % 2 == 0 ? {:error => [error]} : error
+      end
+    end
+  end
+
   RESOURCE = Resource.new
   PRIVATE_RESOURCE = Resource.new
 
@@ -194,30 +206,66 @@ module EHelpersTest__CRUD
     end
   end
 
-  class TestBuiltinErrorHandler < E
+  class DefaultPrimaryKey < E
     map :/
 
     crudify Resource.new
   end
 
-  Spec.new TestBuiltinErrorHandler do
-    app TestBuiltinErrorHandler
-    post :foo => :bar
-    is(last_response.status) == 500
-    does(last_response.body) =~ /someErrorOccurred/
-  end
-
-  class TestBuiltinErrorHandlerWithCustomStatusCode < E
+  class CustomPrimaryKey < E
     map :/
 
-    crudify Resource.new, :halt_with => 501
+    crudify Resource.new, :pkey => 'obj_id'
   end
 
-  Spec.new TestBuiltinErrorHandlerWithCustomStatusCode do
-    app TestBuiltinErrorHandlerWithCustomStatusCode
-    post :foo => :bar
-    is(last_response.status) == 501
-    expect(last_response.body) =~ /someErrorOccurred/
+  class BuiltinErrorHandler < E
+    map :/
+
+    crudify ResourceWithErrors.new
+  end
+
+  class BuiltinErrorHandlerWithCustomStatusCode < E
+    map :/
+
+    crudify ResourceWithErrors.new, :halt_with => 501
+  end
+
+  Spec.new self do
+
+    Testing DefaultPrimaryKey do
+      app DefaultPrimaryKey
+
+      obj_id = rand(1000).to_s
+      post :id => obj_id
+      expect(last_response.status) == 200
+      check(last_response.body) == obj_id
+    end
+
+    Testing CustomPrimaryKey do
+      app CustomPrimaryKey
+
+      obj_id = rand(1000).to_s
+      post :obj_id => obj_id
+      expect(last_response.status) == 200
+      check(last_response.body) == obj_id
+    end
+
+    Testing BuiltinErrorHandler do
+      app BuiltinErrorHandler
+
+      post :foo => :bar
+      is(last_response.status) == 500
+      does(last_response.body) =~ /someErrorOccurred/
+    end
+
+    Testing BuiltinErrorHandlerWithCustomStatusCode do
+      app BuiltinErrorHandlerWithCustomStatusCode
+      
+      post :foo => :bar
+      is(last_response.status) == 501
+      expect(last_response.body) =~ /someErrorOccurred/
+    end
+
   end
 
 end
