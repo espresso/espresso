@@ -38,10 +38,10 @@ class << E
     path = path_or_opts.first
     action = '%s_' << (path || :index).to_s
     resource_method = {
-      :get => opts.fetch(:get, :get),
-      :post => opts.fetch(:post, :create),
-      :put => opts.fetch(:put, :update),
-      :patch => opts.fetch(:patch, :update),
+      :get    => opts.fetch(:get, :get),
+      :post   => opts.fetch(:post, :create),
+      :put    => opts.fetch(:put, :update),
+      :patch  => opts.fetch(:patch, :update),
       :delete => opts.fetch(:delete, :delete),
     }
     
@@ -51,37 +51,38 @@ class << E
       proc_accept_errors = proc.arity > 1
     end
 
-    presenter = lambda do |controller_instance, obj|
+    pkey      = opts[:pkey]      || :id
+    join_with = opts[:join_with] || ', '
+    halt_with = opts[:halt_with] || 500
 
-      join_with = opts[:join_with] || ', '
-      halt_with = opts[:halt_with] || 500
-      pkey      = opts[:pkey]      || :id
+    presenter = lambda do |controller_instance, obj, err|
 
       # extracting errors, if any
       errors = nil
-      if obj.respond_to?(:errors) && (raw_errors = obj.errors) &&
-        raw_errors.respond_to?(:size) && raw_errors.size > 0
+      if err || (obj.respond_to?(:errors) && (err = obj.errors) &&
+        err.respond_to?(:size) && err.size > 0)
 
-        if raw_errors.respond_to?(:join)
-          errors = raw_errors
+        if err.respond_to?(:join)
+          errors = err
         else
-          if raw_errors.respond_to?(:each_pair) # seems error is a Hash
+          if err.respond_to?(:each_pair) # seems error is a Hash
             # some objects may respond to `each_pair` but not respond to `inject`,
             # so using trivial looping to extract error messages.
             errors = []
-            raw_errors.each_pair do |k,v|
+            err.each_pair do |k,v|
               # usually DataMapper returns erros in the following format:
               # { :property => ['error 1', 'error 2'] }
               # flatten is there just in case we get nested arrays.
               error = v.is_a?(Array) ? v.flatten.join(join_with) : v.to_s
               errors << '%s: %s' % [k, error]
             end
-          elsif raw_errors.respond_to?(:to_a) # not Array nor Hash, but convertible to Array
+          elsif err.respond_to?(:to_a) # not Array nor Hash, but convertible to Array
             # converting error to Array and joining
-            errors = raw_errors.to_a
+            errors = err.to_a
+          elsif err.is_a?(String)
+            errors = [err]
           else
-            # otherwise simply force converting the error to String
-            errors = [raw_errors.inspect]
+            errors = [err.inspect]
           end
         end
       end
@@ -116,75 +117,114 @@ class << E
     end
     
     fetch_object = lambda do |controller_instance, id|
-      resource.send(resource_method[:get], id) ||
-        controller_instance.halt(404, 'object with ID %s not found' % controller_instance.escape_html(id))
+      obj, err = nil
+      begin
+        obj = resource.send(resource_method[:get], id) ||
+          controller_instance.halt(404, 'object with ID %s not found' % controller_instance.escape_html(id))
+      rescue => e
+        err = e.message
+      end
+      [obj, err]
+    end
+
+    create_object = lambda do |controller_instance|
+      obj, err = nil
+      begin
+        data = controller_instance.params.reject { |k,v| opts[:exclude].include?(k) }
+        obj  = resource.send(resource_method[:post], data)
+      rescue => e
+        err = e.message
+      end
+      [obj, err]
     end
 
     update_object = lambda do |controller_instance, request_method, id|
-      object = fetch_object.call(controller_instance, id)
-      object.send(resource_method[request_method], controller_instance.params.reject { |k,v| opts[:exclude].include?(k) })
-      presenter.call controller_instance, object
+      obj, err = nil
+      begin
+        obj, err = fetch_object.call(controller_instance, id)
+        unless err
+          data = controller_instance.params.reject { |k,v| opts[:exclude].include?(k) }
+          obj.send(resource_method[request_method], data)
+        end
+      rescue => e
+        err = e.message
+      end
+      [obj, err]
     end
-    self.class_exec do
 
-      define_method action % :get do |id|
-        presenter.call self, fetch_object.call(self, id)
-      end
-
-      define_method action % :head do |id|
-        presenter.call self, fetch_object.call(self, id)
-      end
-
-      define_method action % :post do
-        presenter.call self, resource.send(resource_method[:post], params.reject { |k,v| opts[:exclude].include?(k) })
-      end
-
-      define_method action % :put do |id|
-        update_object.call self, :put, id
-      end
-
-      define_method action % :patch do |id|
-        update_object.call self, :patch, id
-      end
-
-      # if resource respond to #delete(or whatever set in options for delete),
-      # sending #delete to resource, with given id as 1st param.
-      # otherwise, fetching object by given id and sending #delete on it.
-      #
-      # @return [String] empty string
-      define_method action % :delete do |id|
+    # if resource respond to #delete(or whatever set in options for delete),
+    # sending #delete to resource, with given id as 1st param.
+    # otherwise, fetching object by given id and sending #delete on it.
+    #
+    # @return [String] empty string
+    delete_object = lambda do |id|
+      err = nil
+      begin
         meth = resource_method[:delete]
         if resource.respond_to?(meth)
           resource.send(meth, id)
-        elsif object = fetch_object.call(self, id)
-          if object.respond_to?(meth)
-            object.send meth
-          elsif object.respond_to?(:delete!)
-            object.send :delete!
-          elsif object.respond_to?(:destroy)
-            object.send :destroy
-          elsif object.respond_to?(:destroy!)
-            object.send :destroy!
-          else
-            halt 500, 'Given object does not respond to any of #%s' % [
-              meth, :delete!, :destroy, :destroy!
-            ].uniq.join(" #")
+        else
+          obj, err = fetch_object.call(self, id)
+          unless err
+            if obj.respond_to?(meth)
+              obj.send meth
+            elsif obj.respond_to?(:delete!)
+              obj.send :delete!
+            elsif obj.respond_to?(:destroy)
+              obj.send :destroy
+            elsif obj.respond_to?(:destroy!)
+              obj.send :destroy!
+            else
+              err = 'Given object does not respond to any of #%s' % [
+                escape_html(meth), :delete!, :destroy, :destroy!
+              ].uniq.join(" #")
+            end
           end
         end
-        ''
+      rescue => e
+        err = e.message
+      end
+      err ? [halt_with, escape_html(err)] : []
+    end
+
+    options = lambda do |controller_instance|
+      ::AppetiteConstants::REQUEST_METHODS.map do |request_method|
+        if restriction = restrictions?((action % request_method.downcase).to_sym)
+          auth_class, auth_args, auth_proc = restriction
+          auth_class.new(proc {}, *auth_args, &auth_proc).call(controller_instance.env) ? nil : request_method
+        else
+          request_method
+        end
+      end.compact.join(', ')
+    end
+
+    self.class_exec do
+
+      define_method action % :get do |id|
+        presenter.call self, *fetch_object.call(self, id)
+      end
+
+      define_method action % :head do |id|
+        presenter.call self, *fetch_object.call(self, id)
+      end
+
+      define_method action % :post do
+        presenter.call self, *create_object.call(self)
+      end
+
+      [:put, :patch].each do |request_method|
+        define_method action % request_method do |id|
+          presenter.call self, *update_object.call(self, request_method, id)
+        end
+      end
+
+      define_method action % :delete do |id|
+        halt *delete_object.call(id)
       end
 
       define_method action % :options do
-        ::AppetiteConstants::REQUEST_METHODS.map do |request_method|
-          if restriction = self.class.restrictions?((action % request_method.downcase).to_sym)
-            auth_class, auth_args, auth_proc = restriction
-            auth_class.new(proc {}, *auth_args, &auth_proc).call(env) ? nil : request_method
-          else
-            request_method
-          end
-        end.compact.join(', ')
+        options.call self
       end
-
     end
 
   end

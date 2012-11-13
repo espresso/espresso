@@ -298,15 +298,13 @@ class EApp
         s.each_pair { |rm, as| (map[r] ||= {})[rm] = as.dup.unshift(c) }
       end
     end
-
-    map.define_singleton_method :to_s do
+    
+    def map.to_s
       out = []
-      map = self
-      map.each do |data|
+      self.each do |data|
         route, request_methods = data
         next if route.size == 0
         out << "%s\n" % route
-        next unless opts[:verbose] || opts[:v]
         request_methods.each_pair do |request_method, route_setup|
           out << "  %s%s" % [request_method, ' ' * (10 - request_method.size)]
           out << "%s#%s\n" % [route_setup[0], route_setup[3]]
@@ -315,7 +313,6 @@ class EApp
       end
       out.join
     end
-
     map
   end
 

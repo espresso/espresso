@@ -133,6 +133,7 @@ module EHelpersTest__CRUD
       Test :delete do
         RESOURCE.keys.each do |key|
           delete key
+          expect(last_response.status) == 200
         end
         expect(RESOURCE.keys.size) == 0
       end
@@ -196,6 +197,7 @@ module EHelpersTest__CRUD
 
             And 'finally delete it' do
               delete id
+              expect(last_response.status) == 200
               expect(PRIVATE_RESOURCE.keys.size) == 0
             end
 
@@ -233,7 +235,7 @@ module EHelpersTest__CRUD
   Spec.new self do
 
     Testing DefaultPrimaryKey do
-      app DefaultPrimaryKey
+      app DefaultPrimaryKey.mount
 
       obj_id = rand(1000).to_s
       post :id => obj_id
