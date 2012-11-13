@@ -295,12 +295,12 @@ class EApp
     #       to set absolute path to assets, use `assets_fullpath` instead.
     #
     def assets_path path = nil
-      @assets_path = root + normalize_path(path).freeze if path
-      @assets_path ||= '' << root << 'public/'.freeze
+      @assets_path = (root + path.to_s).freeze if path
+      @assets_path ||= (root + 'public/').freeze
     end
 
     def assets_fullpath path = nil
-      @assets_fullpath = normalize_path(path).freeze if path
+      @assets_fullpath = path.to_s.freeze if path
       @assets_fullpath
     end
 
