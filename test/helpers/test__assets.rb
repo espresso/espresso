@@ -232,45 +232,60 @@ module EHelpersTest__Assets
       end
 
       Should 'cd to vendor/jquery and load vendor/jquery/jquery.js' do
-        get :assets_loader_chdir, :js, :scenario => ['vendor/jquery jquery', '.. master']
+        get :assets_loader_chdir, :js, :scenario => ['vendor/jquery jquery', '.. master', '/ master']
         does(last_response).match? 'src="/assets/vendor/jquery/jquery.js"'
         Then 'cd to .. and load vendor/master.js' do
           does(last_response).match? 'src="/assets/vendor/master.js"'
         end
-      end
-
-      Should 'cd to vendor/jquery and load vendor/jquery/jquery.js' do
-        get :assets_loader_chdir, :js, :scenario => ['vendor/jquery jquery', '../.. master']
-        does(last_response).match? 'src="/assets/vendor/jquery/jquery.js"'
-        Then 'cd to ../.. and load master.js' do
+        Then 'cd to / and load master.js' do
           does(last_response).match? 'src="/assets/master.js"'
         end
       end
 
+      Should 'cd to vendor/jquery and load vendor/jquery/jquery.js' do
+        get :assets_loader_chdir, :js, :scenario => ['vendor/jquery jquery', '../.. master', '/scripts master']
+        does(last_response).match? 'src="/assets/vendor/jquery/jquery.js"'
+        Then 'cd to ../.. and load master.js' do
+          does(last_response).match? 'src="/assets/master.js"'
+        end
+        Then 'cd to /scripts and load master.js' do
+          does(last_response).match? 'src="/assets/scripts/master.js"'
+        end
+      end
+
       Should 'cd to css/themes and load css/themes/black.css' do
-        get :assets_loader_chdir, :css, :scenario => ['css/themes black', ' master']
+        get :assets_loader_chdir, :css, :scenario => ['css/themes black', ' master', '/css master']
         does(last_response).match? 'href="/assets/css/themes/black.css"'
         Then 'cd to root and load master.css' do
           does(last_response).match? 'href="/assets/master.css"'
+        end
+        Then 'cd to /css and load master.css' do
+          does(last_response).match? 'href="/assets/css/master.css"'
         end
       end
 
       Should 'behave well with rooted baseurls' do
         Should 'cd to vendor/icons/16x16 and load vendor/icons/16x16/file.png' do
-          get :assets_loader_chdir, :png, :baseurl => '/public', :scenario => ['vendor/icons/16x16 file', '../.. sprite']
+          get :assets_loader_chdir, :png, :baseurl => '/public', :scenario => ['vendor/icons/16x16 file', '../.. sprite', '/icons folder']
           does(last_response).match? 'src="/public/vendor/icons/16x16/file.png"'
           Then 'cd to ../.. and load vendor/sprite.png' do
             does(last_response).match? 'src="/public/vendor/sprite.png"'
+          end
+          Then 'cd to /icons and load folder.png' do
+            does(last_response).match? 'src="/public/icons/folder.png"'
           end
         end
       end
 
       Should 'behave well with protocoled baseurls' do
         Should 'cd to icons/16x16 and load icons/16x16/file.png' do
-          get :assets_loader_chdir, :png, :baseurl => 'http://some.cdn', :scenario => ['icons/16x16 file', '.. sprite']
+          get :assets_loader_chdir, :png, :baseurl => 'http://some.cdn', :scenario => ['icons/16x16 file', '.. sprite', '/imgs img']
           does(last_response).match? 'src="http://some.cdn/icons/16x16/file.png"'
           Then 'cd to .. and load sprite.png' do
             does(last_response).match? 'src="http://some.cdn/icons/sprite.png"'
+          end
+          Then 'cd to /imgs and load img.png' do
+            does(last_response).match? 'src="http://some.cdn/imgs/img.png"'
           end
         end
       end

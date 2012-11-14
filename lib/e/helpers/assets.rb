@@ -49,7 +49,6 @@
 class EAssetsLoader
 
   attr_reader :baseurl, :wd, :app, :to_s
-  alias :path :baseurl
 
   def initialize ctrl, baseurl = nil, &proc
     @ctrl, @app  = ctrl, ctrl.app
@@ -77,12 +76,17 @@ class EAssetsLoader
 
   def chdir path = nil
     return @wd = nil unless path
-    dirs_back, path = path.to_s.split(/\/+/).partition { |c| c == '..' }
-    if wd
-      wd_chunks = wd.split(/\/+/)
-      wd = wd_chunks[0, wd_chunks.size - dirs_back.size] || []
+    
+    wd = []
+    if (path = path.to_s) =~ /\A\//
+      path = path.sub(/\A\/+/, '')
+      path = path.empty? ? [] : [path]
     else
-      wd = []
+      dirs_back, path = path.split(/\/+/).partition { |c| c == '..' }
+      if @wd
+        wd_chunks = @wd.split(/\/+/)
+        wd = wd_chunks[0, wd_chunks.size - dirs_back.size] || []
+      end
     end
     @wd = (wd + path << '').
       compact. # `compact` is faster than `nil.to_s`
