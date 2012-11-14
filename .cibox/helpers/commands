@@ -1,2 +1,2 @@
 push
-rake test:helpers --trace
+rake test:helpers -t

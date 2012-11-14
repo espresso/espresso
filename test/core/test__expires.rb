@@ -46,12 +46,17 @@ module ECoreTest__Expires
   Spec.new App do
 
     def contain_suitable_headers? response, amount, *directives
-      actual = response.headers.values_at('Cache-Control', 'Expires')
-      expected = [
-          E.new.cache_control!(*directives << {:max_age => amount}),
-          (Time.now + amount).httpdate
-      ]
-      is?(expected) == actual
+      date_format = '%a, %d %b %Y %H:%M:%S %Z'
+      cache_control = response.headers['Cache-Control']
+      expect(E.new.cache_control!(*directives << {:max_age => amount})) == cache_control
+
+      raw_expires = response.headers['Expires']
+      begin
+        expires = Time.parse(raw_expires)
+      rescue => e
+        fail('Received Bad "Expires" Header - %s\n%s' % [raw_expires, e.message])
+      end
+      check(expires) <= Time.now + amount
     end
 
     get

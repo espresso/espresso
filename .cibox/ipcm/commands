@@ -1,2 +1,2 @@
 push
-rake test:ipcm --trace
+rake test:ipcm -t
