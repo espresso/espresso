@@ -1,4 +1,3 @@
-
 ## Global Setup
 
 
@@ -40,7 +39,7 @@ And Espresso kindly offer it.
 **# 1** - Actions can be configured by name
 
 **Example:** - all actions, but `:api` and `:json`, should return "text/plain" content type.
-`:api` and `:json` actions should return  "application/javascript"
+`:api` and `:json` actions should return  "application/json"
 
 ```ruby
 class App < E
