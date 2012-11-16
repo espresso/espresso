@@ -18,7 +18,7 @@ class App < E
 end
 ```
 
-Now you can define any number of actions without bother to add charset inside each one.
+Now you can define any number of actions without bothering to add the charset inside each one.
 
 And when you need your actions to return another charset,
 simply change a single line of code at class level.
@@ -70,7 +70,7 @@ end
 ```
 
 **Please Note** that when you firstly setup actions by regexp
-then try to setup a specific action, last setup will be ignored.
+then try to setup a specific action, the last setup will be ignored.
 
 To override setup set by regexp, use bang methods in specific setups.
 
@@ -158,7 +158,7 @@ end
 **Important Note!** When setting up actions by format wildcard,
 Espresso will preserve that setup for all actions matching given format.
 
-And when you want to setup a specific action after you did an wildcard setup,
+And when you want to setup a specific action after you did a wildcard setup,
 you'll note that specific setup is ignored.
 
 It may look confusing, though it is not,
@@ -213,23 +213,23 @@ end
 ## Remote Setup
 
 
-Any Espresso controller or slice can be packed as a gem then installed on any server.<br/>
+Any Espresso controller or slice can be packed as a gem and then installed on any server.<br/>
 Very useful when you need distributed apps.
 
 And it becomes even more useful with Remote Setup.
 
-Say you need same app to run some setup on Server A and another setup on Server B,
-without touching/refactor the app et all.
+Say you need the same app to run some setup on Server A and another setup on Server B,
+without touching/refactor the app at all.
 
 Easy!
 
-Let's say we have a Forum app that serve /Forums base URL and returns content of ISO-8859-1 charset.
+Let's say we have a Forum app that serves /Forums base URL and returns content of ISO-8859-1 charset.
 
 That's ok for Server A.
 
 But for Server B we need it to serve /forum base URL and return UTF-8 charset.
 
-For this, we pass base URL as first param and setting charset using bang method inside block.
+For this, we pass the base URL as first param and setting charset using bang method inside block.
 
 **Example:** - deploying Forum app on Server B
 
