@@ -1,4 +1,3 @@
-
 ## Actions
 
 The cornerstone of any Espresso app.
@@ -24,7 +23,7 @@ It is really straightforward to define actions in Espresso cause they are usual 
 
 A controller is meant to organize and setup actions.
 
-The basic setup is base URL. It is defaulted to the controller's undersocred name and are used by all actions.
+The basic setup is base URL. It is defaulted to the controller's underscored name and are used by all actions.
 
 Other setups are action-specific and can be set for N or for all actions.<br/>
 To define a setup for all actions, simply call appropriate method at controller's class level.<br/>
