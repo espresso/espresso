@@ -1,4 +1,3 @@
-
 ## Actions
 
 The cornerstone of any Espresso app.
@@ -105,7 +104,7 @@ end
 app.run
 ```
 
-**Worth to Note** - when some controller has own setup, the slice will NOT implcitly override it.
+**Worth to Note** - when some controller has own setup, the slice will NOT implicitly override it.
 
 **Example:** - `News` and `Pages` will use Haml engine, `Articles` will use Erubis instead
 
@@ -134,7 +133,7 @@ app.run
 ```
 
 To override some setup for some controller, use bang methods.<br/>
-This will explicitly instruct slice to override controller's  setup.
+This will explicitly instruct slice to override controller's setup.
 
 Refering to the example above, we can override engine for `Articles` controller by this:
 
@@ -173,13 +172,13 @@ The "Controller" term in Espresso Framework does not necessarily refers to the "
 
 Espresso by itself does not deal with models, migrations etc.
 
-It is a job of used ORM.
+It is the responsibility of the ORM you choose to use.
 
-The only way Espresso interacting with models are the `CRUD` helper.<br/>
+The only way Espresso interacts with models is through the `CRUD` helper.<br/>
 It will automatically map HTTP requests to corresponding methods in given model so items are created/updated/deleted seamlessly. [Details here](http://e.github.com/CRUD.html)
 
 
-Also it is planed to create a gem apart that will generate a generic Espresso project.
+Also it is planned to create a gem apart that will generate a generic Espresso project.
 
 The project will presumably contain rake/thor tasks for creating/migrating models.
 
