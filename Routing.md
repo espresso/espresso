@@ -1,4 +1,3 @@
-
 ## Base URL
 
 
@@ -111,7 +110,7 @@ Now `App` will serve:
 
 
 Usually actions should also contain non-alphanumeric chars.<br/>
-Most common - hypes, dots and slashes.
+Most common - hyphens, dots and slashes.
 
 To address this, Espresso uses a map to translate action names into HTTP paths.
 
@@ -228,7 +227,7 @@ However, as we know, Ruby is powerful enough.
 And Espresso uses this power in full.
 
 So, when we need `read` method to accept 1 or 2 args,
-we simply giving to last param a default value:
+we simply give the last param a default value:
 
 ```ruby
 class App < E
@@ -457,7 +456,7 @@ Now `news` action will serve any of:
 
 Espresso uses a really flexible rewrite engine,
 which allows to redirect the browser to new address
-as well as pass control to arbitrarry app(without redirect)
+as well as pass control to arbitrary app(without redirect)
 or just send response to browser(without redirect as well).
 
 A rewrite rule consist of regular expression and a block that receives matches as params.
