@@ -1,3 +1,156 @@
+class EspressoFrameworkInstanceVariables
+
+  include ::Rack::Utils
+
+  attr_accessor :response, :params, :explicit_charset
+
+  def initialize ctrl
+    @ctrl = ctrl
+  end
+
+  # a simple wrapper around Rack::Session
+  def session
+    @session_proxy ||= Class.new do
+      attr_reader :session
+
+      def initialize session = {}
+        @session = session
+      end
+
+      def [] key
+        session[key]
+      end
+
+      def []= key, val
+        return if readonly?
+        session[key] = val
+      end
+
+      def delete key
+        return if readonly?
+        session.delete key
+      end
+
+      # makes sessions readonly
+      #
+      # @example prohibit writing for all actions
+      #    before do
+      #      session.readonly!
+      #    end
+      #
+      # @example prohibit writing only for :render and :display actions
+      #    before :render, :display do
+      #      session.readonly!
+      #    end
+      def readonly!
+        @readonly = true
+      end
+
+      def readonly?
+        @readonly
+      end
+
+      def method_missing *args
+        session.send *args
+      end
+
+    end.new @ctrl.env['rack.session']
+  end
+
+  # @example
+  #    flash[:alert] = 'Item Deleted'
+  #    p flash[:alert] #=> "Item Deleted"
+  #    p flash[:alert] #=> nil
+  #
+  # @note if sessions are confined, flash will not work,
+  #       so do not confine sessions for all actions,
+  #       confine them only for actions really need this.
+  def flash
+    @flash_proxy ||= Class.new do
+      attr_reader :session
+
+      def initialize session = {}
+        @session = session
+      end
+
+      def []= key, val
+        session[key(key)] = val
+      end
+
+      def [] key
+        return unless val = session[key = key(key)]
+        session.delete key
+        val
+      end
+
+      def key key
+        '__e__session__flash__-' << key.to_s
+      end
+    end.new @ctrl.env['rack.session']
+  end
+
+  # shorthand for `response.set_cookie` and `response.delete_cookie`.
+  # also it allow to make cookies readonly.
+  def cookies
+    @cookies_proxy ||= Class.new do
+      attr_reader :controller, :response
+
+      def initialize controller
+        @controller, @response = controller, controller.response
+      end
+
+      # set cookie header
+      #
+      # @param [String, Symbol] key
+      # @param [String, Hash] val
+      # @return [Boolean]
+      def []= key, val
+        return if readonly?
+        response.set_cookie key, val
+      end
+
+      # get cookie by key
+      def [] key
+        controller.orig_cookies[key]
+      end
+
+      # instruct browser to delete a cookie
+      #
+      # @param [String, Symbol] key
+      # @param [Hash] opts
+      # @return [Boolean]
+      def delete key, opts ={}
+        return if readonly?
+        response.delete_cookie key, opts
+      end
+
+      # prohibit further cookies writing
+      #
+      # @example prohibit writing for all actions
+      #    before do
+      #      cookies.readonly!
+      #    end
+      #
+      # @example prohibit writing only for :render and :display actions
+      #    before :render, :display do
+      #      cookies.readonly!
+      #    end
+      def readonly!
+        @readonly = true
+      end
+
+      def readonly?
+        @readonly
+      end
+
+      def method_missing *args
+        controller.orig_cookies.send *args
+      end
+    end.new @ctrl
+  end
+
+end
+
 class E
 
   alias orig_params  params
@@ -29,6 +182,7 @@ class E
         raise e
       end
     end
+
   end
 
   # this proxy used to keep methods that rely on instance variables,
@@ -39,7 +193,7 @@ class E
   end
 
   def response
-    __e__.response ||= EspressoFrameworkResponse.new
+    __e__.response ||= Rack::Response.new
   end
 
   def params
@@ -350,133 +504,12 @@ class E
     ::CGI.unescapeElement *args
   end
 
-  # The response object. See Rack::Response and Rack::ResponseHelpers for more info:
-  # http://rack.rubyforge.org/doc/classes/Rack/Response.html
-  # http://rack.rubyforge.org/doc/classes/Rack/Response/Helpers.html
-  class EspressoFrameworkResponse < ::Rack::Response # kindly borrowed from [Sinatra Framework](https://github.com/sinatra/sinatra)
-    def body=(value)
-      value = value.body while Rack::Response === value
-      @body = String === value ? [value.to_str] : value
-    end
-
-    def each
-      block_given? ? super : enum_for(:each)
-    end
-
-    def finish
-      if status.to_i / 100 == 1
-        headers.delete "Content-Length"
-        headers.delete "Content-Type"
-      elsif Array === body and not [204, 304].include?(status.to_i)
-        # needed on rbx as it raises an exception on body with nil chunks
-        @body = @body.compact
-        # if some other code has already set Content-Length, don't muck with it
-        # currently, this would be the static file-handler
-        headers["Content-Length"] ||= body.inject(0) { |l, p| l + ::Rack::Utils.bytesize(p) }.to_s
-      end
-
-      # Rack::Response#finish sometimes returns self as response body. We don't want that.
-      status, headers, result = super
-      result = body if result == self
-      [status, headers, result]
-    end
-  end
-
-  # Class of the response body in case you use #stream.
-  #
-  # Three things really matter: The front and back block (back being the
-  # blog generating content, front the one sending it to the client) and
-  # the scheduler, integrating with whatever concurrency feature the Rack
-  # handler is using.
-  #
-  # Scheduler has to respond to defer and schedule.
-  class EspressoFrameworkStream # class kindly borrowed from [Sinatra Framework](https://github.com/sinatra/sinatra)
-    def self.schedule(*)
-      yield
-    end
-
-    def self.defer(*)
-      yield
-    end
-
-    def initialize(scheduler = self.class, keep_open = false, &back)
-      @back, @scheduler, @keep_open = back.to_proc, scheduler, keep_open
-      @callbacks, @closed = [], false
-    end
-
-    def close
-      return if @closed
-      @closed = true
-      @scheduler.schedule { @callbacks.each { |c| c.call } }
-    end
-
-    def each(&front)
-      @front = front
-      @scheduler.defer do
-        begin
-          @back.call(self)
-        rescue Exception => e
-          @scheduler.schedule { raise e }
-        end
-        close unless @keep_open
-      end
-    end
-
-    def <<(data)
-      @scheduler.schedule { @front.call(data.to_s) }
-      self
-    end
-
-    def callback(&block)
-      @callbacks << block
-    end
-
-    alias errback callback
-  end
-
   module EspressoFrameworkCoreHelpers # methods kindly borrowed from [Sinatra Framework](https://github.com/sinatra/sinatra)
 
     # Set or retrieve the response status code.
     def status(value=nil)
       response.status = value if value
       response.status
-    end
-
-    # Set or retrieve the response body. When a block is given,
-    # evaluation is deferred until the body is read with #each.
-    def body(value=nil, &block)
-      if block_given?
-        def block.each;
-          yield(call)
-        end
-
-        response.body = block
-      elsif value
-        response.body = value
-      else
-        response.body
-      end
-    end
-
-    # Allows to start sending data to the client even though later parts of
-    # the response body have not yet been generated.
-    #
-    # The close parameter specifies whether Stream#close should be called
-    # after the block has been executed. This is only relevant for evented
-    # servers like Thin or Rainbows.
-    def stream(keep_open = false)
-      scheduler = env['async.callback'] ? EventMachine : EspressoFrameworkStream
-      current = params.dup
-      block = proc do |out|
-        begin
-          original, __e__.params = __e__.params, current
-          yield(out)
-        ensure
-          __e__.params = original if original
-        end
-      end
-
-      body EspressoFrameworkStream.new(scheduler, keep_open, &block)
     end
 
     # Specify response freshness policy for HTTP caches (Cache-Control header).
@@ -641,158 +674,4 @@ class E
 
   end
   include EspressoFrameworkCoreHelpers
-
-  class EspressoFrameworkInstanceVariables
-
-    include ::Rack::Utils
-
-    attr_accessor :response, :params, :explicit_charset
-
-    def initialize ctrl
-      @ctrl = ctrl
-    end
-
-    # a simple wrapper around Rack::Session
-    def session
-      @session_proxy ||= Class.new do
-        attr_reader :session
-
-        def initialize session = {}
-          @session = session
-        end
-
-        def [] key
-          session[key]
-        end
-
-        def []= key, val
-          return if readonly?
-          session[key] = val
-        end
-
-        def delete key
-          return if readonly?
-          session.delete key
-        end
-
-        # makes sessions readonly
-        #
-        # @example prohibit writing for all actions
-        #    before do
-        #      session.readonly!
-        #    end
-        #
-        # @example prohibit writing only for :render and :display actions
-        #    before :render, :display do
-        #      session.readonly!
-        #    end
-        def readonly!
-          @readonly = true
-        end
-
-        def readonly?
-          @readonly
-        end
-
-        def method_missing *args
-          session.send *args
-        end
-
-      end.new @ctrl.env['rack.session']
-    end
-
-    # @example
-    #    flash[:alert] = 'Item Deleted'
-    #    p flash[:alert] #=> "Item Deleted"
-    #    p flash[:alert] #=> nil
-    #
-    # @note if sessions are confined, flash will not work,
-    #       so do not confine sessions for all actions,
-    #       confine them only for actions really need this.
-    def flash
-      @flash_proxy ||= Class.new do
-        attr_reader :session
-
-        def initialize session = {}
-          @session = session
-        end
-
-        def []= key, val
-          session[key(key)] = val
-        end
-
-        def [] key
-          return unless val = session[key = key(key)]
-          session.delete key
-          val
-        end
-
-        def key key
-          '__e__session__flash__-' << key.to_s
-        end
-      end.new @ctrl.env['rack.session']
-    end
-
-    # shorthand for `response.set_cookie` and `response.delete_cookie`.
-    # also it allow to make cookies readonly.
-    def cookies
-      @cookies_proxy ||= Class.new do
-        attr_reader :controller, :response
-
-        def initialize controller
-          @controller, @response = controller, controller.response
-        end
-
-        # set cookie header
-        #
-        # @param [String, Symbol] key
-        # @param [String, Hash] val
-        # @return [Boolean]
-        def []= key, val
-          return if readonly?
-          response.set_cookie key, val
-        end
-
-        # get cookie by key
-        def [] key
-          controller.orig_cookies[key]
-        end
-
-        # instruct browser to delete a cookie
-        #
-        # @param [String, Symbol] key
-        # @param [Hash] opts
-        # @return [Boolean]
-        def delete key, opts ={}
-          return if readonly?
-          response.delete_cookie key, opts
-        end
-
-        # prohibit further cookies writing
-        #
-        # @example prohibit writing for all actions
-        #    before do
-        #      cookies.readonly!
-        #    end
-        #
-        # @example prohibit writing only for :render and :display actions
-        #    before :render, :display do
-        #      cookies.readonly!
-        #    end
-        def readonly!
-          @readonly = true
-        end
-
-        def readonly?
-          @readonly
-        end
-
-        def method_missing *args
-          controller.orig_cookies.send *args
-        end
-      end.new @ctrl
-    end
-
-  end
-
 end

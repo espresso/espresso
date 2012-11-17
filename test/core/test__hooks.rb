@@ -29,7 +29,7 @@ module ECoreTest__Hooks
       before { (@priority_test ||= []) << :c }
       before(:priority => 100) { (@priority_test ||= []) << :a }
       before(:priority => 50) { (@priority_test ||= []) << :b }
-      after(:priority => -100) { response.body = @priority_test.inspect }
+      after(:priority => -100) { response.body = [@priority_test.inspect] }
     end
 
     format :json

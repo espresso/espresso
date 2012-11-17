@@ -79,7 +79,6 @@ module ECoreTest__Pass
       r = get :invoke, :catcher, ARGS.join('/'), PARAMS.dup
       check(r.body) =~ /\A\[200/
       check(r.body) =~ /"Content\-Type"=>"text\/html"/
-      check(r.body) =~ /"Content\-Length"=>"28"/
       check(r.body) =~ /#{Regexp.escape '[\"k\", \"v\"]'}/
       check(r.body) =~ /#{Regexp.escape '{\"var\"=>\"val\"}'}/
     end
