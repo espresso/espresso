@@ -367,4 +367,29 @@ module EHelpersTest__Assets
     end
 
   end
+
+  Spec.new self do
+    eapp = EApp.new do
+      assets_url :assets, true
+      assets_fullpath ::File.expand_path('../assets', __FILE__)
+      mount App
+    end
+    app eapp
+    map :assets
+
+    get 'master.js'
+    check(last_response.status) == 200
+    expect(last_response["Content-Type"]) == "application/javascript"
+    expect(last_response.body) == 'master.js'
+
+    get 'master.css'
+    check(last_response.status) == 200
+    expect(last_response["Content-Type"]) == "text/css"
+    expect(last_response.body) == 'master.css'
+
+    get 'master.png'
+    check(last_response.status) == 200
+    expect(last_response["Content-Type"]) == "image/png"
+  end
+
 end

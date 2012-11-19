@@ -350,24 +350,23 @@ class EApp
     use.each { |w| builder.use w[:ware], *w[:args], &w[:proc] }
     mount_controllers!
     @mounted_controllers.each do |ctrl|
-      
       ctrl.url_map.each_pair do |route, rest_map|
         builder.map route do
           ctrl.use?.each { |w| use w[:ware], *w[:args], &w[:proc] }
           run lambda { |env| ctrl.new(nil, rest_map).call env }
         end
       end
-      if assets_server?
-        builder.map assets_url do
-          run lambda { |e| ::Rack::Directory.new(app.assets_fullpath || app.assets_path).call(e) }
-        end
-      end
       ctrl.freeze!
       ctrl.lock!
     end
+    if assets_server?
+      builder.map assets_url do
+        run lambda { |e| ::Rack::Directory.new(app.assets_fullpath || app.assets_path).call(e) }
+      end
+    end
     rewrite_rules.size > 0 ?
-        ::AppetiteRewriter.new(rewrite_rules, builder.to_app) :
-        builder.to_app
+      ::AppetiteRewriter.new(rewrite_rules, builder.to_app) :
+      builder.to_app
   end
 
   def mount_controllers!
