@@ -76,6 +76,7 @@ app.run
 
 To mount a controller/slice into a specific root, pass it as first argument:
 
+
 ```ruby
 module Forum
     class Users < E
@@ -109,6 +110,56 @@ app.run
 
 **[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
 
+
+## Inner Apps
+
+As of version 0.3.3 Espresso supports mounting of any Rack app.
+
+Just mount it as a regular Espresso controller.
+
+**Example:** Mounting a Sinatra app:
+
+```ruby
+require 'sinatra/base'
+require 'e'
+
+class Cms < Sinatra::Base
+
+  get('/') { 
+    # ...
+  }
+
+  # ...
+
+end
+
+class App < E
+  map :/
+
+  def index
+    # ...
+  end
+
+  # ...
+end
+
+app = EApp.new do
+  
+  mount App          # this will mount App into /
+  mount Cms, '/cms'  # this will mount Sinatra app into /cms
+end
+app.run
+```
+
+And of course inner apps supports canonical mounts, just like native controllers does:
+
+```ruby
+app = EApp.new do
+  
+  # ...
+  mount Cms, '/cms', '/pages'  # this will mount Sinatra app into /cms and /pages
+end
+```
 
 ## Run
 

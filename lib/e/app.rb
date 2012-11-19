@@ -253,14 +253,20 @@ class EApp
 
   def initialize automount = false, &proc
     @automount = automount
-    @controllers, @mounted_controllers = [], []
+    @controllers, @mounted_controllers, @inner_apps = [], [], []
     proc && self.instance_exec(&proc)
   end
 
   # add controller/namespace to be mounted when app starts.
   # proc given here will be executed inside given controller/namespace.
-  def mount namespace, *roots, &setup
-    @controllers << [namespace, roots, setup]
+  def mount namespace_or_app, *roots, &setup
+    if namespace_or_app.respond_to?(:call) && !is_app?(namespace_or_app)
+      # seems a Rack app given
+      roots.empty? && raise(ArgumentError, "Please provide at least one root to mount given app on")
+      @inner_apps << [namespace_or_app, roots] # setup ignored on Rack apps
+    else
+      @controllers << [namespace_or_app, roots, setup]
+    end
     self
   end
 
@@ -358,6 +364,12 @@ class EApp
       end
       ctrl.freeze!
       ctrl.lock!
+    end
+    @inner_apps.each do |a|
+      inner_app, inner_app_roots = a
+      inner_app_roots.each do |inner_app_root|
+        builder.map(inner_app_root) { run inner_app }
+      end
     end
     if assets_server?
       builder.map assets_url do
