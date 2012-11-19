@@ -324,9 +324,30 @@ or default engine - ERB.
 
 If block given, the template will not be searched/rendered.<br/>
 Instead, the string returned by the block will be rendered.<br/>
-This way you'll can render data from DB directly, without saving it to file system.
+This way you'll can render data from DB directly, without saving it to a file.
+
 
 **=== Important ===** If custom controller given, rendering methods will use the path, engine and layout set by given controller.
+
+
+**=== Important ===** Espresso wont support custom file extensions!
+
+So you can not render a template like this: `render "template.haml"`.
+
+Instead use `render "template"` and the extension will be added automatically,
+based on extension given or computed at class level.
+
+Espresso will guess extension by used engine, like '.haml' for Haml, '.erb' for Erubis etc.<br/>
+If your templates uses a custom extension, set it via `engine_ext`.
+  
+However, if you have a file with a extension that is not typical for used engine
+nor match the extension given via `engine_ext`, please consider to rename the file.
+
+Computing file extensions would add extra unneeded overhead.<br/>
+The probability of custom extensions are ephemeral
+and it is quite irrational to slow down an entire framework 
+just to handle such a negligible probability.
+
 
 **[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
 

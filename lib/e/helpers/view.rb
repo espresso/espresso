@@ -282,15 +282,31 @@ class E
   # if some path given it will be appended to global path.
   # if multiple paths given they will be `File.join`-ed and appended to global path.
   def view_path *args
-    ::EViewPathProxy.new ::File.join(self.class.view_path?, *args)
+    ::EspressoFrameworkViewPathProxy.new ::File.join(self.class.view_path?, *args)
   end
 
   # returns full path to layouts.
   # if any args given they are `File.join`-ed and appended to returned path.
   def layouts_path *args
-    ::EViewPathProxy.new ::File.join(self.class.view_path?, self.class.layouts_path?, *args)
+    ::EspressoFrameworkViewPathProxy.new ::File.join(self.class.view_path?, self.class.layouts_path?, *args)
   end
   alias :layout_path :layouts_path
+
+  # Note on rendering: **Espresso wont support custom file extensions**,
+  # so you can not render a template like this: `render "template.haml"`.
+  # Instead use `render "template"` and the extension will be added automatically,
+  # based on extension given or computed at class level.
+  #
+  # Espresso will guess extension by used engine, like '.haml' for Haml, '.erb' for Erubis etc.
+  # If your templates uses a custom extension, set it via `engine_ext`.
+  #   
+  # However, if you have a file with a extension that is not typical for used engine
+  # nor match the extension given via `engine_ext`, please consider to rename the file.
+  #
+  # Computing file extensions would add extra unneeded overhead.
+  # The probability of custom extensions are ephemeral
+  # and it is quite irrational to slow down an entire framework 
+  # just to handle such a negligible probability.
 
   def render *args, &proc
     controller, action_or_template, scope, locals, compiler_key = __e__engine_params(*args)
@@ -413,7 +429,7 @@ class E
   end
 
   def __e__template controller, action_or_template, ext = nil
-    if action_or_template.instance_of?(::EViewPathProxy)
+    if action_or_template.instance_of?(::EspressoFrameworkViewPathProxy)
       action_or_template
     else
       ::File.join controller.view_path?, # controller's path to templates
@@ -423,7 +439,7 @@ class E
   end
 
   def __e__layout_template controller, layout, ext
-    if layout.instance_of?(EViewPathProxy)
+    if layout.instance_of?(EspressoFrameworkViewPathProxy)
       layout
     else
       ::File.join controller.view_path?, # controller's path to templates
@@ -436,7 +452,7 @@ end
 
 # `instance_of?` is 3x faster than `match` and 1x faster than `is_a?`
 # so using it to check whether given path is a full path.
-class EViewPathProxy < String
+class EspressoFrameworkViewPathProxy < String
   def initialize str
     super str
   end
