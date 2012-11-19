@@ -445,37 +445,6 @@ end
 **[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
 
 
-## Streaming
-
-
-There are no doubts that Sinatra's streaming implementation is really elegant and powerful.
-
-And as there are no reason to reinvent the same wheel,<br/>
-Espresso Framework simply uses the Sinatra's streaming helper,<br/>
-saying a big thank to bright minds behind Sinatra.
-
-In two words, `stream` method allow to start sending response
-while it is not yet generated in full.
-
-**Example:**
-
-```ruby
-def index
-    # ...
-    stream do |s|
-        s << 'Hello '
-        sleep 1
-        s << 'World!'
-    end
-end
-```
-
-Please note that this will work as expected only on servers that does support streaming.
-
-
-**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
-
-
 ## Error Handlers
 
 

@@ -86,7 +86,6 @@ Yes, [CIBox](http://cibox.org) service is built entirely on Espresso Framework.
 [Halt](https://github.com/slivu/espresso/blob/master/Workflow.md#halt) |
 [Redirect](https://github.com/slivu/espresso/blob/master/Workflow.md#redirect) |
 [Reload](https://github.com/slivu/espresso/blob/master/Workflow.md#reload) |
-[Streaming](https://github.com/slivu/espresso/blob/master/Workflow.md#streaming) |
 [Error Handlers](https://github.com/slivu/espresso/blob/master/Workflow.md#error-handlers) |
 [Hooks](https://github.com/slivu/espresso/blob/master/Workflow.md#hooks) |
 [Authorization](https://github.com/slivu/espresso/blob/master/Workflow.md#authorization) |
