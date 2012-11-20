@@ -4,9 +4,8 @@
 # [Espresso](http://e.github.com)
 
 **Scalable Web Framework aimed at Speed and Simplicity**
-<br/>
-<br/>
-<br/>
+<a href="https://travis-ci.org/slivu/espresso">
+<img src="https://travis-ci.org/slivu/espresso.png"></a>
 
 Quick Start
 ---
