@@ -273,8 +273,9 @@ class EApp
   # mount controller/namespace right away rather than at app starting.
   # proc given here will be executed inside given controller/namespace.
   def mount! namespace, *roots, &setup
+    root = roots.shift
     extract_controllers(namespace).each do |ctrl|
-      (root = roots.shift) && ctrl.remap!(root, *roots)
+      root && ctrl.remap!(root, *roots)
       ctrl.app = self
       ctrl.setup!
       ctrl.global_setup!(&setup) if setup
