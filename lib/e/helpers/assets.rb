@@ -166,7 +166,7 @@ class EAssetsLoader
         opts[:rel] = 'stylesheet'
         opted_src = opts.delete(:href) || opts.delete(:src)
         src ||= opted_src || raise('Please URL as first argument or :href option')
-        "<link href=\"%s%s\" %s />\n" % [
+        "<link href=\"%s%s\" %s>\n" % [
           opted_src ? opted_src : assets_url(src),
           opts.delete(:ext),
           __e__assets__opts_to_s(opts)
@@ -181,7 +181,7 @@ class EAssetsLoader
       opted_src = opts.delete(:src)
       src ||= opted_src || raise('Please provide image URL as first argument or :src option')
       opts[:alt] ||= ::File.basename(src, ::File.extname(src))
-      "<img src=\"%s%s\" %s />\n" % [
+      "<img src=\"%s%s\" %s>\n" % [
         opted_src ? opted_src : assets_url(src),
         opts.delete(:ext),
         __e__assets__opts_to_s(opts)

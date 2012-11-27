@@ -96,10 +96,10 @@ module EHelpersTest__Assets
     Testing :image_tag do
 
       get :image_with_url, 'image.jpg'
-      does(last_response).match? '<img src="/assets/image.jpg" alt="image" />'
+      does(last_response).match? '<img src="/assets/image.jpg" alt="image">'
 
       get :image_with_src, 'image.jpg'
-      does(last_response).match? '<img src="image.jpg" alt="image" />'
+      does(last_response).match? '<img src="image.jpg" alt="image">'
     end
 
     Testing :script_tag do
@@ -121,10 +121,10 @@ module EHelpersTest__Assets
     Testing :style_tag do
 
       get :style_with_url, 'url.css'
-      does(last_response).match? '<link href="/assets/url.css" rel="stylesheet" />'
+      does(last_response).match? '<link href="/assets/url.css" rel="stylesheet">'
 
       get :style_with_src, 'src.css'
-      does(last_response).match? '<link href="src.css" rel="stylesheet" />'
+      does(last_response).match? '<link href="src.css" rel="stylesheet">'
 
       get :style_with_block, :some => 'param'
       lines = last_response.body.split("\n").map { |s| s.strip }
