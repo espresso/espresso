@@ -1,11 +1,3 @@
-# registering Slim engine, if loaded
-if Object.const_defined?(:Slim)
-  unless ::Tilt.const_defined?(:SlimTemplate)
-    ::Tilt::SlimTemplate = ::Slim::Template
-    ::Tilt.register ::Tilt::SlimTemplate, 'slim'
-  end
-end
-
 class << E
 
   # @example - use Haml for all actions
@@ -33,6 +25,16 @@ class << E
   def engine! engine, *engine_args
     return if locked?
     engine?
+
+    # registering Slim engine, if needed
+    if engine == :Slim
+      Object.const_defined?(:Slim) ||
+        raise(ArgumentError, "Please load Slim engine before using it")
+      unless ::Tilt.const_defined?(:SlimTemplate)
+        ::Tilt.const_set :SlimTemplate, ::Slim::Template
+        ::Tilt.register  ::Tilt::SlimTemplate, 'slim'
+      end
+    end
 
     keep_existing = engine_args.delete(true)
     setup__actions.each do |action|
