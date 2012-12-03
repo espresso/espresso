@@ -4,11 +4,11 @@ module ECoreTest__Canonical
     map '/', '/cms', '/pages'
 
     def index
-      path
+     rq.path
     end
 
     def post_eatme
-      path
+      rq.path
     end
 
   end

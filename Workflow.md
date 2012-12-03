@@ -1018,7 +1018,7 @@ end
 ## Accepted Content Type
 
 
-Usually the browser inform the app about accepted content type with HTTP_ACCEPT header.
+Usually the browser inform the app about accepted content type via HTTP_ACCEPT header.
 
 `accept?` is a helper allowing to disclose what content type are actually accepted/expected by the browser.
 

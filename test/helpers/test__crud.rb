@@ -58,9 +58,9 @@ module EHelpersTest__CRUD
 
     crudify = lambda do |obj|
       case
-        when post?, put?, patch?
+        when rq.post?, rq.put?, rq.patch?
           obj['__id__']
-        when head?
+        when rq.head?
           response.headers['Last-Modified'] = params[:lm]
         else
           obj.inspect

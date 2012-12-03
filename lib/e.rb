@@ -4,19 +4,12 @@ require 'cgi'
 require 'erb'
 
 require 'rubygems'
-require 'tilt'
 require 'appetite'
+require 'tilt'
 
 class E < Appetite
-  
-end
-
-class EApp
-  module Setup
-    
-    include ::AppetiteUtils
-    include ::AppetiteHelpers    
-  end
+  CONTENT_TYPE__DEFAULT      = 'text/html'.freeze
+  CONTENT_TYPE__EVENT_STREAM = 'text/event-stream'.freeze
 end
 
 class Module
@@ -29,11 +22,14 @@ class Module
   end
 end
 
-require 'e/class'
-require 'e/instance'
-require 'e/helpers/crud'
-require 'e/helpers/view'
-require 'e/helpers/cache'
-require 'e/helpers/ipcm'
+require 'e/setup'
+require 'e/base'
+require 'e/cookies'
+require 'e/session'
 require 'e/helpers/assets'
+require 'e/helpers/cache'
+require 'e/helpers/crud'
+require 'e/helpers/ipcm'
+require 'e/helpers/stream'
+require 'e/helpers/view'
 require 'e/app'

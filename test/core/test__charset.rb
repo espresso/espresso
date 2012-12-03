@@ -56,7 +56,7 @@ module ECoreTest__Encoding
 
     get :iso_8859_2
     check(last_response).is_of_charset 'ISO-8859-2'
-    prove(last_response.header['Content-Type']) =~ %r[#{AppetiteHelpers.mime_type '.xml'}]
+    prove(last_response.header['Content-Type']) =~ %r[#{Rack::Mime::MIME_TYPES.fetch '.xml'}]
 
     Testing 'setup by giving action name along with format' do
       get 'index.json'

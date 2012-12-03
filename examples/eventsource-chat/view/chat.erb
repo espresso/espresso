@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<body>
+  <input type="text" id="message">
+  <input type="button" value="post" onClick="post_message();">
+  <hr>
+  <div id="messages"></div>
+</body>
+
+<script type="text/javascript">
+var evs = new EventSource('<%= route :login, action_params[:user] %>');
+evs.onmessage = function(e) { document.getElementById('messages').innerHTML += e.data; }
+
+function post_message() {
+  var xhr = new XMLHttpRequest();
+  xhr.open('POST', '<%= route :message, action_params[:user] %>',  true);
+  xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+  xhr.send('message=' + document.getElementById('message').value);
+}
+</script>
+
+</html>
