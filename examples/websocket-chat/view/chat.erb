@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<body>
+  <input type="text" id="message">
+  <input type="button" value="post" onClick="post_message();">
+  <hr>
+  <div id="messages"></div>
+</body>
+
+<script type="text/javascript">
+messages = document.getElementById('messages');
+message  = document.getElementById('message' );
+
+ws = new WebSocket('ws://127.0.0.1:9292<%= route :login, action_params[:user] %>');
+ws.onmessage = function(e) {
+  message.value = null;
+  messages.innerHTML = e.data + messages.innerHTML;
+}
+
+function post_message() {
+  ws.send(message.value);
+}
+</script>
+
+</html>

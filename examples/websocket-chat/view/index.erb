@@ -1,0 +1,8 @@
+<!doctype html>
+<html lang="en">
+<body>
+  <div id="messages"></div>
+</body>
+<input type="text" id="user">
+<input type="button" value="login" onClick="window.location = '<%= route :chat %>/' + document.getElementById('user').value;">
+</html>

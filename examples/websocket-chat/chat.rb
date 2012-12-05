@@ -16,16 +16,21 @@ class Chat < E
   end
 
   def login user
-    event_stream do |stream|
-      Users.each {|u| u.event('welcome'); u.data(user)}
+    if stream = websocket?
+      welcome = render_p(:welcome)
+      Users.each {|u| u << welcome }
       Users << stream
+      stream.on_message { |msg| post_message msg }
       stream.on_error { Users.delete stream }
+      stream.read_every 1
     end
   end
 
-  def post_message user
-    msg = render_p(:message)
-    Users.each { |u| u.data msg }
+  private
+
+  def post_message message
+    msg = render_p(:message, message: message)
+    Users.each { |u| u << msg }
     msg
   end
 

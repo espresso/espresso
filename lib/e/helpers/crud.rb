@@ -184,7 +184,7 @@ class << E
       rescue => e
         err = e.message
       end
-      err ? [halt_with, escape_html(err)] : []
+      [nil, err]
     end
 
     options = lambda do |controller_instance|
@@ -219,7 +219,7 @@ class << E
       end
 
       define_method action % :delete do |id|
-        halt *delete_object.call(id)
+        presenter.call self, *delete_object.call(id)
       end
 
       define_method action % :options do

@@ -174,7 +174,7 @@ class E
   # @param [Class] *args
   # @param [Proc] &proc
   def pass *args
-    halt invoke *args
+    halt invoke(*args)
   end
 
   # same as `pass` except it returns the result instead of halting
@@ -184,18 +184,19 @@ class E
   def invoke *args, &proc
 
     if args.size == 0
-      error 500, '`%s` expects an action(or a Controller and some action) to be provided' % __method__
+      return [500, {}, '`%s` expects an action(or a Controller and some action) to be provided' % __method__]
     end
 
     app = ::AppetiteUtils.is_app?(args.first) ? args.shift : self.class
 
     if args.size == 0
-      error 500, 'Beside Controller, `%s` expects some action to be provided' % __method__
+      return [500, {}, 'Beside Controller, `%s` expects some action to be provided' % __method__]
     end
 
-    action   = args.shift.to_sym
-    route    = app[action] || error(404, '%s does not respond to %s action' % [app, action])
-    rest_map = app.url_map[route]
+    action = args.shift.to_sym
+    unless route = app[action]
+      return [404, {}, '%s does not respond to %s action' % [app, action]]
+    end
     env.update ENV__SCRIPT_NAME => route
 
     if args.size > 0
@@ -203,14 +204,16 @@ class E
       args.each { |a| a.is_a?(Hash) ? params.update(a) : path << a.to_s << '/' }
       env.update ENV__PATH_INFO => path
       params.size > 0 &&
-          env.update(ENV__QUERY_STRING => build_nested_query(params))
+        env.update(ENV__QUERY_STRING => build_nested_query(params))
     end
     app.new.call env, &proc
   end
 
   # same as `invoke` except it returns only body
   def fetch *args, &proc
-    invoke(*args, &proc).last
+    body = invoke(*args, &proc).last
+    body = body.body if body.respond_to?(:body)
+    body.is_a?(Array) ? body.inject('') {|b,c| b << c.to_s} : body
   end
 
   # same as `halt` except it uses for body the proc defined by `error` at class level
