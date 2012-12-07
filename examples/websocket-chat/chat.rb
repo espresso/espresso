@@ -36,4 +36,4 @@ class Chat < E
 
 end
 
-Chat.run server: :Reel, Port: 9292
+Chat.run server: :Reel

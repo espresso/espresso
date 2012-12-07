@@ -26,6 +26,16 @@ class EApp
 
   module Setup
 
+    def default_server server = nil
+      @default_server = server if server
+      @default_server || :WEBrick
+    end
+
+    def default_port port = nil
+      @default_port = port if port
+      @default_port || 3000
+    end
+
     # set base URL to be prepended to all controllers
     def map url
       @base_url = rootify_url(url).freeze
@@ -324,7 +334,7 @@ class EApp
 
   alias urlmap url_map
 
-  # by default, Espresso will use WEBrick server and default WEBrick port.
+  # by default, Espresso will use WEBrick server.
   # pass :server option and any option accepted by selected(or default) server:
   #
   # @example use Thin server with its default port
@@ -336,8 +346,12 @@ class EApp
   def run opts = {}
     mount_controllers!
     server = opts.delete(:server)
-    server && ::Rack::Handler.const_defined?(server) || (server = :WEBrick)
-    ::Rack::Handler.const_get(server).run self, opts
+    (server && ::Rack::Handler.const_defined?(server)) || (server = default_server)
+    handler =  ::Rack::Handler.const_get(server)
+    if handler.respond_to?(:valid_options) && handler.valid_options.any? {|k,v| k =~ /\APort/}
+      opts[:Port] ||= default_port
+    end
+    handler.run self, opts
   end
 
   # Rack interface

@@ -20,4 +20,4 @@ class App < E
 
 end
 
-App.run server: :Reel, Port: 9292
+App.run server: :Reel
