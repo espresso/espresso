@@ -2,6 +2,9 @@ class EApp
 
   include ::AppetiteUtils
 
+  DEFAULT_SERVER = :WEBrick
+  DEFAULT_PORT   = 3000
+
   # Rack interface to all found controllers
   #
   # @example config.ru
@@ -24,17 +27,8 @@ class EApp
     new.call env
   end
 
+
   module Setup
-
-    def default_server server = nil
-      @default_server = server if server
-      @default_server || :WEBrick
-    end
-
-    def default_port port = nil
-      @default_port = port if port
-      @default_port || 3000
-    end
 
     # set base URL to be prepended to all controllers
     def map url
@@ -346,10 +340,10 @@ class EApp
   def run opts = {}
     mount_controllers!
     server = opts.delete(:server)
-    (server && ::Rack::Handler.const_defined?(server)) || (server = default_server)
+    (server && ::Rack::Handler.const_defined?(server)) || (server = DEFAULT_SERVER)
     handler =  ::Rack::Handler.const_get(server)
     if handler.respond_to?(:valid_options) && handler.valid_options.any? {|k,v| k =~ /\APort/}
-      opts[:Port] ||= default_port
+      opts[:Port] ||= DEFAULT_PORT
     end
     handler.run self, opts
   end
