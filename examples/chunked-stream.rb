@@ -20,4 +20,4 @@ class App < E
 
 end
 
-App.run# server: :Reel
+App.run server: :Reel
