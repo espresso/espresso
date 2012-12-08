@@ -1,7 +1,0 @@
-source :rubygems
-
-gem 'thin'
-gem 'rack'
-gem 'e'
-gem 'sinatra'
-gem 'rails'

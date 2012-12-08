@@ -23,5 +23,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'haml'
 
   s.require_paths = ['lib']
-  s.files = `git ls-files`.split("\n").reject { |f| f =~ /test\/overhead/ }
+  s.files = Dir['**/*'].reject {|e| e =~ /\.(gem|lock)\Z/}
 end
