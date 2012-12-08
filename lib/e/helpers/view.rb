@@ -347,9 +347,10 @@ class E
     if action_or_template.instance_of?(::EspressoFrameworkViewPathProxy)
       action_or_template
     else
-      ::File.join controller.view_path?, # controller's path to templates
-        controller.base_url,             # controller's route
-        action_or_template.to_s          # given template
+      ::File.expand_path(
+        ::File.join(controller.view_path?, # controller's path to templates
+        controller.base_url,               # controller's route
+        action_or_template.to_s))          # given template
     end << (ext || controller.engine_ext?(action_or_template))  # given or computed extension
   end
 
