@@ -1,0 +1,10 @@
+javascript:
+  var dp = $('#datepicker');
+  dp.datepicker({format: 'yyyy-mm-dd'}).on('changeDate', function(e){
+    var date = [e.date.getFullYear(),
+      ('0' + (e.date.getMonth() + 1)).slice(-2),
+      ('0' + e.date.getDate()).slice(-2)
+    ].join('-');
+    updateEntries(date);
+  });
+  dp.datepicker('show');

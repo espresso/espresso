@@ -1,0 +1,37 @@
+table.table.table-striped
+  thead
+    tr
+      th
+      th
+        - if @items.size > 0
+          | Occur at
+
+  - @items.each do |item|
+    tr
+      td = item.name
+      td = item.date
+
+#CRUDModal.modal.fade
+  .modal-body
+    form.form-horizontal#CRUDModal-form
+      .control-group
+        label.control-label Name
+        .controls
+          input#CRUDModal-name type="text" name="name"
+      .control-group
+        label.control-label Occur at
+        .controls
+          input#CRUDModal-date type="text" name="occur_at"
+          | &nbsp;
+          input#CRUDModal-time type="text" style="width: 50px;"
+
+    .alert.alert-error.hide#CRUDModal-errors
+  .modal-footer
+    .row
+      .span
+        button.btn.btn-danger type="button" onClick="if(confirm('This action can NOT be undone! Continue?')) CRUDSendDeleteRequest();" Delete
+      .span.pull-right
+        button.btn type="button" data-dismiss="modal" Cancel
+        button.btn.btn-info type="button" onClick="CRUDSendRequest();" Save
+
+input.hide#date value=@ymd.join('-')

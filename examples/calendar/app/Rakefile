@@ -1,0 +1,69 @@
+wd = File.expand_path('..', __FILE__) + '/'
+require wd + 'boot'   # boot file will load controllers/models and build app
+Bundler.require :test # requiring only gems in test group
+
+# loading spec files containing our unit tests
+Dir[wd + 'spec/**/*_spec.rb'].each { |f| require f }
+
+# building test tasks
+namespace :test do
+  # preparing Specular
+  session = Specular.new
+
+  # automatically including Sonar into all specs
+  session.boot { include Sonar } # `boot` will run inside each spec class
+
+  task :admin do
+    
+    # automatically set tested app for all specs
+    session.before { app ECalendarApp } # `before` will run inside each spec instance
+
+    # setting base URL for Sonar
+    session.before { map ECalendar::Admin.base_url }
+    
+    # running tests
+    session.run /AdminSpec/
+    puts session
+    session.exit_code
+  end
+end
+
+namespace :db do
+
+  desc 'auto-migrating All models - ACHTUNG! it is a destructive action!'
+  task :auto_migrate do
+    DataMapper.auto_migrate!
+    puts 'done'
+  end
+
+  desc 'upgrading All models'
+  task :auto_upgrade do
+    DataMapper.auto_upgrade!
+    puts 'done'
+  end
+
+  # automatically building migrate/upgrade tasks for all models.
+  # @example:
+  #   model name: PageModel
+  #   rake  task: rake db:auto_migrate_Page
+  #   rake  task: rake db:auto_upgrade_Page
+  #
+  regex = /Model\Z/
+  Object.constants.select { |c| c.to_s =~ regex }.each do |c|
+    desc 'auto-migrating %s - ACHTUNG! this is a destructive action!' % c
+    task "auto_migrate_#{c}".sub(regex, '') do
+      Object.const_get(c).auto_migrate!
+      puts 'done'
+    end
+
+    desc 'auto-upgrading %s' % c
+    task "auto_upgrade_#{c}".sub(regex, '') do
+      Object.const_get(c).auto_upgrade!
+      puts 'done'
+    end
+  end
+
+end
+
+task :test => %w[ admin ].map { |t| 'test:%s' % t }
+task :default => 'test:admin'

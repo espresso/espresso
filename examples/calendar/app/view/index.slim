@@ -1,0 +1,25 @@
+.row
+  .span#datepicker
+  .span8#entries
+
+#data
+
+javascript:
+  function updateEntries(date) {
+    $.post(
+      '#{route :entries}/' + date,
+      function(response) {
+        $('#entries').html(response);
+        if('evs' in window) evs.close();
+        evs = new EventSource('#{route :subscribe}/' + date);
+        evs.onmessage = function(e) {
+          $('#entries').html(e.data);
+        }
+      }
+    );
+  }
+
+  $(function(){
+    updateEntries('#{Date.today.strftime('%Y-%m-%d')}');
+  });
+

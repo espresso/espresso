@@ -1,0 +1,23 @@
+source :rubygems
+
+# Slim always should go before Espresso,
+# otherwise it wont be automatically registered
+gem 'slim'
+
+gem 'appetite', git: 'git://github.com/slivu/appetite.git'
+gem 'e',        git: 'git://github.com/slivu/espresso.git'
+gem 'reel',     git: 'git://github.com/celluloid/reel.git'
+
+gem 'data_mapper', '~> 1.2.0'
+gem 'dm-mysql-adapter'
+
+group :test do
+  # used to build test and tasks for DB migrations tasks
+  gem 'rake', '~> 10'
+
+  # used for unit testing
+  gem 'specular', '>= 0.1.5'
+
+  # allow to communicate to any Rack app via fake HTTP
+  gem 'sonar', '>= 0.1.1'
+end

@@ -1,0 +1,15 @@
+.row
+  .span#datepicker
+  .span8#entries
+    == entries
+
+javascript:
+  function updateEntries(date) {
+    $.post(
+      '#{route :entries}/' + date,
+      function(response) {
+        $('#entries').html(response);
+      }
+    );
+  }
+  

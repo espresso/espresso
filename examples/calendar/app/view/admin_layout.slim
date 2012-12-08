@@ -1,0 +1,21 @@
+doctype 5
+html
+  head
+    title ECalendar Tutorial / Admin
+
+    - assets_loader :vendor do
+      == js  'jquery'
+      
+      -  cd  'bootstrap'
+      == js  'js/bootstrap.min'
+      == css 'css/bootstrap.min'
+
+      -  cd  '/bootstrap-datepicker'
+      == css 'css/datepicker'
+      == js  'js/bootstrap-datepicker'
+
+  body
+    .container
+
+      == yield
+      == render_p view_path('datepicker')
