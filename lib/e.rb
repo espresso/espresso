@@ -10,6 +10,7 @@ require 'tilt'
 class E < Appetite
   CONTENT_TYPE__DEFAULT      = 'text/html'.freeze
   CONTENT_TYPE__EVENT_STREAM = 'text/event-stream'.freeze
+  VIEW__DEFAULT_PATH         = 'view/'.freeze
 end
 
 class Module

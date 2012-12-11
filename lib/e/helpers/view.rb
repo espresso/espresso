@@ -26,15 +26,7 @@ class << E
     return if locked?
     engine?
 
-    # registering Slim engine, if needed
-    if engine == :Slim
-      Object.const_defined?(:Slim) ||
-        raise(ArgumentError, "Please load Slim engine before using it")
-      unless ::Tilt.const_defined?(:SlimTemplate)
-        ::Tilt.const_set :SlimTemplate, ::Slim::Template
-        ::Tilt.register  ::Tilt::SlimTemplate, 'slim'
-      end
-    end
+    register_slim_engine! if engine == :Slim
 
     keep_existing = engine_args.delete(true)
     setup__actions.each do |action|
@@ -63,7 +55,7 @@ class << E
     engine_ext?
     setup__actions.each do |a|
       next if @view__engine_ext[a] && keep_existing
-      @view__engine_ext[a] = (normalized_ext ||= normalize_path('.' << ext.to_s.sub(/\A\./, '')).freeze)
+      @view__engine_ext[a] = (normalized_ext ||= normalize_path('.' + ext.to_s.sub(/\A\./, '')).freeze)
     end
   end
 
@@ -73,7 +65,7 @@ class << E
   end
 
   engine_default_ext = ::Tilt.mappings.sort { |a, b| b.first.size <=> a.first.size }.
-      inject({}) { |m, i| i.last.each { |e| m.update e => '.' << i.first }; m }
+    inject({}) { |m, i| i.last.each { |e| m.update e => ('.' + i.first) }; m }
   define_method :engine_default_ext? do |engine|
     engine_default_ext[engine]
   end
@@ -144,34 +136,37 @@ class << E
   # set custom path for templates.
   # default value: app_root/view/
   def view_path path
-    view_path!(path, :keep_existing)
+    view_path! path, :keep_existing
   end
 
   def view_path! path, keep_existing = false
-    return if locked? || (@view__path == false && keep_existing)
-    path = normalize_path(path.to_s << '/').sub(/\/+\Z/, '/')
+    return if locked? || (@view__path && keep_existing)
+    path = normalize_path(path.to_s + '/').sub(/\/+\Z/, '/')
     path =~ /\A\// ?
       view_fullpath!(path, keep_existing) :
       @view__path = path.freeze
   end
 
   def view_path?
-    @view__computed_path ||= (p = view_fullpath?) ? p : ('' << app.root << (@view__path || 'view/')).freeze
+    @view__computed_path ||= begin
+      (p = view_fullpath?) ? p :
+        (app.root + (@view__path || E::VIEW__DEFAULT_PATH)).freeze
+    end
   end
 
   def view_fullpath path
-    view_fullpath!(path, :keep_existing)
+    view_fullpath! path, :keep_existing
   end
 
   def view_fullpath! path, keep_existing = false
-    return if locked? || (@view__fullpath == false && keep_existing)
-    @view__fullpath = path ? normalize_path(path.to_s << '/').sub(/\/+\Z/, '/').freeze : path
+    return if locked? || (@view__fullpath && keep_existing)
+    @view__fullpath = path ?
+      normalize_path(path.to_s + '/').sub(/\/+\Z/, '/').freeze : path
   end
 
   def view_fullpath?
     @view__fullpath
   end
-
 
   # allow setting view prefix for this controller
   #
@@ -190,19 +185,19 @@ class << E
   #    end
   #
   # @param string
-
-  def view_prefix(prefix=nil)
-    if prefix
-      @view__prefix = prefix
-    else
-      if @view__prefix
-        @view__prefix
-      else
-        base_url
-      end
-    end
+  def view_prefix path
+    view_prefix! path, :keep_existing
+  end
+  
+  def view_prefix! path, keep_existing = false
+    return if locked? || (@view__prefix && keep_existing)
+    @view__prefix = path ?
+      normalize_path(path.to_s + '/').sub(/\/+\Z/, '/').freeze : path
   end
 
+  def view_prefix?
+    @view__prefix || base_url
+  end
 
   # set custom path for layouts.
   # default value: view path
@@ -213,23 +208,45 @@ class << E
   alias :layout_path :layouts_path
 
   def layouts_path! path, keep_existing = false
-    return if locked? || (@view__layouts_path == false && keep_existing)
-    @view__layouts_path = normalize_path(path.to_s << '/').freeze
+    return if locked? || (@view__layouts_path && keep_existing)
+    @view__layouts_path = normalize_path(path.to_s + '/').freeze
   end
 
   def layouts_path?
     @view__layouts_path ||= ''.freeze
   end
 
+  def register_slim_engine!
+    Object.const_defined?(:Slim) ||
+      raise(ArgumentError, "Please load Slim engine before using it")
+    unless ::Tilt.const_defined?(:SlimTemplate)
+      ::Tilt.const_set :SlimTemplate, ::Slim::Template
+      ::Tilt.register  ::Tilt::SlimTemplate, 'slim'
+      ::E::E__ENGINE_MAP['slim'] = ::Tilt::SlimTemplate
+    end
+  end
+  
 end
 
 class E
+
+  E__ENGINE_MAP = ::Tilt.mappings.inject({}) do |map, s|
+    s.last.each { |e| map.update e.to_s.split('::').last.sub(/Template\Z/, '').downcase => e }
+    map
+  end
+  # Slim adapter not shipped with Tilt,
+  # so adding Slim to map to be sure adhoc methods defined at loadtime
+  E__ENGINE_MAP['slim'] = nil unless E__ENGINE_MAP.has_key?('slim')
 
   # returns the path defined at class level.
   # if some path given it will be appended to global path.
   # if multiple paths given they will be `File.join`-ed and appended to global path.
   def view_path *args
-    ::EspressoFrameworkViewPathProxy.new ::File.join(self.class.view_path?, *args)
+    view_path_builder self.class.view_path?, *args
+  end
+
+  def view_path_builder *args
+    ::EspressoFrameworkViewPathProxy.new ::File.join(*args)
   end
 
   # returns full path to layouts.
@@ -246,13 +263,13 @@ class E
   #
   # Espresso will guess extension by used engine, like '.haml' for Haml, '.erb' for Erubis etc.
   # If your templates uses a custom extension, set it via `engine_ext`.
-  #
+  #   
   # However, if you have a file with a extension that is not typical for used engine
   # nor match the extension given via `engine_ext`, please consider to rename the file.
   #
   # Computing file extensions would add extra unneeded overhead.
   # The probability of custom extensions are ephemeral
-  # and it is quite irrational to slow down an entire framework
+  # and it is quite irrational to slow down an entire framework 
   # just to handle such a negligible probability.
 
   def render *args, &proc
@@ -290,10 +307,7 @@ class E
   end
   alias render_l render_layout
 
-  ::Tilt.mappings.inject({}) do |map, s|
-    s.last.each { |e| map.update e.to_s.split('::').last.sub(/Template\Z/, '').downcase => e }
-    map
-  end.each_pair do |suffix, engine|
+  E__ENGINE_MAP.each_key do |suffix, engine|
 
     # this can be easily done via `define_method`,
     # however, ruby 1.8 does not support args with default values on procs
@@ -303,7 +317,7 @@ class E
     def render_#{suffix} *args, &proc
       controller, action_or_template, scope, locals, compiler_key = __e__engine_params(*args)
       engine_args = proc ? [] : [__e__template(controller, action_or_template, '.#{suffix}')]
-      output = __e__engine_instance(compiler_key, #{engine}, *engine_args, &proc).render(scope, locals)
+      output = __e__engine_instance(compiler_key, E__ENGINE_MAP['#{suffix}'], *engine_args, &proc).render(scope, locals)
 
       # looking for layout of given action
       # or the one of current action
@@ -311,13 +325,13 @@ class E
       return output unless layout || layout_proc
 
       engine_args = layout_proc ? [] : [__e__layout_template(controller, layout, '.#{suffix}')]
-      __e__engine_instance(compiler_key, #{engine}, *engine_args, &layout_proc).render(scope, locals) { output }
+      __e__engine_instance(compiler_key, E__ENGINE_MAP['#{suffix}'], *engine_args, &layout_proc).render(scope, locals) { output }
     end
 
     def render_#{suffix}_partial *args, &proc
       controller, action_or_template, scope, locals, compiler_key = __e__engine_params(*args)
       engine_args = proc ? [] : [__e__template(controller, action_or_template, '.#{suffix}')]
-      __e__engine_instance(compiler_key, #{engine}, *engine_args, &proc).render(scope, locals)
+      __e__engine_instance(compiler_key, E__ENGINE_MAP['#{suffix}'], *engine_args, &proc).render(scope, locals)
     end
     alias render_#{suffix}_p render_#{suffix}_partial
 
@@ -325,13 +339,13 @@ class E
       controller, action_or_template, scope, locals, compiler_key = __e__engine_params(*args)
       # render layout of given action
       # or use given action_or_template as template name
-      layout, layout_proc = controller[action_or_template] ? controller.layout?(action_or_template) : action_or_template.to_s
+      layout, layout_proc = controller[action_or_template] ? controller.layout?(action_or_template) : action_or_template
       layout || layout_proc || raise('seems there are no layout defined for %s#%s action' % [controller, action_or_template])
       engine_args = layout_proc ? [] : [__e__layout_template(controller, layout, '.#{suffix}')]
-      __e__engine_instance(compiler_key, #{engine}, *engine_args, &layout_proc).render(scope, locals, &(proc || proc() { '' }))
+      __e__engine_instance(compiler_key, E__ENGINE_MAP['#{suffix}'], *engine_args, &layout_proc).render(scope, locals, &(proc || proc() { '' }))
     end
     alias render_#{suffix}_l render_#{suffix}_layout
-
+      
     RUBY
 
   end
@@ -379,10 +393,9 @@ class E
     if action_or_template.instance_of?(::EspressoFrameworkViewPathProxy)
       action_or_template
     else
-      ::File.expand_path(
-        ::File.join(controller.view_path?, # controller's path to templates
-        controller.view_prefix,            # defined view_prefix / controller's route
-        action_or_template.to_s))          # given template
+      ::File.join controller.view_path?, # controller's path to templates
+        controller.view_prefix?,         # controller's route
+        action_or_template.to_s          # given template
     end << (ext || controller.engine_ext?(action_or_template))  # given or computed extension
   end
 
@@ -400,11 +413,7 @@ end
 
 # `instance_of?` is 3x faster than `match` and 1x faster than `is_a?`
 # so using it to check whether given path is a full path.
-class EspressoFrameworkViewPathProxy < String
-  def initialize str
-    super str
-  end
-end
+class EspressoFrameworkViewPathProxy < String; end
 
 
 class EApp

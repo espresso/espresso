@@ -1,4 +1,5 @@
 module EViewTest__ViewPrefix
+
   class App < E
     map '/path-test-i-dont-care'
     view_prefix '/path-test'
@@ -10,10 +11,18 @@ module EViewTest__ViewPrefix
     end
   end
 
-  Spec.new App do
+  class Failure < E
+    def tryme
+      render
+    end
+  end
 
+  Spec.new App do
     get
     expect(last_response.body) == 'HEADER/index.erb'
+  end
 
+  Spec.new Failure do
+    expect { get :tryme }.to_raise_error Errno::ENOENT
   end
 end
