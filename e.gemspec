@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
 
   s.required_ruby_version = '>= 1.8.7'
 
-  s.add_dependency 'appetite', '~> 0.0.8'
+  s.add_dependency 'appetite', '~> 0.0.9'
   s.add_dependency 'tilt', '~> 1.3'
 
   s.add_development_dependency 'rake', '~> 10'
