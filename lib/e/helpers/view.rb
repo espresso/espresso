@@ -150,8 +150,8 @@ class << E
   def view_path! path, keep_existing = false
     return if locked? || (@view__path == false && keep_existing)
     path = normalize_path(path.to_s << '/').sub(/\/+\Z/, '/')
-    path =~ /\A\// ? 
-      view_fullpath!(path, keep_existing) : 
+    path =~ /\A\// ?
+      view_fullpath!(path, keep_existing) :
       @view__path = path.freeze
   end
 
@@ -172,6 +172,38 @@ class << E
     @view__fullpath
   end
 
+
+  # allow setting view prefix for this controller
+  #
+  # @note defaults to controller's base_url
+  #
+  # @example :index-action will render 'view/admin/reports/index.EXT' view, regardless of base_url
+  #
+  #    class Reports < E
+  #      map '/reports'
+  #      view_prefix 'admin/reports'
+  #      # ...
+  #      def index
+  #        render
+  #      end
+  #
+  #    end
+  #
+  # @param string
+
+  def view_prefix(prefix=nil)
+    if prefix
+      @view__prefix = prefix
+    else
+      if @view__prefix
+        @view__prefix
+      else
+        base_url
+      end
+    end
+  end
+
+
   # set custom path for layouts.
   # default value: view path
   # @note should be relative to view path
@@ -188,7 +220,7 @@ class << E
   def layouts_path?
     @view__layouts_path ||= ''.freeze
   end
-  
+
 end
 
 class E
@@ -214,13 +246,13 @@ class E
   #
   # Espresso will guess extension by used engine, like '.haml' for Haml, '.erb' for Erubis etc.
   # If your templates uses a custom extension, set it via `engine_ext`.
-  #   
+  #
   # However, if you have a file with a extension that is not typical for used engine
   # nor match the extension given via `engine_ext`, please consider to rename the file.
   #
   # Computing file extensions would add extra unneeded overhead.
   # The probability of custom extensions are ephemeral
-  # and it is quite irrational to slow down an entire framework 
+  # and it is quite irrational to slow down an entire framework
   # just to handle such a negligible probability.
 
   def render *args, &proc
@@ -299,7 +331,7 @@ class E
       __e__engine_instance(compiler_key, #{engine}, *engine_args, &layout_proc).render(scope, locals, &(proc || proc() { '' }))
     end
     alias render_#{suffix}_l render_#{suffix}_layout
-      
+
     RUBY
 
   end
@@ -347,9 +379,10 @@ class E
     if action_or_template.instance_of?(::EspressoFrameworkViewPathProxy)
       action_or_template
     else
-      ::File.join controller.view_path?, # controller's path to templates
-        controller.base_url,             # controller's route
-        action_or_template.to_s          # given template
+      ::File.expand_path(
+        ::File.join(controller.view_path?, # controller's path to templates
+        controller.view_prefix,            # defined view_prefix / controller's route
+        action_or_template.to_s))          # given template
     end << (ext || controller.engine_ext?(action_or_template))  # given or computed extension
   end
 
