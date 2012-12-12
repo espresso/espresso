@@ -14,9 +14,9 @@ class E
     (charset = @__e__explicit_charset || charset?) && charset(charset)
 
     begin
-      (self.class.hooks?(:a, action_with_format)||[]).each { |m| self.send m }
+      invoke_before_filters
       super
-      (self.class.hooks?(:z, action_with_format)||[]).each { |m| self.send m }
+      invoke_after_filters
     rescue => e
       # if a handler defined at class level, use it
       if handler = self.class.error?(500, action)
@@ -27,7 +27,14 @@ class E
         raise e
       end
     end
+  end
 
+  def invoke_before_filters
+    (self.class.hooks?(:a, action_with_format)||[]).each { |m| self.send m }
+  end
+
+  def invoke_after_filters
+    (self.class.hooks?(:z, action_with_format)||[]).each { |m| self.send m }
   end
 
   def user
@@ -75,7 +82,7 @@ class E
       content_type.scan(%r[.*;\s?charset=(.*)]i).flatten.first
     type = '.' << type.to_s if type && type.is_a?(Symbol)
     content_type = String.new(type ?
-      (type =~ /\A\./ ? mime_type(type) : type.split(';').first) : 
+      (type =~ /\A\./ ? mime_type(type) : type.split(';').first) :
       CONTENT_TYPE__DEFAULT)
     content_type << '; charset=' << charset if charset
     response[HEADER__CONTENT_TYPE] = content_type
@@ -307,7 +314,7 @@ class E
     ::CGI.unescapeElement *args
   end
 
-  
+
   # methods below kindly borrowed from [Sinatra Framework](https://github.com/sinatra/sinatra)
 
   # Specify response freshness policy for HTTP caches (Cache-Control header).

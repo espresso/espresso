@@ -41,6 +41,10 @@ class << E
     add_hook :z, opts, &proc
   end
 
+  def around opts = {}, &proc
+    add_hook :m, opts, &proc
+  end
+
   def hooks? position, action = nil
     initialize_hooks position
     @sorted_hooks[[position,action]] ||= sort_hooks(position, action)

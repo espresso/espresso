@@ -59,6 +59,23 @@ module ECoreTest__Hooks
 
   end
 
+  class AroundApp < E
+    before { @aggr_array = ["before"]}
+    around {
+      @aggr_array << "around_begin"
+      yield
+      @aggr_array << "around_end"
+    }
+    after { response.body = [@aggr_array.join(',')] }
+
+    def index
+      @aggr_array << "action"
+    end
+  end
+
+
+
+
   Spec.new App do
 
     Testing 'hook set for ALL actions' do
@@ -87,6 +104,16 @@ module ECoreTest__Hooks
     Testing :priority do
       get :test_priority
       expect(last_response.body) == [:a, :b, :c].inspect
+    end
+  end
+
+  Spec.new AroundApp do
+    Testing 'hook set for ALL actions' do
+      get
+      expect(last_response.body) == '4'
+
+      post
+      expect(last_response.body) == '4'
     end
   end
 
