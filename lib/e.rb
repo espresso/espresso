@@ -27,6 +27,7 @@ require 'e/setup'
 require 'e/base'
 
 
+require 'e/helpers/action_handling'
 require 'e/helpers/assets'
 require 'e/helpers/cache'
 require 'e/helpers/callbacks'
