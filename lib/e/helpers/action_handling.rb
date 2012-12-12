@@ -14,7 +14,6 @@ class E
 
     begin
       invoke_before_filters
-
       super
       invoke_after_filters
     rescue => e
