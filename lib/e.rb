@@ -25,11 +25,12 @@ end
 
 require 'e/setup'
 require 'e/base'
-require 'e/cookies'
+
 require 'e/session'
 require 'e/helpers/assets'
 require 'e/helpers/cache'
 require 'e/helpers/callbacks'
+require 'e/helpers/cookies'
 require 'e/helpers/crud'
 require 'e/helpers/html'
 require 'e/helpers/http_cache_control'

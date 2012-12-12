@@ -1,12 +1,12 @@
 class E
-  
+
   # shorthand for `response.set_cookie` and `response.delete_cookie`.
   # also it allow to make cookies readonly.
   def cookies
     @__e__cookies_proxy ||= Class.new do
 
       def initialize controller
-        @controller, @request, @response = 
+        @controller, @request, @response =
           controller, controller.request, controller.response
       end
 
@@ -59,5 +59,5 @@ class E
       end
     end.new self
   end
-  
+
 end
