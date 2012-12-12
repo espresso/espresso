@@ -15,6 +15,7 @@ class E
 
     begin
       invoke_before_filters
+
       super
       invoke_after_filters
     rescue => e
@@ -29,13 +30,6 @@ class E
     end
   end
 
-  def invoke_before_filters
-    (self.class.hooks?(:a, action_with_format)||[]).each { |m| self.send m }
-  end
-
-  def invoke_after_filters
-    (self.class.hooks?(:z, action_with_format)||[]).each { |m| self.send m }
-  end
 
   def user
     env[ENV__REMOTE_USER]

@@ -110,10 +110,7 @@ module ECoreTest__Hooks
   Spec.new AroundApp do
     Testing 'hook set for ALL actions' do
       get
-      expect(last_response.body) == '4'
-
-      post
-      expect(last_response.body) == '4'
+      expect(last_response.body) == 'before,around_begin,action,around_end'
     end
   end
 
