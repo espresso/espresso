@@ -301,14 +301,14 @@ class EApp
   # with controller and action that serving each URL.
   def url_map opts = {}
     mount_controllers!
-    
+
     map = {}
     @mounted_controllers.each do |c|
       c.url_map.each_pair do |r, s|
         s.each_pair { |rm, as| (map[r] ||= {})[rm] = as.dup.unshift(c) }
       end
     end
-    
+
     def map.to_s
       out = []
       self.each do |data|
@@ -393,7 +393,7 @@ class EApp
   def mount_controllers!
     @automount &&
       @controllers += discover_controllers.map { |c| [c, ['/'], nil] }
-    
+
     @controllers.each do |ctrl_setup|
       ctrl, roots, setup = ctrl_setup
       next if @mounted_controllers.include?(ctrl)
