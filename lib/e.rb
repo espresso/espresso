@@ -26,7 +26,7 @@ end
 require 'e/setup'
 require 'e/base'
 
-require 'e/session'
+
 require 'e/helpers/assets'
 require 'e/helpers/cache'
 require 'e/helpers/callbacks'
@@ -37,6 +37,7 @@ require 'e/helpers/http_cache_control'
 require 'e/helpers/http_stati'
 require 'e/helpers/ipcm'
 require 'e/helpers/restrictions'
+require 'e/helpers/session'
 require 'e/helpers/stream'
 require 'e/helpers/view'
 require 'e/app'
