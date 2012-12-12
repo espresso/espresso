@@ -383,8 +383,26 @@ class E
   end
 
   def __e__engine_instance compiler_key, engine, *args, &proc
-    return engine.new(*args, &proc) unless compiler_key
+    if compiler_key
+      __e__compiler_key_cached_instance(compiler_key, engine, *args, &proc)
+    else
+      __e__mtime_cached_instance(engine, *args, &proc)
+    end
+  end
+
+  def __e__compiler_key_cached_instance(compiler_key, engine, *args, &proc)
     compiler_cache [compiler_key, engine.__id__, args.hash, proc && proc.__id__] do
+      engine.new(*args, &proc)
+    end
+  end
+
+  def __e__mtime_cached_instance(engine, *args, &proc)
+    if args.first.instance_of?(String) or args.first.instance_of?(EspressoFrameworkViewPathProxy)
+      mtime = File.mtime(args.first).to_i
+      compiler_cache [mtime, args.hash, proc && proc.__id__] do
+        engine.new(*args, &proc)
+      end
+    else
       engine.new(*args, &proc)
     end
   end
