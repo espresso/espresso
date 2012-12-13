@@ -89,5 +89,4 @@ module ECoreTest__Hooks
       expect(last_response.body) == [:a, :b, :c].inspect
     end
   end
-
 end
