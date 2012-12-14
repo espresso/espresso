@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 
-version = "0.3.3"
+version = "0.3.4"
 Gem::Specification.new do |s|
 
   s.name = 'e'
@@ -17,7 +17,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'tilt', '~> 1.3'
 
   s.add_development_dependency 'rake', '~> 10'
-  s.add_development_dependency 'specular', '>= 0.1.7'
+  s.add_development_dependency 'specular', '>= 0.1.8'
   s.add_development_dependency 'sonar', '>= 0.1.2'
   s.add_development_dependency 'slim'
   s.add_development_dependency 'haml'
