@@ -15,6 +15,7 @@ end
 
 class << E
   private
+  
   # instance_exec at runtime is expensive enough,
   # so compiling procs into methods at load time.
   def proc_to_method *chunks, &proc
@@ -42,10 +43,31 @@ class Module
   end
 end
 
-%w[core helpers view assets cache-manager].each do |dir|
-  Dir[$:.first + '/e/' + dir + '/**/*.rb'].each {|f| require f}
-end
+require 'e/core/action_invoker'
+require 'e/core/authorization'
+require 'e/core/cache_control'
+require 'e/core/callbacks'
+require 'e/core/content_type'
+require 'e/core/cookies'
+require 'e/core/error_handlers'
+require 'e/core/send_file'
+require 'e/core/session'
+require 'e/core/stream'
+
+require 'e/helpers/html'
+require 'e/helpers/status'
+
+require 'e/view/setup'
+require 'e/view/base'
+require 'e/view/e_app'
+
+require 'e/cache-manager/base'
+require 'e/cache-manager/e_app'
+
+require 'e/assets/base'
+require 'e/assets/e_app'
 
 require 'e/crud'
+
 require 'e/e_app/setup'
 require 'e/e_app/base'
