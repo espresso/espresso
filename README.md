@@ -119,6 +119,8 @@ App.run
 
 ### Streaming
 
+Note: Streaming in Espresso is working only with [Reel](https://github.com/celluloid/reel) web server of version 0.3 and up
+
 [Server-Sent Events](https://github.com/slivu/espresso/blob/master/Streaming.md#server-sent-events) |
 [WebSockets](https://github.com/slivu/espresso/blob/master/Streaming.md#websockets) |
 [Chunked Responses](https://github.com/slivu/espresso/blob/master/Streaming.md#chunked-responses)
