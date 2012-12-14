@@ -1,7 +1,20 @@
 class E
 
   # shorthand for `response.set_cookie` and `response.delete_cookie`.
-  # also it allow to make cookies readonly.
+  #
+  # @example Setting a cookie
+  # cookies['cookie-name'] = 'value'
+  #
+  # @example Reading a cookie
+  # cookies['cookie-name']
+  # #=> value
+  #
+  # @example Setting a cookie with custom options
+  # cookies['question_of_the_day'] = {:value => 'who is not who?', :expires => Date.today + 1, :secure => true}
+  #
+  # @example Deleting a cookie
+  # cookies.delete 'cookie-name'
+  #
   def cookies
     @__e__cookies_proxy ||= Class.new do
 
@@ -16,7 +29,6 @@ class E
       # @param [String, Hash] val
       # @return [Boolean]
       def []= key, val
-        return if readonly?
         @response.set_cookie key, val
       end
 
@@ -31,27 +43,7 @@ class E
       # @param [Hash] opts
       # @return [Boolean]
       def delete key, opts ={}
-        return if readonly?
         @response.delete_cookie key, opts
-      end
-
-      # prohibit further cookies writing
-      #
-      # @example prohibit writing for all actions
-      #    before do
-      #      cookies.readonly!
-      #    end
-      #
-      # @example prohibit writing only for :render and :display actions
-      #    before :render, :display do
-      #      cookies.readonly!
-      #    end
-      def readonly!
-        @readonly = true
-      end
-
-      def readonly?
-        @readonly
       end
 
       def method_missing *args

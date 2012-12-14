@@ -13,6 +13,25 @@ class E < Appetite
   VIEW__DEFAULT_PATH         = 'view/'.freeze
 end
 
+class << E
+  private
+  # instance_exec at runtime is expensive enough,
+  # so compiling procs into methods at load time.
+  def proc_to_method *chunks, &proc
+    chunks += [self.to_s, proc.to_s]
+    name = ('__appetite__e__%s__' % chunks.join('_').gsub(/[^\w|\d]/, '_')).to_sym
+    define_method name, &proc
+    name
+  end
+end
+
+class EApp
+  include ::AppetiteUtils
+
+  DEFAULT_SERVER = :WEBrick
+  DEFAULT_PORT   = 3000
+end
+
 class Module
   def mount *roots, &setup
     ::EApp.new.mount self, *roots, &setup
@@ -23,23 +42,10 @@ class Module
   end
 end
 
-require 'e/setup'
-require 'e/base'
+%w[core helpers view assets cache-manager].each do |dir|
+  Dir[$:.first + '/e/' + dir + '/**/*.rb'].each {|f| require f}
+end
 
-
-require 'e/helpers/action_handling'
-require 'e/helpers/assets'
-require 'e/helpers/cache'
-require 'e/helpers/callbacks'
-require 'e/helpers/cookies'
-require 'e/helpers/crud'
-require 'e/helpers/header_content'
-require 'e/helpers/html'
-require 'e/helpers/http_cache_control'
-require 'e/helpers/http_stati'
-require 'e/helpers/ipcm'
-require 'e/helpers/restrictions'
-require 'e/helpers/session'
-require 'e/helpers/stream'
-require 'e/helpers/view'
-require 'e/e_app'
+require 'e/crud'
+require 'e/e_app/setup'
+require 'e/e_app/base'

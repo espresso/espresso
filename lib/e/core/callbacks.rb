@@ -50,7 +50,7 @@ class << E
     @sorted_hooks[[position,action]] ||= sort_hooks(position, action)
   end
 
-private
+  private
   def initialize_hooks position
     (@sorted_hooks ||= {})
     (@hooks ||= {})[position] ||= {}

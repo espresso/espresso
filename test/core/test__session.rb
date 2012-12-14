@@ -4,10 +4,6 @@ module ECoreTest__Session
 
     before { session['needed here to load session'] }
 
-    setup :readonly_set_by_hook do
-      before { session.readonly! }
-    end
-
     def set var, val
       session[var] = val
     end
@@ -35,16 +31,6 @@ module ECoreTest__Session
     def delete var
       session.delete[var]
     end
-
-    def readonly_set_by_hook var, val
-      session[var] = val
-    end
-
-    def readonly_set_directly var, val
-      session.readonly!
-      session[var] = val
-    end
-
   end
 
   Spec.new App do
@@ -65,21 +51,6 @@ module ECoreTest__Session
 
       get :values
       expect(last_response.body) == [val].inspect
-    end
-
-    Test :readonly do
-
-      o 'setting directly'
-      var, val = rand.to_s, rand.to_s
-      get :readonly_set_directly, var, val
-      r = get :get, var
-      expect(r.body) =~ /notSet/
-
-      o 'setting via hooks'
-      var, val = rand.to_s, rand.to_s
-      get :readonly_set_by_hook, var, val
-      r = get :get, var
-      expect(r.body) =~ /notSet/
     end
 
     Testing :flash do

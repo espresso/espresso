@@ -1,3 +1,66 @@
+class << E
+
+  # Content-Type to be returned by action(s). default is text/html
+  #
+  # @example - all actions should return text/javascript
+  #    content_type ".js"
+  #
+  # @example - :feed should return application/rss+xml
+  #    setup :feed do
+  #      content_type ".rss"
+  #    end
+  #
+  # Content-Type can also be set at instance level.
+  # see `#content_type!`
+  #
+  # @param [String] content_type
+  def content_type content_type
+    content_type! content_type, true
+  end
+  alias provide content_type
+
+  def content_type! content_type, keep_existing = false
+    return if locked?
+    content_type?
+    setup__actions.each do |a|
+      next if @content_type[a] && keep_existing
+      @content_type[a] = content_type
+    end
+  end
+  alias provide! content_type!
+
+  def content_type? action = nil
+    @content_type ||= {}
+    @content_type[action] || @content_type[:*]
+  end
+
+  # update Content-Type header by add/update charset.
+  #
+  # @note please make sure that returned body is of same charset,
+  #       cause `charset` will only set header and not change the charset of body itself!
+  #
+  # @param [String] charset
+  #   when class is yet open for configuration, first arg is treated as charset to be set.
+  #   otherwise it is treated as action to query charset for.
+  def charset charset
+    charset! charset, true
+  end
+
+  def charset! charset, keep_existing = false
+    return if locked?
+    charset?
+    setup__actions.each do |a|
+      next if @charset[a] && keep_existing
+      @charset[a] = charset
+    end
+  end
+
+  def charset? action = nil
+    @charset ||= {}
+    @charset[action] || @charset[:*]
+  end
+end
+
 class E
   # set Content-Type header
   #
@@ -97,69 +160,5 @@ class E
 
   def charset? action = action_with_format
     self.class.charset?(action)
-  end
-end
-
-
-class << E
-
-  # Content-Type to be returned by action(s). default is text/html
-  #
-  # @example - all actions should return text/javascript
-  #    content_type ".js"
-  #
-  # @example - :feed should return application/rss+xml
-  #    setup :feed do
-  #      content_type ".rss"
-  #    end
-  #
-  # Content-Type can also be set at instance level.
-  # see `#content_type!`
-  #
-  # @param [String] content_type
-  def content_type content_type
-    content_type! content_type, true
-  end
-  alias provide content_type
-
-  def content_type! content_type, keep_existing = false
-    return if locked?
-    content_type?
-    setup__actions.each do |a|
-      next if @content_type[a] && keep_existing
-      @content_type[a] = content_type
-    end
-  end
-  alias provide! content_type!
-
-  def content_type? action = nil
-    @content_type ||= {}
-    @content_type[action] || @content_type[:*]
-  end
-
-  # update Content-Type header by add/update charset.
-  #
-  # @note please make sure that returned body is of same charset,
-  #       cause `charset` will only set header and not change the charset of body itself!
-  #
-  # @param [String] charset
-  #   when class is yet open for configuration, first arg is treated as charset to be set.
-  #   otherwise it is treated as action to query charset for.
-  def charset charset
-    charset! charset, true
-  end
-
-  def charset! charset, keep_existing = false
-    return if locked?
-    charset?
-    setup__actions.each do |a|
-      next if @charset[a] && keep_existing
-      @charset[a] = charset
-    end
-  end
-
-  def charset? action = nil
-    @charset ||= {}
-    @charset[action] || @charset[:*]
   end
 end

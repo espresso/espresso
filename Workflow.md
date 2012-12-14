@@ -78,7 +78,7 @@ route :open, :vars => {:var1 => '1', :var2 => '2'}
 #=> /open?vars[var1]=1&vars[var2]=2
 ```
 
-To get action route along with format, pass the action name as string, having desired format as suffix.<br/>
+To get action route along with format, pass the action name as string, having desired format as suffix.<br>
 If action does not support given format, it will simply be used as a part of URL.
 
 **Example:**
@@ -292,8 +292,8 @@ This is easily done by using `fetch`.
 
 Basically, this same as `pass` except it returns the body instead of halting request processing.
 
-`fetch` will execute the given action or block inside current or given app and returning the body.<br/>
-If block given, it will be executed instead of given action.<br/>
+`fetch` will execute the given action or block inside current or given app and returning the body.<br>
+If block given, it will be executed instead of given action.<br>
 Please note that the action is required even when block given.
 
 **Example:**
@@ -330,9 +330,9 @@ If you need status code and/or headers, use `invoke` instead, which will return 
 
 `halt` will interrupt any process and send an arbitrary resopnse to browser.
 
-It accepts from 0 to 3 arguments.<br/>
-If argument is a hash, it is added to headers.<br/>
-If argument is a Integer, it is treated as Status-Code.<br/>
+It accepts from 0 to 3 arguments.<br>
+If argument is a hash, it is added to headers.<br>
+If argument is a Integer, it is treated as Status-Code.<br>
 Any other arguments are treated as body.
 
 If a single argument given and it is an Array, it is treated as a bare Rack response and instantly sent to browser.
@@ -450,10 +450,10 @@ end
 
 Espresso allow to set error handlers that can be used to throw errors with desired status code and body.
 
-When setting error handler, you should provide status code and the proc that will generate the body.<br/>
+When setting error handler, you should provide status code and the proc that will generate the body.<br>
 The proc may accept an argument. That will be the error message.
 
-When using handler, the only required argument is status code.<br/>
+When using handler, the only required argument is status code.<br>
 If error message given as 2nd argument, it will be passed to error handler proc as first argument.
 
 **Example:** - Setting and using 404 error handler
@@ -559,8 +559,8 @@ class App < E
 end
 ```
 
-Callbacks will be executed in the order was added.<br/>
-To change the calling order, use :priority option.<br/>
+Callbacks will be executed in the order was added.<br>
+To change the calling order, use :priority option.<br>
 The callback with highest priority will run first.
 
  **Example:** - Making sure this will run before any other hooks by setting priority to 1000(with condition there are no hooks with higher priority)
@@ -706,44 +706,11 @@ session['session-name']
 #=> value
 ```
 
-**Delete Session**
+**Deleting**
 
 ```ruby
 session.delete 'session-name'
 ```
-
-
-**Readonly Sessions**
-
-`session.readonly!` allow to make sessions readonly.
-
-**Example:** - Setting readonly bit via hooks
-
-```ruby
-before do
-    session.readonly!
-end
-```
-
-**Example:** - Setting for specific action(s)
-
-```ruby
-setup :action_name do
-    before { session.readonly! }
-end
-```
-
-**Example:** - Readonly bit set directly inside action
-
-```ruby
-def :action_name
-    session.readonly!
-    # ...
-end
-```
-
-
-**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
 
 
 ## Flash
@@ -751,7 +718,7 @@ end
 
 Burn after reading! :)
 
-`flash` allow to store a message that will be purged after first read.<br/>
+`flash` allow to store a message that will be purged after first read.<br>
 The message are stored in sessions and are consistent between requests.
 
 **Example:**
@@ -771,62 +738,33 @@ flash[:message]
 
 **[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
 
+
 ## Cookies
 
 
-
-**Example:** - Setting cookies
+**Example:** - Setting a cookie
 
 ```ruby
 cookies['cookie-name'] = 'value'
 ```
 
-**Example:** - Reading cookies
+**Example:** - Reading a cookie
 
 ```ruby
 cookies['cookie-name']
 #=> value
 ```
 
-**Example:** - Setting cookies with custom options
+**Example:** - Setting a cookie with custom options
 
 ```ruby
 cookies['question_of_the_day'] = {:value => 'who is not who?', :expires => Date.today + 1, :secure => true}
 ```
 
-**Example:** - Deleting cookies
+**Example:** - Deleting a cookie
 
 ```ruby
 cookies.delete 'cookie-name'
-```
-
-**Readonly Cookies**
-
-`cookies.readonly!` allow to make cookies readonly.
-
-**Example:** - Setting readonly bit via hooks
-
-```ruby
-before do
-    cookies.readonly!
-end
-```
-
-**Example:** - Setting for specific action(s)
-
-```ruby
-setup :action_name do
-    before { cookies.readonly! }
-end
-```
-
-**Example:** - Readonly bit set directly inside action
-
-```ruby
-def :action_name
-    cookies.readonly!
-    # ...
-end
 ```
 
 
@@ -1143,7 +1081,7 @@ end
 ```
 
 
-By default the cache will be kept in memory.<br/>
+By default the cache will be kept in memory.<br>
 If you want to use a different pool, set it by using `cache_pool` at app level.
 
 Just make sure your pool behaves like a Hash,
@@ -1183,7 +1121,7 @@ however you can modify them by passing an hash of below options:
 send_file '/path/to/file', :cache_control => 'max-age=3600, public, must-revalidate'
 ```
 
-Recommended to use only with small files.<br/>
+Recommended to use only with small files.<br>
 Or setup your web server to make use of X-Sendfile and use Rack::Sendfile.
 
 **[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**

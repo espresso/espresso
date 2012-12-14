@@ -80,6 +80,7 @@ class << E
 end
 
 class E
+  
   def cache_control? action = action_with_format
     self.class.cache_control? action
   end
@@ -210,7 +211,7 @@ class E
   end
   alias etag! etag
 
-    # Generates a Time object from the given value.
+  # Generates a Time object from the given value.
   # Used by #expires and #last_modified.
   def time_for(value)
     if value.respond_to? :to_time
@@ -236,7 +237,7 @@ class E
     raise ArgumentError, "unable to convert #{value.inspect} to a Time object"
   end
 
-private
+  private
 
   # Helper method checking if a ETag value list includes the current ETag.
   def etag_matches?(list, new_resource = request.post?)

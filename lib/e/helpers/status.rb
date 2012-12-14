@@ -1,4 +1,7 @@
 class E
+  
+  # kindly borrowed from Sinatra Framework
+
   # whether or not the status is set to 1xx
   def informational?
     status.between? 100, 199

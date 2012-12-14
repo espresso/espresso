@@ -1,55 +1,53 @@
-#
-# @example
-# asl = assets_loader :vendor
-#  
-# asl.js :jquery
-# #=> <script src="/vendor/jquery.js" ...
-# 
-# # change dir to vendor/jquery-ui
-# asl.chdir 'jquery-ui'
-#
-# asl.js 'js/jquery-ui.min'
-# #=> <script src="/vendor/jquery-ui/js/jquery-ui.min.js" ...
-#
-# asl.css 'css/jquery-ui.min'
-# #=> <link href="/vendor/jquery-ui/css/jquery-ui.min.css" ...
-#
-# # change dir to vendor/bootstrap
-# asl.cd '../bootstrap'
-#
-# asl.js 'js/bootstrap.min'
-# #=> <script src="/vendor/bootstrap/js/bootstrap.min.js" ...
-#
-# asl.css 'css/bootstrap'
-# #=> <link href="/vendor/bootstrap/css/bootstrap.css" ...
-#
-# @example using blocks. blocks are converted to string automatically
-#
-# # `assets_url` is set to /vendor at app level
-#
-# assets_loader do
-#   
-#   js :jquery
-#
-#   chdir 'jquery-ui'
-#   js 'js/jquery-ui.min'
-#   css 'css/jquery-ui.min'
-#
-#   cd '../bootstrap'
-#   js 'js/bootstrap.min'
-#   css 'css/bootstrap'
-# end
-#
-# #=> <script src="/vendor/jquery.js" ...
-# #=> <script src="/vendor/jquery-ui/js/jquery-ui.min.js" ...
-# #=> <link href="/vendor/jquery-ui/css/jquery-ui.min.css" ...
-# #=> <script src="/vendor/bootstrap/js/bootstrap.min.js" ...
-# #=> <link href="/vendor/bootstrap/css/bootstrap.css" ...
-#
-class EAssetsLoader
+class EspressoFrameworkAssetsLoader
 
   attr_reader :baseurl, :wd, :app, :to_s
 
+  # @example
+  # asl = assets_loader :vendor
+  #  
+  # asl.js :jquery
+  # #=> <script src="/vendor/jquery.js" ...
+  # 
+  # # change dir to vendor/jquery-ui
+  # asl.chdir 'jquery-ui'
+  #
+  # asl.js 'js/jquery-ui.min'
+  # #=> <script src="/vendor/jquery-ui/js/jquery-ui.min.js" ...
+  #
+  # asl.css 'css/jquery-ui.min'
+  # #=> <link href="/vendor/jquery-ui/css/jquery-ui.min.css" ...
+  #
+  # # change dir to vendor/bootstrap
+  # asl.cd '../bootstrap'
+  #
+  # asl.js 'js/bootstrap.min'
+  # #=> <script src="/vendor/bootstrap/js/bootstrap.min.js" ...
+  #
+  # asl.css 'css/bootstrap'
+  # #=> <link href="/vendor/bootstrap/css/bootstrap.css" ...
+  #
+  # @example using blocks. blocks are converted to string automatically
+  #
+  # # `assets_url` is set to /vendor at app level
+  #
+  # assets_loader do
+  #   
+  #   js :jquery
+  #
+  #   chdir 'jquery-ui'
+  #   js 'js/jquery-ui.min'
+  #   css 'css/jquery-ui.min'
+  #
+  #   cd '../bootstrap'
+  #   js 'js/bootstrap.min'
+  #   css 'css/bootstrap'
+  # end
+  #
+  # #=> <script src="/vendor/jquery.js" ...
+  # #=> <script src="/vendor/jquery-ui/js/jquery-ui.min.js" ...
+  # #=> <link href="/vendor/jquery-ui/css/jquery-ui.min.css" ...
+  # #=> <script src="/vendor/bootstrap/js/bootstrap.min.js" ...
+  # #=> <link href="/vendor/bootstrap/css/bootstrap.css" ...
   def initialize ctrl, baseurl = nil, &proc
     @ctrl, @app  = ctrl, ctrl.app
     @tags, @to_s = [], ''
@@ -203,120 +201,11 @@ class EAssetsLoader
   include Mixin
 end
 
-class EApp
-  module Setup
-
-    # set the baseurl for assets.
-    # by default, assets URL is empty.
-    # 
-    # @example assets_url not set
-    #   script_tag 'master.js'
-    #   => <script src="master.js"
-    #   style_tag 'theme.css'
-    #   => <link href="theme.css"
-    #
-    # @example assets_url set to /assets
-    #
-    #   script_tag 'master.js'
-    #   => <script src="/assets/master.js"
-    #   style_tag 'theme.css'
-    #   => <link href="/assets/theme.css"
-    #
-    # @note
-    #   if second argument given, Espresso will reserve given URL for serving assets,
-    #   so make sure it does not interfere with your actions.
-    #
-    # @example
-    #
-    # class App < E
-    #   map '/'
-    #
-    #   # actions inside controller are not affected 
-    #   # cause app is not set to serve assets, thus no URLs are reserved.
-    #   
-    # end
-    #
-    # app = EApp.new do
-    #   assets_url '/'
-    #   mount App
-    # end
-    # app.run
-    #
-    #
-    # @example
-    #
-    # class App < E
-    #   map '/'
-    #   
-    #   # no action here will work cause "/" URL is reserved for assets
-    #   
-    # end
-    #
-    # app = EApp.new do
-    #   assets_url '/', :serve
-    #   mount App
-    # end
-    # app.run
-    #
-    # @example
-    #
-    # class App < E
-    #   map '/'
-    #  
-    #   def assets
-    #     # this action wont work cause "/assets" URL is reserved for assets
-    #   end
-    #
-    #   # other actions will work properly
-    #  
-    # end
-    #
-    # app = EApp.new do
-    #   assets_url '/assets', :serve
-    #   mount App
-    # end
-    # app.run
-    #
-    def assets_url url = nil, serve = nil
-      if (url = url.to_s.strip).length > 0
-        assets_url     = url =~ /\A[\w|\d]+\:\/\// ? url : rootify_url(url)
-        @assets_url    = (assets_url =~ /\/\Z/ ? assets_url : '' << assets_url << '/').freeze
-        @assets_server = serve
-      end
-      @assets_url ||= ''
-    end
-    alias assets_map assets_url
-
-    def assets_server?
-      @assets_server
-    end
-
-    # used when app is set to serve assets.
-    # by default, Espresso will serve files found under public/ folder inside app root.
-    # use `assets_path` at class level to set custom path.
-    #
-    # @note `assets_path` is used to set paths relative to app root.
-    #       to set absolute path to assets, use `assets_fullpath` instead.
-    #
-    def assets_path path = nil
-      @assets_path = (root + path.to_s).freeze if path
-      @assets_path ||= (root + 'public/').freeze
-    end
-
-    def assets_fullpath path = nil
-      @assets_fullpath = path.to_s.freeze if path
-      @assets_fullpath
-    end
-
-  end
-
-end
-
 class E
-  include EAssetsLoader::Mixin
+  include EspressoFrameworkAssetsLoader::Mixin
 
-  def assets_loader baseurl = nil, &proc
-    EAssetsLoader.new self, baseurl, &proc
+  def assets_loader(baseurl = nil, &proc)
+    EspressoFrameworkAssetsLoader.new(self, baseurl, &proc)
   end
 
 end

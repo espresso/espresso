@@ -59,11 +59,11 @@ class << E
   def restrictions? action = nil
     return unless @restrictions
     action ?
-        @restrictions[action] || @restrictions[:*] :
-        @restrictions
+      @restrictions[action] || @restrictions[:*] :
+      @restrictions
   end
 
-private
+  private
 
   def add_restriction keep_existing, type, opts = {}, &proc
     return if locked? || proc.nil?
@@ -86,4 +86,11 @@ private
       @restrictions[a] = [cls, args, proc]
     end
   end
+end
+
+class E
+  def user
+    env[ENV__REMOTE_USER]
+  end
+  alias user? user
 end
