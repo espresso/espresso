@@ -109,9 +109,12 @@ end
 
 **From W3.org:**
 
-```
-The chunked encoding modifies the body of a message in order to transfer it as a series of chunks, each with its own size indicator, followed by an OPTIONAL trailer containing entity-header fields. This allows dynamically produced content to be transferred along with the information necessary for the recipient to verify that it has received the full message.
-```
+<blockquote>
+The chunked encoding modifies the body of a message in order to transfer it as a series of chunks,
+each with its own size indicator, followed by an OPTIONAL trailer containing entity-header fields.
+This allows dynamically produced content to be transferred along with the information necessary
+for the recipient to verify that it has received the full message.
+</blockquote>
 
 So, this is useful when your body is not yet ready in full and you want to start sending it by chunks.
 
@@ -131,11 +134,4 @@ end
 ```
 
 Please make sure to do `socket.finish` after all your data sent.
-
-
-
-
-
-
-
 
