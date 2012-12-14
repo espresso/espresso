@@ -4,14 +4,14 @@
 
 As easy as:
 
-```html
+<pre lang="html">
 &lt;script type=&quot;text/javascript&quot;&gt;
 var evs = new EventSource('/subscribe');
 evs.onmessage = function(e) {
   $('#wall').html( e.data );
 }
 &lt;/script&gt;
-```
+</pre>
 
 ```ruby
 class App < E
@@ -32,14 +32,14 @@ Other stream helpers:
   - id
 
 
-```html
+<pre lang="html">
 &lt;script type=&quot;text/javascript&quot;&gt;
 var evs = new EventSource('/subscribe');
 evs.addEventListener('time', function(e) {
   $('#time').html( e.data );
 }, false);
 &lt;/script&gt;
-```
+</pre>
 
 ```ruby
 def subscribe
@@ -79,7 +79,7 @@ end
 
 As easy as:
 
-```html
+<pre lang="html">
 &lt;script type=&quot;text/javascript&quot;&gt;
 ws = new WebSocket('ws://host:port/subscribe');
 ws.onmessage = function(e) {
@@ -89,7 +89,7 @@ ws.onmessage = function(e) {
 
 &lt;input type=&quot;text&quot; id=&quot;message&quot;&gt;
 &lt;input type=&quot;button&quot; onClick=&quot;ws.send( $('#message').val() );&quot; value=&quot;send message&quot;&gt;
-```
+</pre>
 
 ```ruby
 def subscribe
