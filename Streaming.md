@@ -1,6 +1,6 @@
-### Important Note:
+### Note:
 
-Streaming in Espresso working only with [Reel](https://github.com/celluloid/reel) web server.
+Streaming in Espresso is working only with [Reel](https://github.com/celluloid/reel) web server.
 
 ## Server-Sent Events
 
