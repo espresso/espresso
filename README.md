@@ -39,8 +39,7 @@ end
 App.run
 ```
 
-Espresso in the wild?
----
+### Espresso in the wild?
 
 [CIBox](http://cibox.org) service are entirely built on Espresso Framework.
 
@@ -110,13 +109,20 @@ Espresso in the wild?
 [Extension](https://github.com/slivu/espresso/blob/master/ViewAPI.md#extension) |
 [Templates Path](https://github.com/slivu/espresso/blob/master/ViewAPI.md#templates-path) |
 [Layouts Path](https://github.com/slivu/espresso/blob/master/ViewAPI.md#layouts-path) |
-[Layout](https://github.com/slivu/espresso/blob/master/ViewAPI.md#layout)
-<br/>
+[Layout](https://github.com/slivu/espresso/blob/master/ViewAPI.md#layout) |
+<br>
 [Rendering Templates](https://github.com/slivu/espresso/blob/master/ViewAPI.md#rendering-templates) |
 [Rendering Layouts](https://github.com/slivu/espresso/blob/master/ViewAPI.md#rendering-layouts) |
 [Ad hoc Rendering](https://github.com/slivu/espresso/blob/master/ViewAPI.md#ad-hoc-rendering) |
 [Path Resolver](https://github.com/slivu/espresso/blob/master/ViewAPI.md#path-resolver) |
 [Templates Compilation](https://github.com/slivu/espresso/blob/master/ViewAPI.md#templates-compilation)
+
+### Streaming
+
+[Server-Sent Events](https://github.com/slivu/espresso/blob/master/Streaming.md#server-sent-events) |
+[WebSockets](https://github.com/slivu/espresso/blob/master/Streaming.md#websockets) |
+[Chunked Responses](https://github.com/slivu/espresso/blob/master/Streaming.md#chunked-responses)
+
 
 ### Assets
 
@@ -186,8 +192,8 @@ Test results:
          rails  792    1.26ms    442      159      88        47        19        9
     ---
 
-**1ms-app** shows your app speed when your actions takes **1ms** to run.<br/>
-**10ms-app** shows your app speed when your actions takes **10ms** to run.<br/>
+**1ms-app** shows your app speed when your actions takes **1ms** to run.<br>
+**10ms-app** shows your app speed when your actions takes **10ms** to run.<br>
 etc.
 
 The app speed are calculated as follow:
@@ -221,11 +227,11 @@ Natural Action/Routes/Params
 ---
 
 I never understood why should i create actions in some file,
-then open another file and directing requests to created action.<br/>
+then open another file and directing requests to created action.<br>
 Even worse! To use params inside action, i have to remember how i named them in another file.
 And when i want to change a param name i have to change it in both files?
 
-What about consistency?<br/>
+What about consistency?<br>
 
 A good tradeoff would be to use some DSL.
 
@@ -242,7 +248,7 @@ But! Strings/Regexps as action names? No, thanks.
 What if i need to remount a bunch of actions to a new root?
 Say from /news to /headlines? Refactoring? Using vars/constants in names? No, Thanks.
 
-How do i setup multiple actions?<br/>
+How do i setup multiple actions?<br>
 How do i find out the currently running action?
 
 What if i do a request like "/book/100/?id=200"? What? Should i use unique param names? No, thanks.
@@ -259,8 +265,8 @@ def book id
 end
 ```
 
-That's a regular **Ruby method** and a regular **Espresso action**.<br/>
-That's also an Espresso route. Yes, the app will respond to "/book/100"<br/>
+That's a regular **Ruby method** and a regular **Espresso action**.<br>
+That's also an Espresso route. Yes, the app will respond to "/book/100"<br>
 And of course action params are used naturally, through method arguments(`id` rather than `params[:id]`).
 
 And all this offered by Ruby for free! Why to reinvent the wheel?
@@ -406,7 +412,7 @@ or simply halt the request and send the response.
 Views Compiler
 ---
 
-For most web sites, most time are spent at templates rendering.<br/>
+For most web sites, most time are spent at templates rendering.<br>
 When rendering templates, most time are spent at reading and compiling.
 
 Espresso allow to easily skip these expensive operations by keeping compiled templates in memory

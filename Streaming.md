@@ -105,7 +105,7 @@ end
 ```
 
 
-## Chunked Streams
+## Chunked Responses
 
 **From W3.org:**
 
@@ -125,7 +125,7 @@ def some_heavy_action
     ExtractDataFromDB_OrSomePresumablySlowAPI.each do |data|
       socket << data.to_s
     end
-    socket.finish # close it, otherwise the browser will wait data forever
+    socket.finish # close it, otherwise the browser will waiting for data forever
   end
 end
 ```
