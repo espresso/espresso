@@ -5,12 +5,12 @@
 As easy as:
 
 ```html
-<script type="text/javascript">
+&lt;script type=&quot;text/javascript&quot;&gt;
 var evs = new EventSource('/subscribe');
-evs.onmessage = function(e) { 
+evs.onmessage = function(e) {
   $('#wall').html( e.data );
 }
-</script>
+&lt;/script&gt;
 ```
 
 ```ruby
@@ -33,12 +33,12 @@ Other stream helpers:
 
 
 ```html
-<script type="text/javascript">
+&lt;script type=&quot;text/javascript&quot;&gt;
 var evs = new EventSource('/subscribe');
-evs.addEventListener('time', function(e) { 
+evs.addEventListener('time', function(e) {
   $('#time').html( e.data );
 }, false);
-</script>
+&lt;/script&gt;
 ```
 
 ```ruby
@@ -80,15 +80,15 @@ end
 As easy as:
 
 ```html
-<script type="text/javascript">
+&lt;script type=&quot;text/javascript&quot;&gt;
 ws = new WebSocket('ws://host:port/subscribe');
 ws.onmessage = function(e) {
   $('#wall').html( e.data );
 }
-</script>
+&lt;/script&gt;
 
-<input type="text" id="message">
-<input type="button" onClick="ws.send( $('#message').val() );" value="send message">
+&lt;input type=&quot;text&quot; id=&quot;message&quot;&gt;
+&lt;input type=&quot;button&quot; onClick=&quot;ws.send( $('#message').val() );&quot; value=&quot;send message&quot;&gt;
 ```
 
 ```ruby
