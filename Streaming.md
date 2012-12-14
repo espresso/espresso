@@ -4,7 +4,7 @@
 
 As easy as:
 
-```
+```html
 <script type="text/javascript">
 var evs = new EventSource('/subscribe');
 evs.onmessage = function(e) { 
@@ -32,7 +32,7 @@ Other stream helpers:
   - id
 
 
-```
+```html
 <script type="text/javascript">
 var evs = new EventSource('/subscribe');
 evs.addEventListener('time', function(e) { 
@@ -72,18 +72,21 @@ def some_action
 end
 ```
 
+**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
+
 
 ## WebSockets
 
 As easy as:
 
-```
+```html
 <script type="text/javascript">
 ws = new WebSocket('ws://host:port/subscribe');
 ws.onmessage = function(e) {
   $('#wall').html( e.data );
 }
 </script>
+
 <input type="text" id="message">
 <input type="button" onClick="ws.send( $('#message').val() );" value="send message">
 ```
@@ -101,6 +104,8 @@ def subscribe
   end
 end
 ```
+
+**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
 
 
 ## Chunked Responses
@@ -132,4 +137,3 @@ end
 ```
 
 Please make sure to do `socket.finish` after all your data sent.
-
