@@ -413,15 +413,3 @@ end
 ```
 
 **[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
-
-
-
-
-
-
-
-
-
-
-
-

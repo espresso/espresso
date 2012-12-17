@@ -49,109 +49,109 @@ App.run
 
 ### Intro
 
-[Actions](https://github.com/slivu/espresso/blob/master/Intro.md#actions) |
-[Controllers](https://github.com/slivu/espresso/blob/master/Intro.md#controllers) |
-[Slices](https://github.com/slivu/espresso/blob/master/Intro.md#slices) |
-[MVC?](https://github.com/slivu/espresso/blob/master/Intro.md#mvc) |
-[Models?](https://github.com/slivu/espresso/blob/master/Intro.md#models)
+[Actions](https://github.com/slivu/espresso/blob/master/docs/Intro.md#actions) |
+[Controllers](https://github.com/slivu/espresso/blob/master/docs/Intro.md#controllers) |
+[Slices](https://github.com/slivu/espresso/blob/master/docs/Intro.md#slices) |
+[MVC?](https://github.com/slivu/espresso/blob/master/docs/Intro.md#mvc) |
+[Models?](https://github.com/slivu/espresso/blob/master/docs/Intro.md#models)
 
 ### Routing
 
-[Base URL](https://github.com/slivu/espresso/blob/master/Routing.md#base-url) |
-[Canonicals](https://github.com/slivu/espresso/blob/master/Routing.md#canonicals) |
-[Actions](https://github.com/slivu/espresso/blob/master/Routing.md#actions) |
-[Actions Mapping](https://github.com/slivu/espresso/blob/master/Routing.md#actions-mapping) |
-[Parametrization](https://github.com/slivu/espresso/blob/master/Routing.md#parametrization) |
-[Format](https://github.com/slivu/espresso/blob/master/Routing.md#format) |
-[RESTful Actions](https://github.com/slivu/espresso/blob/master/Routing.md#restful-actions) |
-[Aliases](https://github.com/slivu/espresso/blob/master/Routing.md#aliases) |
-[Rewriter](https://github.com/slivu/espresso/blob/master/Routing.md#rewriter)
+[Base URL](https://github.com/slivu/espresso/blob/master/docs/Routing.md#base-url) |
+[Canonicals](https://github.com/slivu/espresso/blob/master/docs/Routing.md#canonicals) |
+[Actions](https://github.com/slivu/espresso/blob/master/docs/Routing.md#actions) |
+[Actions Mapping](https://github.com/slivu/espresso/blob/master/docs/Routing.md#actions-mapping) |
+[Parametrization](https://github.com/slivu/espresso/blob/master/docs/Routing.md#parametrization) |
+[Format](https://github.com/slivu/espresso/blob/master/docs/Routing.md#format) |
+[RESTful Actions](https://github.com/slivu/espresso/blob/master/docs/Routing.md#restful-actions) |
+[Aliases](https://github.com/slivu/espresso/blob/master/docs/Routing.md#aliases) |
+[Rewriter](https://github.com/slivu/espresso/blob/master/docs/Routing.md#rewriter)
 
 
 ### Setup
 
-[Global Setup](https://github.com/slivu/espresso/blob/master/Setup.md#global-setup) |
-[Setup by Name](https://github.com/slivu/espresso/blob/master/Setup.md#setup-by-name) |
-[Setup by Format](https://github.com/slivu/espresso/blob/master/Setup.md#setup-by-format) |
-[Remote Setup](https://github.com/slivu/espresso/blob/master/Setup.md#remote-setup)
+[Global Setup](https://github.com/slivu/espresso/blob/master/docs/Setup.md#global-setup) |
+[Setup by Name](https://github.com/slivu/espresso/blob/master/docs/Setup.md#setup-by-name) |
+[Setup by Format](https://github.com/slivu/espresso/blob/master/docs/Setup.md#setup-by-format) |
+[Remote Setup](https://github.com/slivu/espresso/blob/master/docs/Setup.md#remote-setup)
 
 ### Workflow
 
-[Route](https://github.com/slivu/espresso/blob/master/Workflow.md#route) |
-[Params](https://github.com/slivu/espresso/blob/master/Workflow.md#params) |
-[Passing Control](https://github.com/slivu/espresso/blob/master/Workflow.md#passing-control) |
-[Fetching Body](https://github.com/slivu/espresso/blob/master/Workflow.md#fetching-body) |
-[Halt](https://github.com/slivu/espresso/blob/master/Workflow.md#halt) |
-[Redirect](https://github.com/slivu/espresso/blob/master/Workflow.md#redirect) |
-[Reload](https://github.com/slivu/espresso/blob/master/Workflow.md#reload) |
-[Error Handlers](https://github.com/slivu/espresso/blob/master/Workflow.md#error-handlers) |
-[Hooks](https://github.com/slivu/espresso/blob/master/Workflow.md#hooks) |
-[Authorization](https://github.com/slivu/espresso/blob/master/Workflow.md#authorization) |
-[Sessions](https://github.com/slivu/espresso/blob/master/Workflow.md#sessions) |
-[Flash](https://github.com/slivu/espresso/blob/master/Workflow.md#flash) |
-[Cookies](https://github.com/slivu/espresso/blob/master/Workflow.md#cookies) |
-[Content Type](https://github.com/slivu/espresso/blob/master/Workflow.md#content-type) |
-[Charset](https://github.com/slivu/espresso/blob/master/Workflow.md#charset) |
-[Cache Control](https://github.com/slivu/espresso/blob/master/Workflow.md#cache-control) |
-[Expires](https://github.com/slivu/espresso/blob/master/Workflow.md#expires) |
-[Last Modified](https://github.com/slivu/espresso/blob/master/Workflow.md#last-modified) |
-[Accepted Content Type](https://github.com/slivu/espresso/blob/master/Workflow.md#accepted-content-type) |
-[Cache Manager](https://github.com/slivu/espresso/blob/master/Workflow.md#cache-manager) |
-[Send File](https://github.com/slivu/espresso/blob/master/Workflow.md#send-file) |
-[Send Files](https://github.com/slivu/espresso/blob/master/Workflow.md#send-files) |
-[Attachment](https://github.com/slivu/espresso/blob/master/Workflow.md#attachment) |
-[Headers](https://github.com/slivu/espresso/blob/master/Workflow.md#headers)
+[Route](https://github.com/slivu/espresso/blob/master/docs/Workflow.md#route) |
+[Params](https://github.com/slivu/espresso/blob/master/docs/Workflow.md#params) |
+[Passing Control](https://github.com/slivu/espresso/blob/master/docs/Workflow.md#passing-control) |
+[Fetching Body](https://github.com/slivu/espresso/blob/master/docs/Workflow.md#fetching-body) |
+[Halt](https://github.com/slivu/espresso/blob/master/docs/Workflow.md#halt) |
+[Redirect](https://github.com/slivu/espresso/blob/master/docs/Workflow.md#redirect) |
+[Reload](https://github.com/slivu/espresso/blob/master/docs/Workflow.md#reload) |
+[Error Handlers](https://github.com/slivu/espresso/blob/master/docs/Workflow.md#error-handlers) |
+[Hooks](https://github.com/slivu/espresso/blob/master/docs/Workflow.md#hooks) |
+[Authorization](https://github.com/slivu/espresso/blob/master/docs/Workflow.md#authorization) |
+[Sessions](https://github.com/slivu/espresso/blob/master/docs/Workflow.md#sessions) |
+[Flash](https://github.com/slivu/espresso/blob/master/docs/Workflow.md#flash) |
+[Cookies](https://github.com/slivu/espresso/blob/master/docs/Workflow.md#cookies) |
+[Content Type](https://github.com/slivu/espresso/blob/master/docs/Workflow.md#content-type) |
+[Charset](https://github.com/slivu/espresso/blob/master/docs/Workflow.md#charset) |
+[Cache Control](https://github.com/slivu/espresso/blob/master/docs/Workflow.md#cache-control) |
+[Expires](https://github.com/slivu/espresso/blob/master/docs/Workflow.md#expires) |
+[Last Modified](https://github.com/slivu/espresso/blob/master/docs/Workflow.md#last-modified) |
+[Accepted Content Type](https://github.com/slivu/espresso/blob/master/docs/Workflow.md#accepted-content-type) |
+[Cache Manager](https://github.com/slivu/espresso/blob/master/docs/Workflow.md#cache-manager) |
+[Send File](https://github.com/slivu/espresso/blob/master/docs/Workflow.md#send-file) |
+[Send Files](https://github.com/slivu/espresso/blob/master/docs/Workflow.md#send-files) |
+[Attachment](https://github.com/slivu/espresso/blob/master/docs/Workflow.md#attachment) |
+[Headers](https://github.com/slivu/espresso/blob/master/docs/Workflow.md#headers)
 
 
 ### View API
 
-[Engine](https://github.com/slivu/espresso/blob/master/ViewAPI.md#engine) |
-[Extension](https://github.com/slivu/espresso/blob/master/ViewAPI.md#extension) |
-[Templates Path](https://github.com/slivu/espresso/blob/master/ViewAPI.md#templates-path) |
-[Layouts Path](https://github.com/slivu/espresso/blob/master/ViewAPI.md#layouts-path) |
-[Layout](https://github.com/slivu/espresso/blob/master/ViewAPI.md#layout) |
+[Engine](https://github.com/slivu/espresso/blob/master/docs/ViewAPI.md#engine) |
+[Extension](https://github.com/slivu/espresso/blob/master/docs/ViewAPI.md#extension) |
+[Templates Path](https://github.com/slivu/espresso/blob/master/docs/ViewAPI.md#templates-path) |
+[Layouts Path](https://github.com/slivu/espresso/blob/master/docs/ViewAPI.md#layouts-path) |
+[Layout](https://github.com/slivu/espresso/blob/master/docs/ViewAPI.md#layout) |
 <br>
-[Rendering Templates](https://github.com/slivu/espresso/blob/master/ViewAPI.md#rendering-templates) |
-[Rendering Layouts](https://github.com/slivu/espresso/blob/master/ViewAPI.md#rendering-layouts) |
-[Ad hoc Rendering](https://github.com/slivu/espresso/blob/master/ViewAPI.md#ad-hoc-rendering) |
-[Path Resolver](https://github.com/slivu/espresso/blob/master/ViewAPI.md#path-resolver) |
-[Templates Compilation](https://github.com/slivu/espresso/blob/master/ViewAPI.md#templates-compilation)
+[Rendering Templates](https://github.com/slivu/espresso/blob/master/docs/ViewAPI.md#rendering-templates) |
+[Rendering Layouts](https://github.com/slivu/espresso/blob/master/docs/ViewAPI.md#rendering-layouts) |
+[Ad hoc Rendering](https://github.com/slivu/espresso/blob/master/docs/ViewAPI.md#ad-hoc-rendering) |
+[Path Resolver](https://github.com/slivu/espresso/blob/master/docs/ViewAPI.md#path-resolver) |
+[Templates Compilation](https://github.com/slivu/espresso/blob/master/docs/ViewAPI.md#templates-compilation)
 
 ### Streaming
 
 Note: Streaming in Espresso is working only with [Reel](https://github.com/celluloid/reel) web server of version 0.3 and up
 
-[Server-Sent Events](https://github.com/slivu/espresso/blob/master/Streaming.md#server-sent-events) |
-[WebSockets](https://github.com/slivu/espresso/blob/master/Streaming.md#websockets) |
-[Chunked Responses](https://github.com/slivu/espresso/blob/master/Streaming.md#chunked-responses)
+[Server-Sent Events](https://github.com/slivu/espresso/blob/master/docs/Streaming.md#server-sent-events) |
+[WebSockets](https://github.com/slivu/espresso/blob/master/docs/Streaming.md#websockets) |
+[Chunked Responses](https://github.com/slivu/espresso/blob/master/docs/Streaming.md#chunked-responses)
 
 
 ### Assets
 
-[Intro](https://github.com/slivu/espresso/blob/master/Assets.md#intro) |
-[Mapper](https://github.com/slivu/espresso/blob/master/Assets.md#mapper) |
-[Server](https://github.com/slivu/espresso/blob/master/Assets.md#server) |
-[Helpers](https://github.com/slivu/espresso/blob/master/Assets.md#helpers) |
-[Loader](https://github.com/slivu/espresso/blob/master/Assets.md#loader)
+[Intro](https://github.com/slivu/espresso/blob/master/docs/Assets.md#intro) |
+[Mapper](https://github.com/slivu/espresso/blob/master/docs/Assets.md#mapper) |
+[Server](https://github.com/slivu/espresso/blob/master/docs/Assets.md#server) |
+[Helpers](https://github.com/slivu/espresso/blob/master/docs/Assets.md#helpers) |
+[Loader](https://github.com/slivu/espresso/blob/master/docs/Assets.md#loader)
 
 
 ### CRUD
 
-[Intro](https://github.com/slivu/espresso/blob/master/CRUD.md#intro) |
-[Resource](https://github.com/slivu/espresso/blob/master/CRUD.md#resource) |
-[Excluded Params](https://github.com/slivu/espresso/blob/master/CRUD.md#excluded-params) |
-[Root](https://github.com/slivu/espresso/blob/master/CRUD.md#root) |
-[Response](https://github.com/slivu/espresso/blob/master/CRUD.md#response) |
-[Error Handler](https://github.com/slivu/espresso/blob/master/CRUD.md#error-handler) |
-[Access Restriction](https://github.com/slivu/espresso/blob/master/CRUD.md#access-restriction)
+[Intro](https://github.com/slivu/espresso/blob/master/docs/CRUD.md#intro) |
+[Resource](https://github.com/slivu/espresso/blob/master/docs/CRUD.md#resource) |
+[Excluded Params](https://github.com/slivu/espresso/blob/master/docs/CRUD.md#excluded-params) |
+[Root](https://github.com/slivu/espresso/blob/master/docs/CRUD.md#root) |
+[Response](https://github.com/slivu/espresso/blob/master/docs/CRUD.md#response) |
+[Error Handler](https://github.com/slivu/espresso/blob/master/docs/CRUD.md#error-handler) |
+[Access Restriction](https://github.com/slivu/espresso/blob/master/docs/CRUD.md#access-restriction)
 
 ### Deploy
 
-[Controllers](https://github.com/slivu/espresso/blob/master/Deploy.md#controllers) |
-[Slices](https://github.com/slivu/espresso/blob/master/Deploy.md#slices) |
-[Roots](https://github.com/slivu/espresso/blob/master/Deploy.md#roots) |
-[Run](https://github.com/slivu/espresso/blob/master/Deploy.md#run) |
-[config.ru](https://github.com/slivu/espresso/blob/master/Deploy.md#configru)
+[Controllers](https://github.com/slivu/espresso/blob/master/docs/Deploy.md#controllers) |
+[Slices](https://github.com/slivu/espresso/blob/master/docs/Deploy.md#slices) |
+[Roots](https://github.com/slivu/espresso/blob/master/docs/Deploy.md#roots) |
+[Run](https://github.com/slivu/espresso/blob/master/docs/Deploy.md#run) |
+[config.ru](https://github.com/slivu/espresso/blob/master/docs/Deploy.md#configru)
 
 <hr/>
 
@@ -220,8 +220,8 @@ you should write actions that takes  insignificant amount of time.
 
 Only after that it make sense to think about framework speed.
 
-**Worth to Note** - Espresso has built-in [cache manager](https://github.com/slivu/espresso/blob/master/Workflow.md#cache-manager)
-as well as [views compiler](https://github.com/slivu/espresso/blob/master/ViewAPI.md#templates-compilation).
+**Worth to Note** - Espresso has built-in [cache manager](https://github.com/slivu/espresso/blob/master/docs/Workflow.md#cache-manager)
+as well as [views compiler](https://github.com/slivu/espresso/blob/master/docs/ViewAPI.md#templates-compilation).
 
 These tools may help you to dramatically reduce the time consumed by your actions.
 

@@ -97,7 +97,7 @@ end
 ## Setup by Format
 
 
-[Format](https://github.com/slivu/espresso/blob/master/Routing.md#format) is a part of routing mechanism
+[Format](https://github.com/slivu/espresso/blob/master/docs/Routing.md#format) is a part of routing mechanism
 but it is also hugely used when it comes to setup actions.
 
 It turns out that setting up actions by name and regular expressions are not enough.
