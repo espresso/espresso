@@ -184,13 +184,3 @@ The project will presumably contain rake/thor tasks for creating/migrating model
 
 
 **[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
-
-
-
-
-
-
-
-
-
-
