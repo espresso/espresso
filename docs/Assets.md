@@ -54,7 +54,7 @@ To define a baseurl to load assets from, use `assets_map`(or `assets_url` alias)
 
 ```ruby
 class App &lt; E
-  map :/
+  map '/'
   ...
 end
 

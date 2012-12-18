@@ -15,7 +15,7 @@ evs.onmessage = function(e) {
 
 ```ruby
 class App < E
-  map :/
+  map '/'
   
   def subscribe
     event_stream do |stream|

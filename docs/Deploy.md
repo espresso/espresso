@@ -134,7 +134,7 @@ class Cms < Sinatra::Base
 end
 
 class App < E
-  map :/
+  map '/'
 
   def index
     # ...
