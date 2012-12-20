@@ -5,7 +5,7 @@ source :rubygems
 gem 'slim'
 
 gem 'appetite', git: 'git://github.com/slivu/appetite.git'
-gem 'e',        git: 'git://github.com/slivu/espresso.git'
+gem 'e',        git: 'git://github.com/espresso/espresso.git'
 gem 'reel',     git: 'git://github.com/celluloid/reel.git'
 
 gem 'data_mapper', '~> 1.2.0'

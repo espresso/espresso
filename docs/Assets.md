@@ -37,7 +37,7 @@ will look like `src="script.js"` / `href="style.css"`
 
 To have them mapped to some URL, use assets mapper.
 
-**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
+**[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
 Mapper
 ---
@@ -99,7 +99,7 @@ png 'image'
 
 both will return `<img src="/assets/image.png" ...`
 
-**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
+**[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
 Server
 ---
@@ -154,7 +154,7 @@ Now your app will serve files found under `/full/path/to/Shared-assets/` folder.
 
 So `<script src="/assets/script.js" ...` will serve `/full/path/to/Shared-assets/script.js`
 
-**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
+**[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
 Helpers
 ---
@@ -219,7 +219,7 @@ img_tag 'banner.png'
 #=&gt; &lt;img src="/static/banner.png" ...
 ```
 
-**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
+**[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
 Loader
 ---
@@ -412,4 +412,4 @@ assets_loader '/vendor' do
 end
 ```
 
-**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
+**[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**

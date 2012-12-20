@@ -72,7 +72,7 @@ def some_action
 end
 ```
 
-**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
+**[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
 
 ## WebSockets
@@ -105,7 +105,7 @@ def subscribe
 end
 ```
 
-**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
+**[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
 
 ## Chunked Responses

@@ -15,7 +15,7 @@ HEAD    /id                    #get(id)
 OPTIONS /                      returns actions available to client
 </pre>
 
-**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
+**[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
 
 ## Resource
@@ -45,7 +45,7 @@ simply map `post` action to `new` method:
 crudify ModelName, :post => :new
 ```
 
-**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
+**[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
 ## Excluded Params
 
@@ -67,7 +67,7 @@ To exclude multiple params, pass them as an array.
 crudify Resource, :exclude => ['__stream_uuid__', 'user']
 ```
 
-**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
+**[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
 
 ## Root
@@ -190,7 +190,7 @@ end
 *Please Note* that you'll have to name your template "get_index.ext" instead of just "index.ext"
 
 
-**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
+**[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
 
 ## Response
@@ -242,7 +242,7 @@ Also `content_type` is used to set proper content type.
 
 DELETE action does not need a handler cause it ever returns an empty string.
 
-**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
+**[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
 ## Error Handler
 
@@ -306,4 +306,4 @@ class App < E
 end
 ```
 
-**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
+**[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**

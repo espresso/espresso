@@ -37,7 +37,7 @@ app.mount /Controller/
 app.run
 ```
 
-**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
+**[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
 
 ## Slices
@@ -68,7 +68,7 @@ app.run
 ```
 
 
-**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
+**[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
 
 ## Roots
@@ -108,7 +108,7 @@ app.mount Forum, '/forum', '/Forums'
 app.run
 ```
 
-**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
+**[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
 
 ## Inner Apps
@@ -182,7 +182,7 @@ app.run :server => :Thin
 app.run :server => :EventedMongrel, :Port => 9090, :num_processors => 100
 ```
 
-**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
+**[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
 
 ## config.ru
@@ -217,4 +217,4 @@ app = EApp.new :automount
 run app
 ```
 
-**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
+**[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**

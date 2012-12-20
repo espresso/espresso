@@ -31,7 +31,7 @@ Now `Book` will serve:
 </pre>
 
 
-**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
+**[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
 
 ## Canonicals
@@ -73,7 +73,7 @@ end
 ```
 
 
-**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
+**[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
 ## Actions
 
@@ -103,7 +103,7 @@ Now `App` will serve:
 *   /edit
 
 
-**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
+**[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
 
 ## Actions Mapping
@@ -175,7 +175,7 @@ end
 ```
 
 
-**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
+**[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
 
 ## Parametrization
@@ -260,7 +260,7 @@ That's it! Now when calling "/read/news/articles/latest",
 In a word, if Ruby method works with given params, HTTP action will work too.<br/>
 Otherwise, HTTP action will return "404 NotFound" error.
 
-**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
+**[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
 
 ## Format
@@ -377,7 +377,7 @@ end
 </pre>
 
 
-**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
+**[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
 
 ## RESTful Actions
@@ -415,7 +415,7 @@ class App < E
 end
 ```
 
-**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
+**[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
 ## Aliases
 
@@ -448,7 +448,7 @@ Now `news` action will serve any of:
 *   /headlines/recent.html
 
 
-**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
+**[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
 
 ## Rewriter
@@ -527,4 +527,4 @@ class App < E
 end
 ```
 
-**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
+**[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**

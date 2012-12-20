@@ -24,7 +24,7 @@ And when you need your actions to return another charset,
 simply change a single line of code at class level.
 
 
-**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
+**[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
 
 ## Setup by Name
@@ -91,13 +91,13 @@ end
 ```
 
 
-**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
+**[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
 
 ## Setup by Format
 
 
-[Format](https://github.com/slivu/espresso/blob/master/docs/Routing.md#format) is a part of routing mechanism
+[Format](https://github.com/espresso/espresso/blob/master/docs/Routing.md#format) is a part of routing mechanism
 but it is also hugely used when it comes to setup actions.
 
 It turns out that setting up actions by name and regular expressions are not enough.
@@ -207,7 +207,7 @@ end
 ```
 
 
-**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
+**[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
 
 ## Remote Setup
@@ -282,4 +282,4 @@ end
 app.run
 ```
 
-**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
+**[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**

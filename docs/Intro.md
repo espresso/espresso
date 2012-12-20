@@ -15,7 +15,7 @@ end
 It is really straightforward to define actions in Espresso cause they are usual Ruby methods.
 
 
-**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
+**[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
 
 ## Controllers
@@ -55,7 +55,7 @@ end
 
 That's it, controllers are usual Ruby classes with inheritance from Espresso class.
 
-**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
+**[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
 
 ## Slices
@@ -153,7 +153,7 @@ app = Cms.mount '/cms' do |ctrl|
 end
 ```
 
-**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
+**[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
 
 ## MVC?
@@ -166,7 +166,7 @@ You are the creator and you are free to choose how to develop your app.
 
 The "Controller" term in Espresso Framework does not necessarily refers to the "Controller" term in MVC.
 
-**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
+**[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
 ## Models?
 
@@ -175,7 +175,7 @@ Espresso by itself does not deal with models, migrations etc.
 It is the responsibility of the ORM you choose to use.
 
 The only way Espresso interacts with models is through the `CRUD` helper.<br/>
-It will automatically map HTTP requests to corresponding methods in given model so items are created/updated/deleted seamlessly. [Details here](http://e.github.com/CRUD.html)
+It will automatically map HTTP requests to corresponding methods in given model so items are created/updated/deleted seamlessly. [Details here](http://espresso.github.com/CRUD.html)
 
 
 Also it is planned to create a gem apart that will generate a generic Espresso project.
@@ -183,4 +183,4 @@ Also it is planned to create a gem apart that will generate a generic Espresso p
 The project will presumably contain rake/thor tasks for creating/migrating models.
 
 
-**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
+**[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**

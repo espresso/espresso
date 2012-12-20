@@ -53,7 +53,7 @@ engine :Erubis, default_encoding: Encoding.default_external
 ```
 
 
-**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
+**[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
 
 ## Extension
@@ -74,7 +74,7 @@ class App < E
 end
 ```
 
-**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
+**[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
 
 ## Templates path
@@ -131,7 +131,7 @@ end
 
 
 
-**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
+**[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
 ## Layouts path
 
@@ -151,7 +151,7 @@ end
 ```
 
 
-**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
+**[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
 
 ## Layout
@@ -196,7 +196,7 @@ class App < Ruby
 end
 ```
 
-**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
+**[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
 
 # Render
@@ -349,7 +349,7 @@ and it is quite irrational to slow down an entire framework
 just to handle such a negligible probability.
 
 
-**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
+**[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
 
 ## Rendering Layouts
@@ -414,7 +414,7 @@ end
 ```
 
 
-**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
+**[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
 
 ## Ad hoc rendering
@@ -434,7 +434,7 @@ render_haml_p      # will render only the template of current action using Haml 
 render_haml_l      # will render only the layout of current action using Haml engine
 ```
 
-**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
+**[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
 
 ## Path Resolver
@@ -509,7 +509,7 @@ end
 view_path 'some', 'path', 'to', 'some-file' # view/some/path/to/some-file
 ```
 
-**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
+**[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
 
 ## Templates Compilation
@@ -591,4 +591,4 @@ end
 ```
 
 
-**[ [contents &uarr;](https://github.com/slivu/espresso#tutorial) ]**
+**[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**

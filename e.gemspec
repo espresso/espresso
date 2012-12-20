@@ -7,7 +7,7 @@ Gem::Specification.new do |s|
   s.version = version
   s.authors = ['Silviu Rusu']
   s.email = ['slivuz@gmail.com']
-  s.homepage = 'https://github.com/slivu/espresso'
+  s.homepage = 'https://github.com/espresso/espresso'
   s.summary = 'Espresso Framework %s' % version
   s.description = 'Scalable Framework aimed at Speed and Simplicity'
 
