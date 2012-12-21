@@ -27,8 +27,9 @@ class << E
   end
 
   def error? code, action = nil
-    (@error_handlers ||= {})[code] ||= {}
-    @error_handlers[code][action] || @error_handlers[code][:*]
+    (@error_handlers ||= {})[code] ||= {} unless locked?
+    return unless handlers = (@error_handlers||{})[code]
+    handlers[action] || handlers[:*]
   end
 end
 
