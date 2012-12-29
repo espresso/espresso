@@ -31,11 +31,12 @@ module ECoreTest__Pass
       end
 
       def get_invoke action, key, val
-        invoke(InnerApp, action.to_sym, key, val).inspect
+        s,h,b = invoke(InnerApp, action.to_sym, key, val)
+        [s, b.body].join('/')
       end
 
       def get_fetch action, key, val
-        fetch(InnerApp, action.to_sym, key, val).inspect
+        fetch(InnerApp, action.to_sym, key, val)
       end
     end
 
@@ -43,7 +44,7 @@ module ECoreTest__Pass
       map '/'
 
       def catcher key, val
-        [[key, val], params].inspect
+        [[key, val].join('='), params.to_a.map {|e| e.join('=')}].join('/')
       end
     end
   end
@@ -71,22 +72,18 @@ module ECoreTest__Pass
     end
 
     Test :inner_app do
-      body = get(:inner_app, :catcher, ARGS.join('/'), PARAMS.dup).body
-      is(body) == [ARGS, PARAMS].inspect
+      get :inner_app, :catcher, ARGS.join('/'), PARAMS.dup
+      check(last_response.body) == "k=v/var=val"
     end
 
     Test :invoke do
-      r = get :invoke, :catcher, ARGS.join('/'), PARAMS.dup
-      check(r.body) =~ /\A\[200/
-      check(r.body) =~ /"Content\-Type"=>"text\/html"/
-      check(r.body) =~ /#{Regexp.escape '[\"k\", \"v\"]'}/
-      check(r.body) =~ /#{Regexp.escape '{\"var\"=>\"val\"}'}/
+      get :invoke, :catcher, ARGS.join('/'), PARAMS.dup
+      check(last_response.body) == "200/k=v/var=val"
     end
 
     Test :fetch do
-      r = get :fetch, :catcher, ARGS.join('/'), PARAMS.dup
-      check(r.body) =~ /#{Regexp.escape '[\"k\", \"v\"]'}/
-      check(r.body) =~ /#{Regexp.escape '{\"var\"=>\"val\"}'}/
+      get :fetch, :catcher, ARGS.join('/'), PARAMS.dup
+      check(last_response.body) == "k=v/var=val"
     end
 
   end

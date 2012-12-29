@@ -3,21 +3,14 @@ module ECoreTest__Error
   class App < E
 
     error 404 do
-      'NoLuckTryAgain'
+      'NoLuckTryAgain - '
     end
 
     error 500 do |e|
-      'FatalErrorOccurred: %s' % e
+      action == :json ? "status:0, error:#{e}" : "FatalErrorOccurred: #{e}"
     end
-
-    setup :json do
-      error 500 do |e|
-        "status:0, error:#{e}"
-      end
-    end
-
+    
     def index
-
     end
 
     def raise_error
@@ -35,7 +28,7 @@ module ECoreTest__Error
     Testing 404 do
       get :blah!
       expect(last_response.status) == 404
-      is?(last_response.body) == 'NoLuckTryAgain'
+      is?(last_response.body) == 'NoLuckTryAgain - max params accepted: 0; params given: 1'
     end
 
     Testing 500 do

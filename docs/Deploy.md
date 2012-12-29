@@ -5,18 +5,22 @@ Run a single controller app:
 
 ```ruby
 class App < E
-    # ...
+  # ...
 end
 
 App.run
 
 # or
-app = App.mount
+app = App.mount do
+  # some setup
+end
 app.run
 
 # or create a new app and mount controller
 app = EApp.new
-app.mount App
+app.mount App do
+  # some setup
+end
 app.run
 ```
 
@@ -43,27 +47,31 @@ app.run
 ## Slices
 
 
-Wrap the app into a slice(module) and run:
+It is possible to wrap the app into a slice(module) and run it:
 
 ```ruby
 module Forum
-    class Users < E
-        # ...
-    end
-    class Posts < E
-        # ...
-    end
+  class Users < E
+    # ...
+  end
+  class Posts < E
+    # ...
+  end
 end
 
 Forum.run
 
 # or
-app = Forum.mount
+app = Forum.mount do
+  # some setup
+end
 app.run
 
 # or create an app and mount the slice
 app = EApp.new
-app.mount Forum
+app.mount Forum do
+  # some setup
+end
 app.run
 ```
 
@@ -79,12 +87,12 @@ To mount a controller/slice into a specific root, pass it as first argument:
 
 ```ruby
 module Forum
-    class Users < E
-        # ...
-    end
-    class Posts < E
-        # ...
-    end
+  class Users < E
+    # ...
+  end
+  class Posts < E
+    # ...
+  end
 end
 
 app = Forum.mount '/forum'
@@ -164,7 +172,7 @@ end
 ## Run
 
 
-By default Espresso will use WEBrick server and default WEBrick port.
+By default Espresso will use `WEBrick` server and default `WEBrick` port.
 
 To use another server, pass `:server` option.
 

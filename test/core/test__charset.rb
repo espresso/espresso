@@ -1,24 +1,21 @@
-module ECoreTest__Encoding
+module ECoreTest__Charset
 
   class App < E
 
     charset 'ISO-8859-1'
 
     setup :utf_16 do
-      charset 'UTF-16'
-      content_type '.txt'
+      content_type '.txt', :charset => 'UTF-16'
     end
 
     setup :utf_32 do
       content_type '.txt'
     end
 
-    format :json
-    setup 'index.json' do
-      charset 'UTF-32'
-    end
-
+    format '.json'
+    
     def index
+      charset 'UTF-32' if json?
       __method__
     end
 
@@ -27,14 +24,12 @@ module ECoreTest__Encoding
     end
 
     def utf_32
-      charset! 'UTF-32'
-      content_type! '.txt' # making sure it keeps charset
+      content_type '.txt', :charset => 'UTF-32' # making sure it keeps charset
       __method__
     end
 
     def iso_8859_2
-      # set charset via `content_type!`
-      content_type! '.xml', 'ISO-8859-2'
+      content_type '.xml', :charset => 'ISO-8859-2'
     end
 
   end

@@ -13,7 +13,7 @@ module ECoreTest__Expires
   XML = [:no_store, :must_revalidate]
 
   class App < E
-    format :xml
+    format '.xml'
 
     expires GENERIC_AMOUNT, *GENERIC
 
@@ -26,19 +26,16 @@ module ECoreTest__Expires
     end
 
     def index
-
     end
 
     def private
-
     end
 
     def read something
-
     end
 
     def inline
-      expires! INLINE_AMOUNT, *INLINE
+      expires INLINE_AMOUNT, *INLINE
     end
 
   end
@@ -48,7 +45,7 @@ module ECoreTest__Expires
     def contain_suitable_headers? response, amount, *directives
       date_format = '%a, %d %b %Y %H:%M:%S %Z'
       cache_control = response.headers['Cache-Control']
-      expect(E.new.cache_control!(*directives << {:max_age => amount})) == cache_control
+      expect(E.new.cache_control(*directives << {:max_age => amount})) == cache_control
 
       raw_expires = response.headers['Expires']
       begin

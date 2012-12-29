@@ -33,7 +33,7 @@ module ECoreTest__Session
     end
   end
 
-  Spec.new App do
+  Spec.new self do
     app EApp.new { session :memory }.mount(App)
     map App.base_url
 
@@ -41,8 +41,8 @@ module ECoreTest__Session
     get :set, var, val
 
     5.times do
-      r = get :get, var
-      expect(r.body) =~ /#{val}/
+      get :get, var
+      expect(last_response.body) =~ /#{val}/
     end
 
     Testing 'keys/values' do

@@ -8,7 +8,7 @@ If we need user to see "Hello World!" when he visits "/hello" address in the bro
 
 ```ruby
 def hello
-    "Hello World!"
+  "Hello World!"
 end
 ```
 
@@ -35,21 +35,21 @@ Action names can also be given as regular expressions.
 ```ruby
 class Pages < E
 
-    # setup for all actions
-    charset 'UTF-8'
+  # setup for all actions
+  charset 'UTF-8'
 
-    # setup for `rss` action
-    setup :rss do
-        content_type '.rss'
-    end
+  # setup for `rss` action
+  setup :rss do
+    content_type '.rss'
+  end
 
-    def latest
-        # ...
-    end
+  def latest
+    # ...
+  end
 
-    def rss
-        # ...
-    end
+  def rss
+    # ...
+  end
 end
 ```
 
@@ -75,17 +75,17 @@ It can be mounted under any path that will serve as base URL for all controllers
 ```ruby
 module Cms
 
-    class Articles < E
-        # ...
-    end
+  class Articles < E
+    # ...
+  end
 
-    class News < E
-        # ...
-    end
+  class News < E
+    # ...
+  end
 
-    class Pages < E
-        # ...
-    end
+  class Pages < E
+    # ...
+  end
 end
 
 app = Cms.mount '/cms'
@@ -99,72 +99,48 @@ Then we simply do like this:
 
 ```ruby
 app = Cms.mount '/cms' do
-    engine :Haml
+  engine :Haml
 end
 app.run
 ```
-
-**Worth to Note** - when some controller has own setup, the slice will NOT implicitly override it.
-
-**Example:** - `News` and `Pages` will use Haml engine, `Articles` will use Erubis instead
-
-```ruby
-module Cms
-
-    class Articles < E
-        engine :Erubis
-        # ...
-    end
-
-    class News < E
-        # ...
-    end
-
-    class Pages < E
-        # ...
-    end
-end
-
-app = Cms.mount '/cms' do
-    engine :Haml
-end
-
-app.run
-```
-
-To override some setup for some controller, use bang methods.<br/>
-This will explicitly instruct slice to override controller's setup.
-
-Refering to the example above, we can override engine for `Articles` controller by this:
-
-```ruby
-app = Cms.mount '/cms' do
-    engine! :Haml
-end
-```
-
 
 When you need to setup only some specific controller,
 use the mount block with a single param that will be set to the controller actually being configured.
 
 ```ruby
 app = Cms.mount '/cms' do |ctrl|
-    engine! :ERB if ctrl == Cms::Articles
+  engine :ERB if ctrl == Cms::Articles
 end
 ```
 
 **[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
+## Applications
+
+Applications are meant to bundle, setup and run controllers and slices.
+
+To create a Espresso application use `EApp` class:
+
+```ruby
+class MyController < E
+  # ...
+end
+
+app = EApp.new
+app.mount MyController
+app.run
+```
+
+
 
 ## MVC?
 
 
-Though you can create pure MVC applications by using Espresso Framework,
+Though you can create MVC applications by using Espresso Framework,
 it does not actually impose any design patterns.
 
 You are the creator and you are free to choose how to develop your app.
 
-The "Controller" term in Espresso Framework does not necessarily refers to the "Controller" term in MVC.
 
 **[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
@@ -173,14 +149,6 @@ The "Controller" term in Espresso Framework does not necessarily refers to the "
 Espresso by itself does not deal with models, migrations etc.
 
 It is the responsibility of the ORM you choose to use.
-
-The only way Espresso interacts with models is through the `CRUD` helper.<br/>
-It will automatically map HTTP requests to corresponding methods in given model so items are created/updated/deleted seamlessly. [Details here](http://espresso.github.com/CRUD.html)
-
-
-Also it is planned to create a gem apart that will generate a generic Espresso project.
-
-The project will presumably contain rake/thor tasks for creating/migrating models.
 
 
 **[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**

@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 
-version = "0.3.6"
+version = "0.3.7"
 Gem::Specification.new do |s|
 
   s.name = 'e'
@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
 
   s.required_ruby_version = '>= 1.8.7'
 
-  s.add_dependency 'appetite', '~> 0.1.0'
+  s.add_dependency 'rack', '~> 1.4'
   s.add_dependency 'tilt', '~> 1.3'
 
   s.add_development_dependency 'rake', '~> 10'

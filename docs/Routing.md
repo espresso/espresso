@@ -11,15 +11,15 @@ This can be changed by setting base URL via `map`.
 
 ```ruby
 class Book < E
-    map '/books'
+  map '/books'
 
-    def index
-        # ...
-    end
+  def index
+    # ...
+  end
 
-    def edit
-        # ...
-    end
+  def edit
+    # ...
+  end
 end
 ```
 
@@ -45,11 +45,11 @@ First param will be treated as base URL, any other consequent params - as canoni
 
 ```ruby
 class News < E
-    map :news, :headlines
+  map :news, :headlines
 
-    def index
-        # ...
-    end
+  def index
+    # ...
+  end
 end
 ```
 

@@ -1,4 +1,5 @@
 require 'rubygems'
+
 require 'specular'
 require 'sonar'
 require 'slim'

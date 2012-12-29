@@ -15,7 +15,7 @@ module ECoreTest__Canonical
 
   module Hlp
     def ok? response
-      check(response.status) == AppetiteConstants::STATUS__OK
+      check(response.status) == EspressoFrameworkConstants::STATUS__OK
     end
   end
 

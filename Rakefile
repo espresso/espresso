@@ -5,7 +5,7 @@ require 'rake'
 task :default => :test
 
 require './test/setup'
-::Dir['./test/**/test__*.rb'].each { |f| require f }
+Dir['./test/**/test__*.rb'].each { |f| require f }
 
 namespace :test do
   task :core do
@@ -13,9 +13,9 @@ namespace :test do
     session = Specular.new
     session.boot { include Sonar }
     session.before do |app|
-      if app && ::AppetiteUtils.is_app?(app)
+      if app && EspressoFrameworkUtils.is_app?(app)
         app.use Rack::Lint
-        app(app)
+        app(app.mount)
         map(app.base_url)
       end
     end
@@ -30,8 +30,8 @@ namespace :test do
     session = Specular.new
     session.boot { include Sonar }
     session.before do |app|
-      if app && ::AppetiteUtils.is_app?(app)
-        app app.mount { view_fullpath ::File.expand_path('../test/helpers/view/templates', __FILE__) }
+      if app && EspressoFrameworkUtils.is_app?(app)
+        app app.mount { view_fullpath File.expand_path('../test/view/templates', __FILE__) }
         map(app.base_url)
         get
       end
@@ -41,33 +41,9 @@ namespace :test do
     puts session.summary
     session.exit_code == 0 || fail
   end
-
-  task :helpers do
-    puts "\n**\nTesting Helpers ..."
-    session = Specular.new
-    session.boot { include Sonar }
-    session.before do |app|
-      if app && ::AppetiteUtils.is_app?(app)
-        map app.base_url
-        app(app)
-      end
-    end
-    session.run /EHelpersTest/, :trace => true
-    puts session.failures if session.failed?
-    puts session.summary
-    session.exit_code == 0 || fail
-  end
-
-  task :ipcm do
-    puts "\n**\nTesting InterProcess Cache Manager"
-    session = Specular.new
-    puts session.run /EIPCMTest/, :trace => true
-    session.exit_code == 0 || fail
-  end
 end
 
-task :test => ['test:core', 'test:view', 'test:helpers']
-
+task :test => ['test:core', 'test:view']
 task :overhead do
   require './test/overhead/run'
 end

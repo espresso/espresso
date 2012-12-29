@@ -12,17 +12,17 @@ module ECoreTest__ContentType
       content_type 'readme'
     end
 
-    format :json
+    format '.json'
 
     def index
-      content_type!('Blah!') if format == '.json'
+      content_type('Blah!') if format == '.json'
     end
 
     def xml
     end
 
     def json
-      content_type! '.json'
+      content_type '.json'
     end
 
     def read something

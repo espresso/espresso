@@ -3,7 +3,7 @@ module ECoreTest__LastModified
   class App < E
 
     def index
-      last_modified! time_for(params[:time])
+      last_modified time_for(params[:time])
     end
 
   end

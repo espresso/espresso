@@ -6,7 +6,7 @@ module ECoreTest__CacheControl
   XML = [:no_store, :must_revalidate, {:max_age => 100, :s_max_age => 200}]
 
   class App < E
-    format :xml
+    format '.xml'
 
     cache_control *GENERIC
 
@@ -31,7 +31,7 @@ module ECoreTest__CacheControl
     end
 
     def inline
-      cache_control! *INLINE
+      cache_control *INLINE
     end
 
   end
@@ -40,7 +40,7 @@ module ECoreTest__CacheControl
 
     def contain_correct_header? response, *directives
       is?(response.headers['Cache-Control']) ==
-          E.new.cache_control!(*directives)
+          E.new.cache_control(*directives)
     end
 
     get
