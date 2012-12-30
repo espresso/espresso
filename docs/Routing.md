@@ -378,6 +378,20 @@ end
 Voila, now App will respond to any of "/pages", "/pages.html" and "/pages.xml"<br>
 but not "/news.html" nor "/news.xml", cause `format` was set for `pages` action only.
 
+It is also possible to disable format for specific actions by using `disable_format_for`:
+
+```ruby
+class App < E
+  map '/'
+
+  format '.xml' # this will enable .xml format for all action
+  
+  disable_format_for :news, :pages # disabling format for :pages and :news actions
+
+  # ...
+end
+```
+
 
 But wait, actions usually are called with params, and an URL like "/read.html/100" looks really bad!
 

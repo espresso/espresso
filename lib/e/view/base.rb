@@ -43,14 +43,18 @@ class E
 
   # returns full path to templates.
   # if any args given they are `File.join`-ed and appended to returned path.
+  #
+  # @note this method will not make use of `view_prefix`,
+  #       thus you should provide full path to template, relative to `view_path` of course
+  #
   def path_to_templates *args
-    ::EspressoFrameworkExplicitViewPath.new ::File.join(view_path?, *args)
+    EspressoFrameworkExplicitViewPath.new ::File.join(view_path?, *args)
   end
 
   # returns full path to layouts.
   # if any args given they are `File.join`-ed and appended to returned path.
   def path_to_layouts *args
-    ::EspressoFrameworkExplicitViewPath.new ::File.join(view_path?, layouts_path?, *args)
+    EspressoFrameworkExplicitViewPath.new ::File.join(view_path?, layouts_path?, *args)
   end
 
   # render a template with layout(if any defined).
