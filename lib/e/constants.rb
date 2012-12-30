@@ -1,7 +1,7 @@
 module EspressoFrameworkConstants
 
   HTTP__DEFAULT_SERVER = :WEBrick
-  HTTP__DEFAULT_PORT   = 3000
+  HTTP__DEFAULT_PORT   = 5252
 
   HTTP__REQUEST_METHODS = %w[GET POST PUT HEAD DELETE OPTIONS PATCH].freeze
 

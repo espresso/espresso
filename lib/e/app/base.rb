@@ -113,17 +113,23 @@ class EApp
   # @example use Thin server with its default port
   #   app.run :server => :Thin
   # @example use EventedMongrel server with custom options
-  #   app.run :server => :EventedMongrel, :Port => 9090, :num_processors => 1000
+  #   app.run :server => :EventedMongrel, :port => 9090, :num_processors => 1000
   #
   # @param [Hash] opts
+  # @option opts [Symbol]  :server (:WEBrick) web server
+  # @option opts [Integer] :port   (5252)
+  # @option opts [String]  :host   (0.0.0.0)
   def run opts = {}
     server = opts.delete(:server)
     (server && Rack::Handler.const_defined?(server)) || (server = HTTP__DEFAULT_SERVER)
-    handler =  Rack::Handler.const_get(server)
-    if handler.respond_to?(:valid_options) && handler.valid_options.any? {|k,v| k =~ /\APort/}
-      opts[:Port] ||= HTTP__DEFAULT_PORT
-    end
-    handler.run app, opts
+    
+    port = opts.delete(:port)
+    opts[:Port] ||= port || HTTP__DEFAULT_PORT
+    
+    host = opts.delete(:host) || opts.delete(:bind)
+    opts[:Host] = host if host
+    
+    Rack::Handler.const_get(server).run app, opts
   end
 
   # Rack interface to mounted controllers

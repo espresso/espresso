@@ -187,7 +187,7 @@ app.run :server => :Thin
 **Example:** Use EventedMongrel server with custom options
 
 ```ruby
-app.run :server => :EventedMongrel, :Port => 9090, :num_processors => 100
+app.run :server => :EventedMongrel, :port => 9090, :num_processors => 100
 ```
 
 **[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**

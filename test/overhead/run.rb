@@ -8,11 +8,16 @@ results = {}
 {
   'espresso' => 60082,
 }.each_pair do |app, port|
-  if pid = Process.spawn("ruby #{wd + app}-app.rb #{port} &> /dev/null")
+  if pid = Process.spawn("ruby #{wd + app}-app.rb #{port}")
     puts 'testing %s app ... ' % app
     sleep 2
+    status = %x[curl -s -o /dev/null -w "%{http_code}" 127.0.0.1:#{port}].strip.to_i
+    unless status == 200
+      puts "=== Failed to start #{app} app ===\n"
+      exit 1
+    end
     pids[:app] << pid
-    cmd = "ab -n1000 -c100 -q localhost:#{port}/|grep 'Requests per second'"
+    cmd = "ab -n1000 -c100 -q 127.0.0.1:#{port}/|grep 'Requests per second'"
     files[app] = Tempfile.new(app)
     pids[:bench] << Process.spawn(cmd, :out => files[app].path)
   end
