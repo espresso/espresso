@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 
-version = "0.3.7"
+version = "0.3.8"
 Gem::Specification.new do |s|
 
   s.name = 'e'
@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.authors = ['Silviu Rusu']
   s.email = ['slivuz@gmail.com']
   s.homepage = 'https://github.com/espresso/espresso'
-  s.summary = 'Espresso Framework %s' % version
+  s.summary = 'e-%s' % version
   s.description = 'Scalable Framework aimed at Speed and Simplicity'
 
   s.required_ruby_version = '>= 1.8.7'
@@ -16,9 +16,9 @@ Gem::Specification.new do |s|
   s.add_dependency 'rack', '~> 1.4'
   s.add_dependency 'tilt', '~> 1.3'
 
-  s.add_development_dependency 'rake', '~> 10'
+  s.add_development_dependency 'rake',     '~> 10'
   s.add_development_dependency 'specular', '>= 0.1.8'
-  s.add_development_dependency 'sonar', '>= 0.1.2'
+  s.add_development_dependency 'sonar',    '>= 0.1.2'
   s.add_development_dependency 'slim'
   s.add_development_dependency 'haml'
 
