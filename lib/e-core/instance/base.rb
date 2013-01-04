@@ -1,5 +1,19 @@
 class E
   e_attributes :env, :request, :action, :format, :canonical
+  e_attributes :response, :params, :action_with_format # getters will be overridden
+
+  def response
+    @__e__response ||= Rack::Response.new
+  end
+
+  def params
+    @__e__params ||= EspressoFrameworkUtils.indifferent_params(request.params)
+  end
+
+  def action_with_format
+    @__e__action_with_format ||=
+      (format ? action.to_s + format : action).freeze
+  end
 
   def call env
     @__e__env = env
@@ -12,10 +26,11 @@ class E
       @__e__format,
         @__e__canonical,
         @__e__action,
-        @__e__action_arguments, required_arguments =
+        @__e__action_arguments,
+        required_arguments =
         (rest_map[env[ENV__REQUEST_METHOD]] || []).map { |e| e.freeze }
 
-      @__e__request = EspressoFrameworkRequest.new(env)
+      self.request = EspressoFrameworkRequest.new(env)
 
       action || fail(STATUS__NOT_FOUND)
 
@@ -113,30 +128,13 @@ class E
   end
   private :clean_format_from_last_param!
 
-  def response
-    @__e__response ||= Rack::Response.new
-  end
-
-  def params
-    @__e__params ||= EspressoFrameworkUtils.indifferent_params(request.params)
-  end
-
   # Set or retrieve the response status code.
   def status(value=nil)
     response.status = value if value
     response.status
   end
 
-  def base_url
-    self.class.base_url
-  end
 
-
-
-  def action_with_format
-    @__e__action_with_format ||=
-      (format ? action.to_s + format : action).freeze
-  end
 
   # @example ruby 1.8
   #    def index id, status
@@ -180,6 +178,11 @@ class E
     alias action_params action_params_ruby19
   else
     alias action_params action_params__array
+  end
+
+  # following methods are delegated to class
+  def base_url
+    self.class.base_url
   end
 
   def setups position
