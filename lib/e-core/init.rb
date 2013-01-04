@@ -6,7 +6,16 @@ end
 class << E
   include EspressoFrameworkConstants
   include EspressoFrameworkUtils
+end
 
+class EApp
+  include EspressoFrameworkConstants
+  include EspressoFrameworkUtils
+end
+
+
+class << E
+  # creates a generic setup method for various
   def define_setup_method meth
     (class << self; self end).class_exec do
       define_method meth do |*args, &proc|
@@ -14,11 +23,25 @@ class << E
       end
     end
   end
-end
 
-class EApp
-  include EspressoFrameworkConstants
-  include EspressoFrameworkUtils
+  # creates a reader method + @__e__-type instance variable
+  def e_attr(var, block=nil)
+    if block
+      #TODO
+    else
+      self.class_eval(
+        %Q{
+          def #{var}
+            @__e__#{var}
+          end
+
+          def #{var}=(value)
+            @__e__#{var} = value
+          end
+        }
+      )
+    end
+  end
 end
 
 class Module
