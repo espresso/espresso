@@ -54,58 +54,51 @@ module ECoreTest__Redirect
     News.mount
   end
 
-  Spec.new self do
-    app Cms::Pages.mount
-    map Cms::Pages.base_url
-
-    def redirected? response, status = 302
-      check(response.status) == status
+  Spec.new Cms::Pages do
+    def vars_redirected?(val)
+      is?(VARS['redirected']) == val
     end
 
-    Test :redirect do
-
+    it :redirect do
       VARS['redirected'] = (rand = rand())
       get :test_redirect
-      was(last_response).redirected?
-      is?(last_response.headers['Location']) == Cms::Pages.route(:index, :var => :val)
-      is?(VARS['redirected']) == rand
+      is_redirect?
+      is_location? Cms::Pages.route(:index, :var => :val)
+      vars_redirected? rand
     end
 
-    Test :permanent_redirect do
-
+    it :permanent_redirect do
       VARS['redirected'] = (rand = rand())
       get :test_permanent_redirect
-      was(last_response).redirected? 301
-      is?(VARS['redirected']) == rand
+      is_redirect? 301
+      vars_redirected? rand
     end
 
-    Test :delayed_redirect do
-
+    it :delayed_redirect do
       VARS['redirected'] = (rand = rand())
       get :test_delayed_redirect
-      was(last_response).redirected?
-      is?(VARS['redirected']) == :test_delayed_redirect
+      is_redirect?
+      vars_redirected? :test_delayed_redirect
     end
 
-    Test :reload do
+    it :reload do
       get :test_reload, :reload => '1'
-      was(last_response).redirected?
+      is_redirect?
       follow_redirect!
-      is?(last_response.status) == 200
-      is?(last_response.body) == 'reloaded'
+      is_ok_body? 'reloaded'
     end
 
     Test :inner_app do
       get :inner_app
-      was(last_response).redirected?
-      is?(last_response.headers['Location']) == Cms::News.route(:index, :var => :val)
+      is_redirect?
+      is_location? Cms::News.route(:index, :var => :val)
     end
 
     Test :redirect_outer do
       target = 'http://google.com'
       get :redirect_outer, :target => target
-      was(last_response).redirected?
-      is?(last_response.headers['Location']) == target
+      is_redirect?
+      is_location? target
     end
 
   end
