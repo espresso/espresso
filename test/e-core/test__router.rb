@@ -121,7 +121,7 @@ module ECoreTest__Router
           is_ok_body? ['a1', 'a2', 'a3', 'etc'].to_s
         else
           #'return 404 cause trailing default params does not work on Appetite running on ruby1.8'
-          is_not_found? 404
+          is_not_found?
           is_body? 'max params accepted: 1; params given: 4'
         end
       end
@@ -159,8 +159,8 @@ module ECoreTest__Router
             [[], url],
             [[:arg1],         url + '/arg1'],
             [[:arg1, :arg2],  url + '/arg1/arg2'],
-            [[:arg1, :var => 'val'], url + '/arg1?var=val'],
-            [[:arg1, :var => 'val', :nil => nil], url + '/arg1?var=val']
+            [[:arg1, {:var => 'val'}], url + '/arg1?var=val'],
+            [[:arg1, {:var => 'val', :nil => nil}], url + '/arg1?var=val']
           ]
         variations.each do |args|
           is?(object.route(action, *args[0])) == args[1]
