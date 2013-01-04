@@ -150,6 +150,12 @@ class E
       (format ? action.to_s + format : action).freeze
   end
 
+  # @example ruby 1.8
+  #    def index id, status
+  #      action_params
+  #    end
+  #    # /100/active
+  #    #> ['100', 'active']
   def action_params__array
     # do not freeze path params here.
     # they will be frozen by #call
@@ -158,37 +164,33 @@ class E
       env[ENV__PATH_INFO].to_s.split('/').reject { |s| s.empty? }
   end
 
-  if RESPOND_TO__PARAMETERS
-    # @example ruby 1.9+
-    #    def index id, status
-    #      action_params
-    #    end
-    #    # /100/active
-    #    #> {:id => '100', :status => 'active'}
-    def action_params
-      return @__e__action_params if @__e__action_params
+  # @example ruby 1.9+
+  #    def index id, status
+  #      action_params
+  #    end
+  #    # /100/active
+  #    #> {:id => '100', :status => 'active'}
+  def action_params_ruby19
+    return @__e__action_params if @__e__action_params
 
-      action_params, given_params = {}, Array.new(action_params__array) # faster than dup
-      @__e__action_arguments.each_with_index do |type_name, index|
-        type, name = type_name
-        if type == :rest
-          action_params[name] = []
-          until given_params.size < (@__e__action_arguments.size - index)
-            action_params[name] << given_params.shift
-          end
-        else
-          action_params[name] = given_params.shift
+    action_params, given_params = {}, Array.new(action_params__array) # faster than dup
+    @__e__action_arguments.each_with_index do |type_name, index|
+      type, name = type_name
+      if type == :rest
+        action_params[name] = []
+        until given_params.size < (@__e__action_arguments.size - index)
+          action_params[name] << given_params.shift
         end
+      else
+        action_params[name] = given_params.shift
       end
-      @__e__action_params = EspressoFrameworkUtils.indifferent_params(action_params).freeze
     end
+    @__e__action_params = EspressoFrameworkUtils.indifferent_params(action_params).freeze
+  end
+
+  if E.is_ruby19?
+    alias action_params action_params_ruby19
   else
-    # @example ruby 1.8
-    #    def index id, status
-    #      action_params
-    #    end
-    #    # /100/active
-    #    #> ['100', 'active']
     alias action_params action_params__array
   end
 

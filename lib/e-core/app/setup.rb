@@ -14,7 +14,6 @@ class EApp
     @root = ('%s/' % path).sub(/\/+\Z/, '/').freeze if path
     @root ||= (::Dir.pwd << '/').freeze
   end
-  alias app_root root
 
   # allow app to use sessions.
   #
@@ -84,7 +83,6 @@ class EApp
   def basic_auth opts = {}, &proc
     use Rack::Auth::Basic, opts[:realm] || 'AccessRestricted', &proc
   end
-  alias auth basic_auth
 
   # (see #basic_auth)
   def digest_auth opts = {}, &proc
@@ -209,10 +207,9 @@ class EApp
   def rewrite rule = nil, &proc
     rewrite_rules << [rule, proc] if proc
   end
-  alias rewrite_rule rewrite
 
   def rewrite_rules
     @rewrite_rules ||= []
   end
-  
+
 end

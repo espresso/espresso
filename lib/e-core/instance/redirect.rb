@@ -1,5 +1,5 @@
 class E
-  
+
   # simply reload the page, using current GET params.
   # to use custom GET params, pass a hash as first argument.
   #
@@ -38,6 +38,5 @@ class E
     response.body = []
     response.redirect target, status
   end
-  alias deferred_redirect delayed_redirect
 
 end
