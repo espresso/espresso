@@ -149,6 +149,50 @@ class << E
     [request_methods, pages + dirs].freeze
   end
 
+  def generate_route_map!
+    @routes, @route_by_action, @route_by_action_with_format = [], {}, {}
+    public_actions.each do |action|
+      route, request_methods = action_to_route(action)
+      
+      @route_by_action[action] = route
+      (formats = formats(action)).each do |format|
+        @route_by_action_with_format[action.to_s + format] = route
+      end
+
+      @routes << [
+        self,
+        action,
+        route,
+        /\A#{Regexp.escape(route).gsub('/', '/+')}(.*)/n,
+        request_methods,
+        formats
+      ]
+    end
+  end
+
+  def action_to_route action
+    route = action.to_s
+    request_methods = Array.new(HTTP__REQUEST_METHODS)
+    HTTP__REQUEST_METHODS.each do |m|
+      regex = /\A#{m}_/i
+      if action.to_s =~ regex
+        request_methods = [m]
+        route = route.sub(regex, '')
+        break
+      end
+    end
+    
+    if route == E__INDEX_ROUTE
+      route = ''
+    else
+      path_rules.keys.sort.reverse.each do |key|
+        route = route.gsub(key.is_a?(Regexp) ? key : /#{key}/, path_rules[key])
+      end
+    end
+
+    [rootify_url(base_url, route).freeze, request_methods.freeze].freeze
+  end
+
   if RESPOND_TO__PARAMETERS # ruby 1.9
     # returning required parameters calculated by arity,
     # and, if available, parameters list.

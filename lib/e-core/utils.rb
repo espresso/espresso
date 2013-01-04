@@ -63,14 +63,20 @@ module EspressoFrameworkUtils
   # @param [Array] args
   # @return [String]
   def build_path path, *args
-    path = path.to_s
     args.compact!
-
-    query_string = args.last.is_a?(Hash) && (h = args.pop.delete_if{|k,v| v.nil?}).any? ?
-      '?' << ::Rack::Utils.build_nested_query(h) : ''
-
-    args.size == 0 || path =~ /\/\Z/ || args.unshift('')
-    path + args.join('/') << query_string
+    path = path.to_s.dup
+    if args.any?
+      # making sure there are a slash between path and args
+      path << '/' unless path =~ /\/\Z/
+      
+      # if last arg is a Hash, turn it into query string.
+      # it is important to pop args before joining  them.
+      if args.last.is_a?(Hash) && (params = args.pop.delete_if {|k,v| v.nil?}).any?
+        return path << args.join('/') << '?' << Rack::Utils.build_nested_query(params)
+      end
+      return path << args.join('/')
+    end
+    path
   end
   module_function :build_path
 
