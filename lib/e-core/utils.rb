@@ -65,10 +65,10 @@ module EspressoFrameworkUtils
   def build_path path, *args
     path = path.to_s
     args.compact!
-    
+
     query_string = args.last.is_a?(Hash) && (h = args.pop.delete_if{|k,v| v.nil?}).any? ?
       '?' << ::Rack::Utils.build_nested_query(h) : ''
-    
+
     args.size == 0 || path =~ /\/\Z/ || args.unshift('')
     path + args.join('/') << query_string
   end
@@ -100,6 +100,21 @@ module EspressoFrameworkUtils
   end
   module_function :indifferent_hash
 
+  # call it like activesupport method
+  # convert constant names to underscored (file) names
+  def underscore(str)
+    str.gsub(/([A-Z]+)([A-Z][a-z])/, '\1_\2').gsub(/([a-z\d])([A-Z])/, '\1_\2').downcase
+  end
+  module_function :underscore
+
+
+  # returns the class names without modules
+  def demodulize(const)
+    const.name.to_s.split('::').last
+  end
+  module_function :demodulize
+
+
   # instance_exec at runtime is expensive enough,
   # so compiling procs into methods at load time.
   def proc_to_method *chunks, &proc
@@ -117,5 +132,9 @@ module EspressoFrameworkUtils
       VIEW__EXT_BY_ENGINE[Slim::Template] = '.slim'.freeze
     end
     def __method__; end
+  end
+
+  def is_ruby19?
+    RUBY_VERSION.to_f > 1.8
   end
 end

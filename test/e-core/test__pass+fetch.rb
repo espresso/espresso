@@ -52,38 +52,46 @@ module ECoreTest__Pass
   Spec.new self do
     app Cms.mount
 
-    ARGS = ["k", "v"].freeze
-    PARAMS = {"var" => "val"}.freeze
+    ARGS   = ["k", "v"]
+    PARAMS = {"var" => "val"}
 
-    Test :get_pass do
-      body = get(ARGS.join('/'), PARAMS.dup).body
-      refute(body) =~ /index/
-      expect(body) == [ARGS, PARAMS].inspect
+    def args
+      ARGS.join('/')
     end
 
-    Test :post_pass do
-      body = post(ARGS.join('/'), PARAMS.dup).body
-      is(body) == [ARGS, PARAMS].inspect
+    def params
+      PARAMS.dup
     end
 
-    Test :custom_query_string do
-      body = get(:custom_query_string, ARGS.join('/'), PARAMS.dup).body
-      expect(body) == [ARGS, {ARGS.first => ARGS.last}].inspect
+    it :get_pass do
+      get args, params
+      refute(last_response.body) =~ /index/
+      is_body? [ARGS, PARAMS].inspect
     end
 
-    Test :inner_app do
-      get :inner_app, :catcher, ARGS.join('/'), PARAMS.dup
-      check(last_response.body) == "k=v/var=val"
+    it :post_pass do
+      post args, params
+      is_body? [ARGS, PARAMS].inspect
     end
 
-    Test :invoke do
-      get :invoke, :catcher, ARGS.join('/'), PARAMS.dup
-      check(last_response.body) == "200/k=v/var=val"
+    it :custom_query_string do
+      get :custom_query_string, args, params
+      is_body? [ARGS, {ARGS.first => ARGS.last}].inspect
     end
 
-    Test :fetch do
-      get :fetch, :catcher, ARGS.join('/'), PARAMS.dup
-      check(last_response.body) == "k=v/var=val"
+    it :inner_app do
+      get :inner_app, :catcher, args, params
+      is_body? "k=v/var=val"
+    end
+
+    it :invoke do
+      get :invoke, :catcher, args, params
+      is_body? "200/k=v/var=val"
+    end
+
+    it :fetch do
+      get :fetch, :catcher, args, params
+      is_body? "k=v/var=val"
     end
 
   end

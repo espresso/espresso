@@ -32,166 +32,162 @@ module ECoreTest__Router
 
   Spec.new App do
 
-    Testing 'zero args' do
-      r = get
-      is?(r.status) == 200
-      is?(r.body) == 'index'
+    describe 'zero args' do
+      it do
+        r = get
+        is_ok_body? 'index'
 
-      r = post
-      is?(r.status) == 200
-      is?(r.body) == 'index'
+        r = post
+        is_ok_body? 'index'
 
-      Should 'return 404 cause it does not accept any args' do
+      end
+
+      it 'returns 404 cause it does not accept any args' do
         r = get :a1
-        is?(r.status) == 404
+        is_not_found?
 
         r = get :a1, :a2
-        is?(r.status) == 404
-      end
-
-    end
-
-    Testing 'one arg' do
-      r = get :exact, :arg
-      is?(r.status) == 200
-      is?(r.body) == 'arg'
-
-      r = post :exact, :arg
-      is?(r.status) == 200
-      is?(r.body) == 'arg'
-
-      Should 'return 404 cause called without args' do
-        r = get :exact
-        is?(r.status) == 404
-
-        r = post :exact
-        is?(r.status) == 404
-      end
-
-      Should 'return 404 cause redundant args provided' do
-        r = post :exact, :arg, :redundant_arg
-        is?(r.status) == 404
-      end
-
-      Should 'return 404 cause :head_exact action does not exists' do
-        r = head :exact
-        expect(r.status) == 404
+        is_not_found?
       end
     end
 
-    Testing 'one or two args' do
-      r = get :one_or_two, :a1
-      is?(r.status) == 200
-      is?(r.body) == ['a1', nil].to_s
+    describe 'one arg' do
+      it do
+        get :exact, :arg
+        is_ok_body? 'arg'
 
-      r = get :one_or_two, :a1, :a2
-      if RUBY_VERSION.to_f > 1.8
-        is?(r.status) == 200
-        is?(r.body) == ['a1', 'a2'].to_s
-      else
-        is?(r.status) == 404
-        is?(r.body) == 'max params accepted: 1; params given: 2'
+        post :exact, :arg
+        is_ok_body? 'arg'
       end
 
-      Should 'return 404 cause no args provided' do
+      it 'returns 404 cause called without args' do
+        get :exact
+        is_not_found?
+
+        post :exact
+        is_not_found?
+      end
+
+      it 'return 404 cause redundant args provided' do
+        post :exact, :arg, :redundant_arg
+        is_not_found?
+      end
+
+      it 'return 404 cause :head_exact action does not exists' do
+        head :exact
+        is_not_found?
+      end
+    end
+
+
+    describe 'one or two args' do
+      it do
+        r = get :one_or_two, :a1
+        is_ok_body? ['a1', nil].to_s
+
+        r = get :one_or_two, :a1, :a2
+
+        if E.is_ruby19?
+          is_ok_body? ['a1', 'a2'].to_s
+        else
+          is_not_found?
+          is_body? 'max params accepted: 1; params given: 2'
+        end
+      end
+
+      it 'return 404 cause no args provided' do
         r = get :one_or_two
-        expect(r.status) == 404
+        is_not_found?
       end
 
-      Should 'return 404 cause redundant args provided' do
+      it 'return 404 cause redundant args provided' do
         r = get :one_or_two, 1, 2, 3, 4, 5, 6
-        expect(r.status) == 404
+        is_not_found?
       end
 
-      Should 'return 404 cause :post_one_or_two action does not exists' do
+      it 'return 404 cause :post_one_or_two action does not exists' do
         r = post :one_or_two
-        expect(r.status) == 404
+        is_not_found?
       end
     end
 
-    Testing 'one or more' do
-      r = get :one_or_more, :a1
-      is?(r.status) == 200
-      is?(r.body) == ['a1'].to_s
+    describe 'one or more' do
+      it do
+        r = get :one_or_more, :a1
+        is_ok_body? ['a1'].to_s
 
-      r = get :one_or_more, :a1, :a2, :a3, :etc
-      if RUBY_VERSION.to_f > 1.8
-        is?(r.status) == 200
-        is?(r.body) == ['a1', 'a2', 'a3', 'etc'].to_s
-      else
-        Should 'return 404 cause trailing default params does not work on E running on ruby1.8' do
-          is?(r.status) == 404
-          is?(r.body) == 'max params accepted: 1; params given: 4'
+        r = get :one_or_more, :a1, :a2, :a3, :etc
+        if E.is_ruby19?
+          is_ok_body? ['a1', 'a2', 'a3', 'etc'].to_s
+        else
+          #'return 404 cause trailing default params does not work on Appetite running on ruby1.8'
+          is_not_found?
+          is_body? 'max params accepted: 1; params given: 4'
         end
       end
     end
 
-    Testing 'any number of args' do
-      r = get :any
-      is?(r.status) == 200
-      is?(r.body) == [].to_s
+  describe 'any number of args' do
+      it do
+        r = get :any
+        is_ok_body? [].to_s
 
-      r = get :any, :number, :of, :args
-      if RUBY_VERSION.to_f > 1.8
-        is?(r.status) == 200
-        is?(r.body) == ['number', 'of', 'args'].to_s
-      else
-        Should 'return 404 cause splat params does not work on E running on ruby1.8' do
-          is?(r.status) == 404
-          is?(r.body) == 'max params accepted: 0; params given: 3'
+        r = get :any, :number, :of, :args
+        if E.is_ruby19?
+          is_ok_body? ['number', 'of', 'args'].to_s
+        else
+          #'return 404 cause splat params does not work on Appetite running on ruby1.8' do
+          is_not_found?
+          is_body? 'max params accepted: 0; params given: 3'
         end
       end
-
     end
 
-    Ensure '`[]` and `route` works properly' do
-      map = {
-          :index => '/index',
-          :exact => '/exact',
+
+
+
+    describe '`[]` and `route` works properly' do
+      @map = {
+          :index      => '/index',
+          :exact      => '/exact',
           :post_exact => '/exact',
-      }
+        }
 
-      When 'called at class level' do
-        map.each_pair do |action, url|
-          url = map() + url
-          expect(App[action]) == url
-
-          expect(App.route action) == url
-          expect(App.route action, :arg1) == url + '/arg1'
-          expect(App.route action, :arg1, :arg2) == url + '/arg1/arg2'
-          expect(App.route action, :arg1, :var => 'val') == url + '/arg1?var=val'
-          expect(App.route action, :arg1, :var => 'val', :nil => nil) == url + '/arg1?var=val'
-
-          App.formats(action).each do |format|
-            expect(App.route action.to_s + format) == url + format
-            is(App.route action.to_s + '.blah') == map() + '/' + action.to_s + '.blah'
-          end
-
+      def check_route_functions(object, action, url)
+        is?(object[action]) == url
+        variations = [
+            [[], url],
+            [[:arg1],         url + '/arg1'],
+            [[:arg1, :arg2],  url + '/arg1/arg2'],
+            [[:arg1, {:var => 'val'}], url + '/arg1?var=val'],
+            [[:arg1, {:var => 'val', :nil => nil}], url + '/arg1?var=val']
+          ]
+        variations.each do |args|
+          is?(object.route(action, *args[0])) == args[1]
         end
 
-        is(App.route :blah) == map() + '/blah'
+        App.formats(action).each do |format|
+          is?(object.route(action.to_s + format)) == (url + format)
+          is?(object.route(action.to_s + '.blah')) == (map() + '/' + action.to_s + '.blah')
+        end
 
+        is?(object.route(:blah)) == (map() + '/blah')
       end
 
-      And 'when called at instance level' do
-        ctrl = App.allocate
-
-        map.each_pair do |action, url|
+      it 'called at class level' do
+        @map.each_pair do |action, url|
           url = map() + url
-          expect(ctrl[action]) == url
-          expect(ctrl.route action) == url
-          expect(ctrl.route action, :nil => nil) == url
-
-          App.formats(action).each do |format|
-            expect(ctrl.route(action.to_s + format)) == url + format
-            is(ctrl.route(action.to_s + '.blah')) == map() + '/' + action.to_s + '.blah'
-          end
+          check_route_functions(App, action, url)
         end
+      end
 
-        is(ctrl.route :blah) == map() + '/blah'
-
+      it 'when called at instance level' do
+        ctrl = App.new
+        @map.each_pair do |action, url|
+          url = map() + url
+          check_route_functions(ctrl, action, url)
+        end
       end
     end
-
   end
 end

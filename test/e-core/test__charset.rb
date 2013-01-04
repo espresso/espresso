@@ -1,6 +1,6 @@
 module ECoreTest__Charset
 
-  class App < E
+  class CharsetApp < E
 
     charset 'ISO-8859-1'
 
@@ -13,7 +13,7 @@ module ECoreTest__Charset
     end
 
     format '.json'
-    
+
     def index
       charset 'UTF-32' if json?
       __method__
@@ -34,28 +34,25 @@ module ECoreTest__Charset
 
   end
 
-  Spec.new App do
+  Spec.new CharsetApp do
+    it do
+      get
+      is_charset? 'ISO-8859-1'
 
-    def is_of_charset response, charset
-      prove(response.header['Content-Type']) =~ %r[charset=#{Regexp.escape charset}]
+      get :utf_16
+      is_charset? 'UTF-16'
+
+      get :utf_32
+      is_charset? 'UTF-32'
+
+      get :iso_8859_2
+      is_charset? 'ISO-8859-2'
+      is_content_type? '.xml'
     end
 
-    get
-    check(last_response).is_of_charset 'ISO-8859-1'
-
-    get :utf_16
-    check(last_response).is_of_charset 'UTF-16'
-
-    get :utf_32
-    check(last_response).is_of_charset 'UTF-32'
-
-    get :iso_8859_2
-    check(last_response).is_of_charset 'ISO-8859-2'
-    prove(last_response.header['Content-Type']) =~ %r[#{Rack::Mime::MIME_TYPES.fetch '.xml'}]
-
-    Testing 'setup by giving action name along with format' do
+    it 'setup by giving action name along with format' do
       get 'index.json'
-      check(last_response).is_of_charset 'UTF-32'
+      is_charset? 'UTF-32'
     end
   end
 end

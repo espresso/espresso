@@ -14,91 +14,58 @@ module ECoreTest__Canonical
   end
 
   module Hlp
-    def ok? response
-      check(response.status) == EspressoFrameworkConstants::STATUS__OK
+    def check_variations(variations)
+      variations.each do |args|
+        self.send(args[0], *args[1])
+        is_ok_body? args[2]
+      end
     end
   end
 
   Spec.new self do
-
     include Hlp
     app(App.mount '/', '/a')
 
-    Testing :base_url do
-      get :index
-      is(last_response).ok?
-      is?(last_response.body) == '/index'
+    it "base_url" do
+      variations = [
+        [:get, [:index], '/index'],
+        [:get, [], '/'],
+        [:post, [:eatme], '/eatme'],
+      ]
 
-      get
-      is(last_response).ok?
-      is?(last_response.body) == '/'
-
-      post :eatme
-      is(last_response).ok?
-      is?(last_response.body) == '/eatme'
+      check_variations(variations)
     end
 
-    Testing :controller_canonicals do
-      get :cms, :index
-      is(last_response).ok?
-      is?(last_response.body) == '/cms/index'
+    it "controller_canonicals" do
+      variations = [
+        [:get, [:cms, :index], '/cms/index'],
+        [:get, [:cms], '/cms'],
+        [:post, [:cms, :eatme], '/cms/eatme'],
+        [:get, [:pages, :index], '/pages/index'],
+        [:get, [:pages], '/pages'],
+        [:post, [:pages, :eatme], '/pages/eatme'],
+      ]
 
-      get :cms
-      is(last_response).ok?
-      is?(last_response.body) == '/cms'
-
-      post :cms, :eatme
-      is(last_response).ok?
-      is?(last_response.body) == '/cms/eatme'
-
-      get :pages, :index
-      is(last_response).ok?
-      is?(last_response.body) == '/pages/index'
-
-      get :pages
-      is(last_response).ok?
-      is?(last_response.body) == '/pages'
-
-      post :pages, :eatme
-      is(last_response).ok?
-      is?(last_response.body) == '/pages/eatme'
+      check_variations(variations)
     end
+
   end
 
   Spec.new self do
-
     include Hlp
     app(App.mount '/', '/a')
 
     Testing :app_canonicals do
+      variations = [
+        [:get, [:a], '/a'],
+        [:get, [:a, :cms], '/a/cms'],
+        [:get, [:a, :cms, :index], '/a/cms/index'],
+        [:get, [:a, :pages, :index], '/a/pages/index'],
+        [:get, [:a, :pages], '/a/pages'],
+        [:post, [:a, :pages, :eatme], '/a/pages/eatme'],
+      ]
 
-      get :a
-      is(last_response).ok?
-      is?(last_response.body) == '/a'
-
-      get :a, :cms, :index
-      is(last_response).ok?
-      is?(last_response.body) == '/a/cms/index'
-
-      get :a, :cms
-      is(last_response).ok?
-      is?(last_response.body) == '/a/cms'
-
-      post :a, :cms, :eatme
-      is(last_response).ok?
-      is?(last_response.body) == '/a/cms/eatme'
-
-      get :a, :pages, :index
-      is(last_response).ok?
-      is?(last_response.body) == '/a/pages/index'
-
-      get :a, :pages
-      is(last_response).ok?
-      is?(last_response.body) == '/a/pages'
-
-      post :a, :pages, :eatme
-      is(last_response).ok?
-      is?(last_response.body) == '/a/pages/eatme'
+      check_variations(variations)
     end
 
   end

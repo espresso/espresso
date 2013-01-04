@@ -17,36 +17,42 @@ module ECoreTest__DiscoverControllers
 
   Spec.new self do
 
-    Testing 'String name' do
-      app EApp.new(false).mount('ControllerNumberOne')
-      get :one
-      expect(last_response.status) == 200
-      get :two
-      expect(last_response.status) == 404
+    describe 'String name' do
+      it do
+        app EApp.new(false).mount('ControllerNumberOne')
+        get :one
+        is_ok?
+        get :two
+        is_not_found?
+      end
 
-      Should 'also work with full qualified name' do
+      it 'works with full qualified name' do
         app EApp.new(false).mount('ECoreTest__DiscoverControllers::ControllerNumberTwo')
         get :one
-        expect(last_response.status) == 404
+        is_not_found?
         get :two
-        expect(last_response.status) == 200
+        is_ok?
       end
     end
 
-    Testing 'Symbol name' do
-      app EApp.new(false).mount(:ControllerNumberTwo)
-      get :one
-      expect(last_response.status) == 404
-      get :two
-      expect(last_response.status) == 200
+    describe 'Symbol name' do
+      it do
+        app EApp.new(false).mount(:ControllerNumberTwo)
+        get :one
+        is_not_found?
+        get :two
+        is_ok?
+      end
     end
 
-    Testing 'Regex name' do
-      app EApp.new(false).mount(/ControllerNumber/)
-      get :one
-      expect(last_response.status) == 200
-      get :two
-      expect(last_response.status) == 200
+    describe 'Regex name' do
+      it do
+        app EApp.new(false).mount(/ControllerNumber/)
+        get :one
+        is_ok?
+        get :two
+        is_ok?
+      end
     end
 
   end

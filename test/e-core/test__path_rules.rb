@@ -48,38 +48,36 @@ module ECoreTest__PathRules
   end
 
   Spec.new self do
-    Test :default_rules do
-      app DefaultRules.mount
-      map DefaultRules.base_url
-
-      %w[
-      four.slashes
-      three-slashes
-      two/slashes
-      ].each do |action|
+    def check_path_rules(app_to_test, methods)
+      app app_to_test.mount
+      map app_to_test.base_url
+      methods.each do |action|
         get action
-        assert(last_response.body) == action
+        is_body? action
       end
-
     end
 
-    Test :custom_rules do
-      app CustomRules.mount
-      map CustomRules.base_url
-
-      %w[
-      dot.html
-      slash/html
-      dash-html
-      comma,html
-      brackets(html)
-      ].each do |action|
-        get action
-        assert(last_response.body) == action
-      end
-
+    it "default_rules" do
+      check_path_rules(DefaultRules,
+        %w[
+          four.slashes
+          three-slashes
+          two/slashes
+          ]
+      )
     end
 
+    it "custom_rules" do
+      check_path_rules(CustomRules,
+        %w[
+          dot.html
+          slash/html
+          dash-html
+          comma,html
+          brackets(html)
+          ]
+      )
+    end
   end
 end
 

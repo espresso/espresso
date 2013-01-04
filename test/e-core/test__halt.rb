@@ -17,35 +17,33 @@ module ECoreTest__Halt
 
   Spec.new App do
 
-    Describe 'sending status and body' do
+    it 'sending status and body' do
       r = get :haltme, :status => 500, :body => :fatal_error!
-      expect(r.status) == 500
-      is?(r.body) == 'fatal_error!'
+      is_status? 500
+      is_body? 'fatal_error!'
     end
 
-    Ensure 'it accepts empty body' do
+    it 'accepts empty body' do
       r = get :haltme, :status => 301
-      expect(r.status) == 301
-      is?(r.body) == ''
+      is_redirect? 301
+      is_body? ''
     end
 
-    Ensure 'default status code is 200' do
+    it 'default status code is 200' do
       r = get :haltme, :body => 'halted'
-      expect(r.status) == 200
-      is?(r.body) == 'halted'
+      is_ok_body? 'halted'
     end
 
-    Ensure 'it works without arguments' do
+    it 'works without arguments' do
       r = get :haltme
-      expect(r.status) == 200
-      is?(r.body) == ''
+      is_ok_body? ''
     end
 
-    Testing 'custom response' do
+    it 'custom response' do
       r = post :send_response, 301, 'redirecting...', 'Location' => 'http://to.the.sky'
-      expect(r.status) == 301
-      expect(r.body) == 'redirecting...'
-      is?(r.header['Location']) == 'http://to.the.sky'
+      is_redirect? 301
+      is_body? 'redirecting...'
+      is_location? 'http://to.the.sky'
     end
 
   end

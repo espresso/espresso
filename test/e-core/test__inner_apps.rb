@@ -19,19 +19,16 @@ module ECoreTest__InnerApps
     end
     app eapp
 
-    get
-    expect(last_response.status) == 200
-    expect(last_response.body) == 'index'
+    it do
+      get
+      is_ok_body? 'index'
 
-    get '/custom-module'
-    expect(last_response.status) == 200
-    expect(last_response.body) == 'InnerApp'
-    expect(last_response['Content-Type']) == 'custom'
-
-    get '/canonical'
-    expect(last_response.status) == 200
-    expect(last_response.body) == 'InnerApp'
-    expect(last_response['Content-Type']) == 'custom'
+      %w(custom-module canonical).each do |url|
+        get "/#{url}"
+        is_ok_body? 'InnerApp'
+        is_content_type? 'custom'
+      end
+    end
 
   end
 end

@@ -25,17 +25,17 @@ module ECoreTest__AppMap
     app EApp.new { map '/some/path'; mount App }
 
     get '/some/path/app'
-    is(last_response.status) == 200
+    is_ok?
 
     app EApp.new { map '/some/another/path'; mount Cms }
 
     get '/some/another/path/pages'
-    is(last_response.status) == 200
+    is_ok?
 
     app EApp.new { map '/yet/another/path'; mount Foo, '/blah' }
 
     get '/yet/another/path/blah/bar'
-    is(last_response.status) == 200
+    is_ok?
 
   end
 end

@@ -14,36 +14,29 @@ module ECoreTest__AppAuth
       auth { |u, p| [u, p] == ['b', 'b'] }
     }
 
-    def protected?
-      check { last_response.status } == 401
-    end
+    describe 'existing controllers are Basic protected' do
+      it do
+        reset_basic_auth!
 
-    def authorized?
-      check { last_response.status } == 200
-    end
+        get
+        protected?
 
-    Ensure 'existing controllers are Basic protected' do
+        authorize 'b', 'b'
 
-      reset_basic_auth!
+        get
+        authorized?
 
-      get
-      protected?
+        reset_basic_auth!
 
-      authorize 'b', 'b'
+        get
+        protected?
+      end
 
-      get
-      authorized?
-
-      reset_basic_auth!
-
-      get
-      protected?
-
-      Ensure 'any location, existing or not, requested via any request method, are Basic protected' do
+      it 'any location, existing or not, requested via any request method, are Basic protected' do
         reset_auth!
 
         get :foo
-        is(protected?)
+        protected?
 
         post
         protected?
@@ -61,26 +54,27 @@ module ECoreTest__AppAuth
       digest_auth { |u| {'d' => 'd'}[u]  }
     }
 
-    Ensure 'existing controllers are Digest protected' do
+    describe 'existing controllers are Digest protected' do
+      it do
+        reset_digest_auth!
 
-      reset_digest_auth!
+        get
+        protected?
 
-      get
-      protected?
+        digest_authorize 'd', 'd'
 
-      digest_authorize 'd', 'd'
+        get
+        authorized?
 
-      get
-      authorized?
+        reset_digest_auth!
 
-      reset_digest_auth!
+        get
+        protected?
+      end
 
-      get
-      protected?
-
-      Ensure 'any location, existing or not, requested via any request method, are Digest protected' do
+      it 'any location, existing or not, requested via any request method, are Digest protected' do
         reset_auth!
-        
+
         get :foo
         is(protected?)
 

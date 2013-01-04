@@ -14,25 +14,30 @@ module ECoreTest__LastModified
       prove(response.headers['Last-Modified']) == time
     end
 
-    time = (Time.now - 100).httpdate
-    get :time => time
-    expect(last_response.status) == 200
-    check(last_response).has_correct_header time
+    def time
+      @time ||= (Time.now - 100).httpdate
+    end
 
-    ims = (Time.now - 110).httpdate
-    header['If-Modified-Since'] = ims
+    it do
+      get :time => time
+      is_ok?
+      is_last_modified?(time)
 
-    get :time => time
-    expect(last_response.status) == 200
-    check(last_response).has_correct_header time
+      ims = (Time.now - 110).httpdate
+      header['If-Modified-Since'] = ims
 
-    Should 'return 304 code cause If-Modified-Since header is set to a later time' do
+      get :time => time
+      is_ok?
+      is_last_modified?(time)
+    end
+
+    it 'return 304 code cause If-Modified-Since header is set to a later time' do
       ims = (Time.now - 90).httpdate
       header['If-Modified-Since'] = ims
 
       get :time => time
-      expect(last_response.status) == 304
-      check(last_response).has_correct_header time
+      is_status? 304
+      is_last_modified?(time)
     end
 
     Should 'return 412 code cause If-Unmodified-Since header is set to a time in future' do
@@ -42,8 +47,9 @@ module ECoreTest__LastModified
       header['If-Unmodified-Since'] = ims
 
       get :time => time
+      is_status? 412
       expect(last_response.status) == 412
-      check(last_response).has_correct_header time
+      is_last_modified?(time)
     end
 
   end

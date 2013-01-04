@@ -28,16 +28,7 @@ module ECoreTest__Auth
   end
 
   Spec.new App do
-
-    def protected?
-      check { last_response.status } == 401
-    end
-
-    def authorized?
-      check { last_response.status } == 200
-    end
-
-    Testing 'Basic via GET' do
+    it 'Basic via GET' do
       get :basic
       protected?
 
@@ -52,7 +43,7 @@ module ECoreTest__Auth
       protected?
     end
 
-    Testing 'Basic via POST' do
+    it 'Basic via POST' do
       reset_basic_auth!
 
       post :basic
@@ -69,7 +60,7 @@ module ECoreTest__Auth
       protected?
     end
 
-    Testing 'Digest via GET' do
+    it 'Digest via GET' do
 
       reset_digest_auth!
 
@@ -87,7 +78,7 @@ module ECoreTest__Auth
       protected?
     end
 
-    Testing 'Digest via POST' do
+    it 'Digest via POST' do
 
       reset_digest_auth!
 

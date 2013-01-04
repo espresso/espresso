@@ -26,17 +26,15 @@ module ECoreTest__Cookies
       var, val = 2.times.map { rand.to_s }
       get :set, var, val
       r = get :get, var
-      expect(r.body) =~ /#{val}/
+      is_body? /#{val}/
 
       Testing 'keys/values' do
         get :keys
-        expect(last_response.body) == [var].inspect
+        is_body?([var].inspect)
 
         get :values
-        expect(last_response.body) == [val].inspect
+        is_body?([val].inspect)
       end
     end
-
   end
-
 end
