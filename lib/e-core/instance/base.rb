@@ -31,7 +31,7 @@ class E
       max && given > max &&
         fail(STATUS__NOT_FOUND, 'max params accepted: %s; params given: %s' % [max, given])
 
-      handle_format!
+      clean_format_from_last_param!
       call!
     end
     e_response.body = [] if request.head?
@@ -101,7 +101,7 @@ class E
   # so user get clean data
   # ex: /foo/bar.html => /foo/bar => ['foo', 'bar']
   #
-  def handle_format!
+  def clean_format_from_last_param!
     if action_params__array.any? && formats.any? && format.nil?
       last_param_ext = File.extname(action_params__array.last)
       if last_param_ext.size > 0 && formats.find { |f| last_param_ext == f }
@@ -112,7 +112,7 @@ class E
     end
     action_params__array.freeze # it is highly important to freeze path params
   end
-  private :handle_format!
+  private :clean_format_from_last_param!
 
   def env
     @__e__env
