@@ -1,6 +1,6 @@
 class E
-  e_attributes :env, :request, :action, :format, :canonical
-  e_attributes :response, :params, :action_with_format # getters will be overridden
+  e_attributes :env, :request, :action, :format, :canonical, :required_arguments
+  e_attributes :response, :params, :action_with_format, :action_arguments # getters will be overridden
 
   def response
     @__e__response ||= Rack::Response.new
@@ -23,11 +23,11 @@ class E
       script_name = '/' if script_name.size == 0
       rest_map    = self.class.url_map[script_name] || {}
 
-      @__e__format,
-        @__e__canonical,
-        @__e__action,
-        @__e__action_arguments,
-        required_arguments =
+      self.format,
+        self.canonical,
+        self.action,
+        self.action_arguments,
+        self.required_arguments =
         (rest_map[env[ENV__REQUEST_METHOD]] || []).map { |e| e.freeze }
 
       self.request = EspressoFrameworkRequest.new(env)
