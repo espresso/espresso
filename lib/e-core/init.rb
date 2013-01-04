@@ -25,7 +25,7 @@ class << E
   end
 
   # creates a reader method + @__e__-type instance variable
-  def e_attr(var, block=nil)
+  def e_attribute(var, block=nil)
     if block
       #TODO
     else
@@ -40,6 +40,12 @@ class << E
           end
         }
       )
+    end
+  end
+
+  def e_attributes(*args)
+    Array(args).each do |m|
+      e_attribute m
     end
   end
 end

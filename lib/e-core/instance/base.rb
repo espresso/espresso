@@ -1,4 +1,5 @@
 class E
+  e_attributes :env, :request, :action, :format, :canonical
 
   def call env
     @__e__env = env
@@ -111,26 +112,6 @@ class E
     action_params__array.freeze
   end
   private :clean_format_from_last_param!
-
-  def env
-    @__e__env
-  end
-
-  def request
-    @__e__request
-  end
-
-  def action
-    @__e__action
-  end
-
-  def format
-    @__e__format
-  end
-
-  def canonical
-    @__e__canonical
-  end
 
   def response
     @__e__response ||= Rack::Response.new
