@@ -42,15 +42,15 @@ module ECoreTest__Session
 
     5.times do
       get :get, var
-      expect(last_response.body) =~ /#{val}/
+      is_body?  /#{val}/
     end
 
     Testing 'keys/values' do
       get :keys
-      expect(last_response.body) == [var].inspect
+      is_body? [var].inspect
 
       get :values
-      expect(last_response.body) == [val].inspect
+      is_body? [val].inspect
     end
 
     Testing :flash do
@@ -58,10 +58,10 @@ module ECoreTest__Session
       get :flash_set, var, val
 
       r = get :flash_get, var
-      expect(r.body) =~ /#{val}/
+      is_body? /#{val}/
 
       r = get :flash_get, var
-      expect(r.body) =~ /notSet/
+      is_body? /notSet/
     end
 
   end
