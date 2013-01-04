@@ -100,6 +100,21 @@ module EspressoFrameworkUtils
   end
   module_function :indifferent_hash
 
+  # call it like activesupport method
+  # convert constant names to underscored (file) names
+  def underscore(str)
+    str.gsub(/([A-Z]+)([A-Z][a-z])/, '\1_\2').gsub(/([a-z\d])([A-Z])/, '\1_\2').downcase
+  end
+  module_function :underscore
+
+
+  # returns the class names without modules
+  def demodulize(const)
+    const.name.to_s.split('::').last
+  end
+  module_function :demodulize
+
+
   # instance_exec at runtime is expensive enough,
   # so compiling procs into methods at load time.
   def proc_to_method *chunks, &proc
