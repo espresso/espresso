@@ -29,20 +29,8 @@ class E
         self.action_arguments,
         self.required_arguments =
         (rest_map[env[ENV__REQUEST_METHOD]] || []).map { |e| e.freeze }
-
       self.request = EspressoFrameworkRequest.new(env)
-
-      action || fail(STATUS__NOT_FOUND)
-
-      min, max = required_arguments
-      given    = action_params__array.size
-
-      min && given < min &&
-        fail(STATUS__NOT_FOUND, 'min params accepted: %s; params given: %s' % [min, given])
-
-      max && given > max &&
-        fail(STATUS__NOT_FOUND, 'max params accepted: %s; params given: %s' % [max, given])
-
+      handle_request_errors!
       clean_format_from_last_param!
       call!
     end
@@ -127,6 +115,19 @@ class E
     action_params__array.freeze
   end
   private :clean_format_from_last_param!
+
+  def handle_request_errors!
+    action || fail(STATUS__NOT_FOUND)
+
+    min, max = required_arguments
+    given    = action_params__array.size
+
+    min && given < min &&
+      fail(STATUS__NOT_FOUND, 'min params accepted: %s; params given: %s' % [min, given])
+
+    max && given > max &&
+      fail(STATUS__NOT_FOUND, 'max params accepted: %s; params given: %s' % [max, given])
+  end
 
   # Set or retrieve the response status code.
   def status(value=nil)
