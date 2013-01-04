@@ -9,6 +9,8 @@ namespace :test do
   session = Specular.new
   session.boot { include Sonar }
   session.before do |app|
+    include BddApi
+    include HttpSpecHelper
     if app && EspressoFrameworkUtils.is_app?(app)
       app.use Rack::Lint
       app(app.mount)
