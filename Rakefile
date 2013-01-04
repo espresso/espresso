@@ -6,11 +6,21 @@ Dir['./test/**/test__*.rb'].each { |f| require f }
 
 namespace :test do
 
+  def run_test(regex, message, session)
+    puts "\n**\n#{message} ..."
+    session.run regex, :trace => true
+    puts session.failures if session.failed?
+    puts session.summary
+    session.exit_code == 0 || fail
+  end
+
   session = Specular.new
-  session.boot { include Sonar }
-  session.before do |app|
+  session.boot do
+    include Sonar
     include BddApi
     include HttpSpecHelper
+  end
+  session.before do |app|
     if app && EspressoFrameworkUtils.is_app?(app)
       app.use Rack::Lint
       app(app.mount)
@@ -19,37 +29,22 @@ namespace :test do
   end
 
   task :core do
-    puts "\n**\nTesting Core ..."
-    session.run /ECoreTest/, :trace => true
-    puts session.failures if session.failed?
-    puts session.summary
-    session.exit_code == 0 || fail
+    run_test(/ECoreTest/, "Testing Core", session)
   end
 
   task :cache do
-    puts "\n**\nTesting Cache ..."
-    session.run /EMoreTest__Cache/, :trace => true
-    puts session.failures if session.failed?
-    puts session.summary
-    session.exit_code == 0 || fail
+    run_test(/EMoreTest__Cache/, "Testing Cache", session)
   end
 
   task :crud do
-    puts "\n**\nTesting CRUD ..."
-    session.run /EMoreTest__CRUD/, :trace => true
-    puts session.failures if session.failed?
-    puts session.summary
-    session.exit_code == 0 || fail
+    run_test(/EMoreTest__CRUD/, "Testing Crud", session)
   end
 
   task :ipcm do
-    puts "\n**\nTesting InterProcess Cache Manager"
-    puts session.run /EMoreTest__IPCM/, :trace => true
-    session.exit_code == 0 || fail
+    run_test(/EMoreTest__IPCM/, "Testing InterProcess Cache Manager", session)
   end
 
   task :view do
-    puts "\n**\nTesting View API ..."
     session = Specular.new
     session.boot { include Sonar }
     session.before do |app|
@@ -59,10 +54,7 @@ namespace :test do
         get
       end
     end
-    session.run /EMoreTest__View/, :trace => true
-    puts session.failures if session.failed?
-    puts session.summary
-    session.exit_code == 0 || fail
+    run_test(/EMoreTest__View/, "Testing View API", session)
   end
 end
 
