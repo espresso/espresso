@@ -36,7 +36,7 @@ module ECoreTest__Utils
       variations = [
         [[:some, :page, {:and => :some_param}], "some/page?and"],
         [['another', 'page', {:with => {'nested' => 'params'}}], "another/page?with[nested]=params"],
-        [['page', {:with => 'param-added', :an_ignored_param => nil}], "page/?with=param-added"],
+        [['page', {:with => 'param-added', :an_ignored_param => nil}], "page?with=param-added"],
       ]
       variations.each do |variation|
         res = EspressoFrameworkUtils.build_path(*variation[0])

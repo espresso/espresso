@@ -23,7 +23,6 @@ class EApp
   end
 
   def initialize automount = false, &proc
-    @routes = []
     @controllers = automount ? discover_controllers : []
     @mounted_controllers = []
     @controllers.each {|c| mount_controller c}
@@ -133,6 +132,7 @@ class EApp
     Rack::Handler.const_get(server).run app, opts
   end
 
+  # Rack interface to mounted controllers
   def call env
     app.call env
   end
@@ -178,7 +178,6 @@ class EApp
     setup && controller.class_exec(&setup)
     @global_setup && controller.class_exec(&@global_setup)
     controller.mount! self
-    @routes.concat controller.routes
 
     @mounted_controllers << controller
   end

@@ -1,6 +1,6 @@
 class << E
 
-  attr_reader :app, :url_map, :action_map, :routes
+  attr_reader :app, :url_map, :action_map
   alias urlmap url_map
 
   # build URL from given action name(or path) and consequent params
@@ -68,8 +68,6 @@ class << E
 
     expand_setups!
     register_slim_engine!
-
-    generate_route_map!
 
     public_actions.each do |action|
       request_methods, routes = action_routes(action)
