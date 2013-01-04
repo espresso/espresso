@@ -32,7 +32,7 @@ module HttpSpecHelper
   end
 
   def is_content_type?(type)
-    if type[0] == '.' # extensions, lookup in mime types
+    if type[0..0].to_s == '.' # extensions, lookup in mime types
       expect(last_response.header['Content-Type']) =~ %r[#{Rack::Mime::MIME_TYPES.fetch(type)}]
     else
       expect(last_response.header['Content-Type']) == type
