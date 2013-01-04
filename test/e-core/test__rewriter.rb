@@ -40,7 +40,7 @@ module ECoreTest__Rewriter
   Spec.new self do
 
     eapp = EApp.new do
-      
+
       mount Cms
 
       rewrite /\A\/articles\/(\d+)\.html$/ do |title|
@@ -99,94 +99,100 @@ module ECoreTest__Rewriter
       check(response.status) == status
     end
 
-    Testing :redirect do
-      page, product = rand(1000000).to_s, rand(1000000).to_s
-      get '/landing-page/%s/%s' % [page, product]
-      was(last_response).redirected?
-      is(last_response.header['Location']).eql? Store.route(:buy, product, :page => page)
-
-      var = rand 1000000
-      get '/articles/%s.html' % var
-      was(last_response).redirected?
-      is(last_response.header['Location']).eql? '/page?title=%s' % var
-
-      var = rand.to_s
-      get '/News/%s.php' % var
-      was(last_response).redirected?
-      is(last_response.header['Location']).eql? '/news/%s/' % var
-
-      var, val = rand.to_s, rand.to_s
-      get '/News/%s.php' % var, var => val
-      was(last_response).redirected?
-      is(last_response.header['Location']) == '/news/%s/?%s=%s' % [var, var, val]
-
-      var = rand.to_s
-      get '/old_news/%s.php' % var
-      was(last_response).redirected? 301
-      is(last_response.header['Location']) == '/news/%s' % var
-
-      name, id = rand(1000000), rand(100000)
-      get '/pages/%s-%s.html' % [name, id]
-      was(last_response).redirected?
-      is(last_response.header['Location']) == '/page/%s?id=%s' % [name, id]
-
-      name, id = rand(1000000), rand(100000)
-      get '/old_pages/%s-%s.html' % [name, id]
-      was(last_response).redirected? 301
-      is(last_response.header['Location']) == '/page?name=%s&id=%s' % [name, id]
+    def check_redir_location(location, status=302)
+      is_redirect?(status)
+      is_location? location
     end
 
-    Testing :pass do
+    describe :redirect do
+      it do
+        page, product = rand(1000000).to_s, rand(1000000).to_s
+        get '/landing-page/%s/%s' % [page, product]
+        check_redir_location(Store.route(:buy, product, :page => page))
+      end
+
+      it do
+        var = rand 1000000
+        get '/articles/%s.html' % var
+        check_redir_location('/page?title=%s' % var)
+      end
+
+      it do
+        var = rand.to_s
+        get '/News/%s.php' % var
+        check_redir_location('/news/%s/' % var)
+      end
+
+      it do
+        var, val = rand.to_s, rand.to_s
+        get '/News/%s.php' % var, var => val
+        check_redir_location('/news/%s/?%s=%s' % [var, var, val])
+      end
+
+      it do
+        var = rand.to_s
+        get '/old_news/%s.php' % var
+        check_redir_location('/news/%s' % var, 301)
+      end
+
+      it do
+        name, id = rand(1000000), rand(100000)
+        get '/pages/%s-%s.html' % [name, id]
+        check_redir_location('/page/%s?id=%s' % [name, id])
+      end
+
+      it do
+        name, id = rand(1000000), rand(100000)
+        get '/old_pages/%s-%s.html' % [name, id]
+        check_redir_location('/page?name=%s&id=%s' % [name, id], 301)
+      end
+    end
+
+    it :pass do
 
       name = rand(100000).to_s
       response = get '/pass_test_I/%s' % name
       if RUBY_VERSION.to_f > 1.8
-        is(response.status) == 200
-        is(response.body) == [name, {'name' => name}].inspect
+        is_ok_body? [name, {'name' => name}].inspect
       else
-        Should 'return 404 cause splat params does not work on E running on ruby1.8' do
-          is(response.status) == 404
-          is(response.body) == 'max params accepted: 0; params given: 1'
-        end
+        #returns 404 cause splat params does not work on E running on ruby1.8' do
+        is_not_found?
+        is_body? 'max params accepted: 0; params given: 1'
       end
 
       name = rand(100000).to_s
       response = get '/pass_test_II/%s' % name
-      is(response.status) == 200
-      is(response.body) == [name, {'name' => name}].to_s
+      is_ok_body? [name, {'name' => name}].to_s
     end
 
-    Testing :halt do
+    it :halt do
+      def check_result(code, body)
+        is_status? code
+        is_body? body
+        is_header? 'TEST', '%s|%s' % [body, code]
+      end
 
       body, code = rand(100000).to_s, 500
       response = get '/halt_test_I/%s/%s' % [body, code]
-      expect(response.status) == code
-      expect(response.body) == body
-      expect(response.headers['TEST']) == '%s|%s' % [body, code]
+      check_result(code, body)
 
       body, code = rand(100000).to_s, 500
       response = get '/halt_test_II/%s/%s' % [body, code]
-      expect(response.status) == code
-      expect(response.body) == body
-      expect(response.headers['TEST']) == '%s|%s' % [body, code]
+      check_result(code, body)
     end
 
-    Testing :context do
-
+    it "context" do
       name = rand(100000).to_s
       get '/context_sensitive/%s' % name
-      was(last_response).redirected?
+      is_redirect?
       follow_redirect!
-      is?(last_response.status) == 200
-      is?(last_response.body) == [name, {}].inspect
+      is_ok_body? [name, {}].inspect
 
       header['User-Agent'] = 'google'
       get '/context_sensitive/%s' % name
-      was(last_response).redirected? 301
+      is_redirect? 301
       follow_redirect!
-      is?(last_response.status) == 200
-      is?(last_response.body) == [name, {}].inspect
+      is_ok_body? [name, {}].inspect
     end
-
   end
 end

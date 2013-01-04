@@ -39,6 +39,10 @@ module HttpSpecHelper
     end
   end
 
+  def is_header?(headertype, val)
+    expect(last_response.headers[headertype]) == val
+  end
+
   def is_body?(val)
     if val.is_a?(Regexp)
       expect(last_response.body) =~ val
