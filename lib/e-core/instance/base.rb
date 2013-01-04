@@ -16,7 +16,7 @@ class E
   end
 
   def call env
-    @__e__env = env
+    self.env = env
     e_response = catch :__e__catch__response__ do
 
       script_name = env[ENV__SCRIPT_NAME]
@@ -120,7 +120,7 @@ class E
         #REVIEW why are we inserting the extension into the params array before the last element?
         # expect "[:read, nil, \"book.xml\"]" == "[:read, \".xml\", \"book\"]" ## output, if I don't call the method
         action_params__array[action_params__array.size - 1] = action_params__array.last.remove_extension
-        @__e__format = last_param_ext
+        self.format = last_param_ext
       end
     end
     # it is highly important to freeze path params
