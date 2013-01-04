@@ -1,11 +1,11 @@
 class E
 
   # set/get or update Content-Type header.
-  # 
+  #
   # if no args given, actual Content-Type returned.
-  # 
+  #
   # To set charset alongside Content-Type, use :charset option.
-  # 
+  #
   # @example all actions matching /api/ will return JSON Content-Type
   #   class App < E
   #
@@ -66,7 +66,6 @@ class E
     def basic_auth opts = {}, &proc
       __e__authorize! Rack::Auth::Basic, opts[:realm] || 'AccessRestricted', &proc
     end
-    alias auth basic_auth
     define_setup_method :auth
     define_setup_method :basic_auth
 
@@ -75,7 +74,7 @@ class E
     #    # ::Digest::MD5.hexdigest 'admin:AccessRestricted:somePassword'
     #    #                            ^           ^             ^
     #    #                         username     realm        password
-    #                                  
+    #
     #    #=> 9d77d54decc22cdcfb670b7b79ee0ef0
     #
     #    digest_auth :passwords_hashed => true, :realm => 'AccessRestricted' do |user|

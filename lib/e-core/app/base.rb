@@ -76,8 +76,6 @@ class EApp
     @global_setup = proc
     self
   end
-  alias setup_controllers global_setup
-  alias setup global_setup
 
   # displays URLs the app will respond to,
   # with controller and action that serving each URL.
@@ -105,7 +103,7 @@ class EApp
     end
     map
   end
-  alias urlmap url_map
+
 
   # by default, Espresso will use WEBrick server.
   # pass :server option and any option accepted by selected(or default) server:
@@ -122,13 +120,13 @@ class EApp
   def run opts = {}
     server = opts.delete(:server)
     (server && Rack::Handler.const_defined?(server)) || (server = HTTP__DEFAULT_SERVER)
-    
+
     port = opts.delete(:port)
     opts[:Port] ||= port || HTTP__DEFAULT_PORT
-    
+
     host = opts.delete(:host) || opts.delete(:bind)
     opts[:Host] = host if host
-    
+
     Rack::Handler.const_get(server).run app, opts
   end
 
@@ -140,7 +138,7 @@ class EApp
   def app
     @app ||= builder
   end
-  alias to_app app
+
 
   private
   def builder
@@ -174,7 +172,7 @@ class EApp
     if root || base_url.size > 0
       controller.remap!(base_url + root.to_s, *roots)
     end
-      
+
     setup && controller.class_exec(&setup)
     @global_setup && controller.class_exec(&@global_setup)
     controller.mount! self

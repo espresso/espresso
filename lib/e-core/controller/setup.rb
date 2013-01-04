@@ -1,7 +1,7 @@
 # setting up various aspects of the controller.
 # @note:  getters should NOT set instance variables,
 #         cause instance variable are frozen after controller is mounted.
-#         
+#
 #         so this will raise an error at runtime:
 #         def canonicals
 #           @canonicals ||= []
@@ -30,7 +30,7 @@ class << E
       gsub(/([A-Z]+)([A-Z][a-z])/, '\1_\2').
       gsub(/([a-z\d])([A-Z])/, '\1_\2').downcase).freeze
   end
-  alias baseurl base_url
+
 
   def canonicals
     @canonicals || []
@@ -66,14 +66,14 @@ class << E
   #   def bar
   #     # ...
   #   end
-  # 
+  #
   #   action_alias 'some/url', :bar
   #   action_alias 'some/another/url', :bar
   #
   # @example make private method :foo to serve /some/url
   #
   #   action_alias 'some/url', :foo
-  # 
+  #
   #   private
   #   def foo
   #     # ...
@@ -93,9 +93,9 @@ class << E
   # @example
   #
   #   class App < E
-  #     
+  #
   #     format '.html', '.xml', '.etc'
-  #     
+  #
   #   end
   #
   def format *formats
@@ -106,39 +106,39 @@ class << E
   # setting format(s) for specific action.
   # first argument is the action name or a Regex matching multiple action names.
   # consequent arguments are the formats to be served.
-  # 
+  #
   # @example make :page action to serve .html format
   #
   #   class App < E
-  #     
+  #
   #     format_for :page, '.html'
-  #     
+  #
   #   end
   #
   # @example make :page action to serve .html and .xml formats
   #
   #   class App < E
-  #     
+  #
   #     format_for :page, '.html', '.xml'
-  #     
+  #
   #   end
   #
   # @example make actions that match /api/ to serve .json format
   #
   #   class App < E
-  #     
+  #
   #     format_for /api/, '.json'
-  #     
+  #
   #   end
   #
   # @example make :api action to serve .json and .xml formats
   #               and any other actions to serve .html format
   #
   #   class App < E
-  #     
+  #
   #     format_for :api, '.json', '.xml'
   #     format '.html'
-  #     
+  #
   #   end
   #
   def format_for matcher, *formats
@@ -148,7 +148,7 @@ class << E
 
   # allow to disable format for specific action(s).
   # any number of arguments accepted(zero arguments will have no effect).
-  # 
+  #
   # @example  all actions will serve .xml format,
   #           except :read action, which wont serve any format
   #
@@ -172,7 +172,7 @@ class << E
   #
   # @note setups will be executed in the order they was added
   # @note #before, #setup and #on are aliases
-  #       
+  #
   # @example setup to be executed before any action
   #      setup do
   #        # ...
@@ -188,7 +188,7 @@ class << E
   #        # ...
   #      end
   #
-  # @example  running a setup before :blue action 
+  # @example  running a setup before :blue action
   #           as well as before actions matching "red"
   #      before :blue, /red/ do
   #        # ...
@@ -207,8 +207,6 @@ class << E
   def before *matchers, &proc
     add_setup :a, *matchers, &proc
   end
-  alias on    before
-  alias setup before
 
   # (see #before)
   def after *matchers, &proc
@@ -226,7 +224,7 @@ class << E
   end
   private :add_setup
 
-  
+
 
   def setups position, action, format
     return [] unless (s = @expanded_setups) && (s = s[position]) && (s = s[action])
@@ -238,7 +236,7 @@ class << E
     return if mounted?
     (@middleware ||= []).none? {|w| w.first == ware} && @middleware << [ware, args, proc]
   end
-  
+
   def middleware
     @middleware || []
   end

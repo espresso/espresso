@@ -6,50 +6,52 @@ Dir['./test/**/test__*.rb'].each { |f| require f }
 
 namespace :test do
 
-  session = Specular.new
-  session.boot { include Sonar }
-  session.before do |app|
-    include BddApi
-    include HttpSpecHelper
-    if app && EspressoFrameworkUtils.is_app?(app)
-      app.use Rack::Lint
-      app(app.mount)
-      map(app.base_url)
+  def run_test(regex, message, session)
+    puts "\n**\n#{message} ..."
+    session.run regex, :trace => true
+    puts session.failures if session.failed?
+    puts session.summary
+    session.exit_code == 0 || fail
+  end
+
+  def default_session
+    session = Specular.new
+    session.boot do
+      include Sonar
+      include BddApi
+      include HttpSpecHelper
     end
+    session.before do |app|
+      if app && EspressoFrameworkUtils.is_app?(app)
+        app.use Rack::Lint
+        app(app.mount)
+        map(app.base_url)
+      end
+    end
+    session
   end
 
   task :core do
-    puts "\n**\nTesting Core ..."
-    session.run /ECoreTest/, :trace => true
-    puts session.failures if session.failed?
-    puts session.summary
-    session.exit_code == 0 || fail
+    run_test(/ECoreTest/, "Testing Core", default_session)
   end
 
   task :cache do
-    puts "\n**\nTesting Cache ..."
-    session.run /EMoreTest__Cache/, :trace => true
-    puts session.failures if session.failed?
-    puts session.summary
-    session.exit_code == 0 || fail
+    run_test(/EMoreTest__Cache/, "Testing Cache", default_session)
   end
 
   task :crud do
-    puts "\n**\nTesting CRUD ..."
-    session.run /EMoreTest__CRUD/, :trace => true
-    puts session.failures if session.failed?
-    puts session.summary
-    session.exit_code == 0 || fail
+    run_test(/EMoreTest__CRUD/, "Testing Crud", default_session)
   end
 
   task :ipcm do
-    puts "\n**\nTesting InterProcess Cache Manager"
-    puts session.run /EMoreTest__IPCM/, :trace => true
-    session.exit_code == 0 || fail
+    run_test(/EMoreTest__IPCM/, "Testing InterProcess Cache Manager", default_session)
+  end
+
+  task :ext do
+    run_test(/ExtTest__/, "Testing Ruby Extensions", default_session)
   end
 
   task :view do
-    puts "\n**\nTesting View API ..."
     session = Specular.new
     session.boot { include Sonar }
     session.before do |app|
@@ -59,14 +61,11 @@ namespace :test do
         get
       end
     end
-    session.run /EMoreTest__View/, :trace => true
-    puts session.failures if session.failed?
-    puts session.summary
-    session.exit_code == 0 || fail
+    run_test(/EMoreTest__View/, "Testing View API", session)
   end
 end
 
-task :test => ['test:core', 'test:view', 'test:crud', 'test:cache']
+task :test => ['test:core', 'test:view', 'test:crud', 'test:cache', 'test:ext']
 task :overhead do
   require './test/overhead/run'
 end

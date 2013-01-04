@@ -1,8 +1,4 @@
 class EspressoFrameworkRewriter
-  include EspressoFrameworkConstants
-  include EspressoFrameworkUtils
-  include Rack::Utils
-
   attr_reader :env, :request
 
   class << self

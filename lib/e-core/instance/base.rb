@@ -1,37 +1,37 @@
 class E
+  e_attributes :env, :request, :action, :format, :canonical, :required_arguments
+  e_attributes :response, :params, :action_with_format, :action_arguments # getters will be overridden
 
-  def app
-    self.class.app
+  def response
+    @__e__response ||= Rack::Response.new
+  end
+
+  def params
+    @__e__params ||= EspressoFrameworkUtils.indifferent_params(request.params)
+  end
+
+  def action_with_format
+    @__e__action_with_format ||=
+      (format ? action.to_s + format : action).freeze
   end
 
   def call env
-    @__e__env = env
+    self.env = env
     e_response = catch :__e__catch__response__ do
 
       script_name = env[ENV__SCRIPT_NAME]
       script_name = '/' if script_name.size == 0
       rest_map    = self.class.url_map[script_name] || {}
-      
-      @__e__format,
-        @__e__canonical,
-        @__e__action,
-        @__e__action_arguments, required_arguments =
+
+      self.format,
+        self.canonical,
+        self.action,
+        self.action_arguments,
+        self.required_arguments =
         (rest_map[env[ENV__REQUEST_METHOD]] || []).map { |e| e.freeze }
-
-      @__e__request = EspressoFrameworkRequest.new(env)
-
-      action || fail(STATUS__NOT_FOUND)
-
-      min, max = required_arguments
-      given    = action_params__array.size
-
-      min && given < min &&
-        fail(STATUS__NOT_FOUND, 'min params accepted: %s; params given: %s' % [min, given])
-
-      max && given > max &&
-        fail(STATUS__NOT_FOUND, 'max params accepted: %s; params given: %s' % [max, given])
-
-      handle_format!
+      self.request = EspressoFrameworkRequest.new(env)
+      handle_request_errors!
+      clean_format_from_last_param!
       call!
     end
     e_response.body = [] if request.head?
@@ -96,40 +96,37 @@ class E
   #     # so extracting it from last argument
   #   end
   #
-  # the second meaning of this method is 
+  # the second meaning of this method is
   # to remove extension from last param
   # so user get clean data
   # ex: /foo/bar.html => /foo/bar => ['foo', 'bar']
   #
-  def handle_format!
+  def clean_format_from_last_param!
     if action_params__array.any? && formats.any? && format.nil?
-      last_param_ext = File.extname(action_params__array.last)
-      if last_param_ext.size > 0 && formats.find { |f| last_param_ext == f }
-        action_params__array[action_params__array.size - 1] =
-          File.basename(action_params__array.last, last_param_ext)
-        @__e__format = last_param_ext
+      last_param_ext = File.extname(action_params__array.last).presence
+      if last_param_ext && formats.any?{ |f|  f == last_param_ext }
+        #REVIEW why are we inserting the extension into the params array before the last element?
+        # expect "[:read, nil, \"book.xml\"]" == "[:read, \".xml\", \"book\"]" ## output, if I don't call the method
+        action_params__array[action_params__array.size - 1] = action_params__array.last.remove_extension
+        self.format = last_param_ext
       end
     end
-    action_params__array.freeze # it is highly important to freeze path params
+    # it is highly important to freeze path params
+    action_params__array.freeze
   end
-  private :handle_format!
+  private :clean_format_from_last_param!
 
-  def env
-    @__e__env
-  end
+  def handle_request_errors!
+    action || fail(STATUS__NOT_FOUND)
 
-  def request
-    @__e__request
-  end
-  alias rq request
+    min, max = required_arguments
+    given    = action_params__array.size
 
-  def response
-    @__e__response ||= Rack::Response.new
-  end
-  alias rs response
+    min && given < min &&
+      fail(STATUS__NOT_FOUND, 'min params accepted: %s; params given: %s' % [min, given])
 
-  def params
-    @__e__params ||= EspressoFrameworkUtils.indifferent_params(request.params)
+    max && given > max &&
+      fail(STATUS__NOT_FOUND, 'max params accepted: %s; params given: %s' % [max, given])
   end
 
   # Set or retrieve the response status code.
@@ -138,20 +135,14 @@ class E
     response.status
   end
 
-  def base_url
-    self.class.base_url
-  end
-  alias baseurl base_url
 
-  def action
-    @__e__action
-  end
 
-  def action_with_format
-    @__e__action_with_format ||= 
-      (format ? action.to_s + format : action).freeze
-  end
-
+  # @example ruby 1.8
+  #    def index id, status
+  #      action_params
+  #    end
+  #    # /100/active
+  #    #> ['100', 'active']
   def action_params__array
     # do not freeze path params here.
     # they will be frozen by #call
@@ -160,57 +151,52 @@ class E
       env[ENV__PATH_INFO].to_s.split('/').reject { |s| s.empty? }
   end
 
-  if RESPOND_TO__PARAMETERS
-    # @example ruby 1.9+
-    #    def index id, status
-    #      action_params
-    #    end
-    #    # /100/active
-    #    #> {:id => '100', :status => 'active'}
-    def action_params
-      return @__e__action_params if @__e__action_params
+  # @example ruby 1.9+
+  #    def index id, status
+  #      action_params
+  #    end
+  #    # /100/active
+  #    #> {:id => '100', :status => 'active'}
+  def action_params_ruby19
+    return @__e__action_params if @__e__action_params
 
-      action_params, given_params = {}, Array.new(action_params__array) # faster than dup
-      @__e__action_arguments.each_with_index do |type_name, index|
-        type, name = type_name
-        if type == :rest
-          action_params[name] = []
-          until given_params.size < (@__e__action_arguments.size - index)
-            action_params[name] << given_params.shift
-          end
-        else
-          action_params[name] = given_params.shift
+    action_params, given_params = {}, Array.new(action_params__array) # faster than dup
+    @__e__action_arguments.each_with_index do |type_name, index|
+      type, name = type_name
+      if type == :rest
+        action_params[name] = []
+        until given_params.size < (@__e__action_arguments.size - index)
+          action_params[name] << given_params.shift
         end
+      else
+        action_params[name] = given_params.shift
       end
-      @__e__action_params = EspressoFrameworkUtils.indifferent_params(action_params).freeze
     end
+    @__e__action_params = EspressoFrameworkUtils.indifferent_params(action_params).freeze
+  end
+
+  if E.is_ruby19?
+    alias action_params action_params_ruby19
   else
-    # @example ruby 1.8
-    #    def index id, status
-    #      action_params
-    #    end
-    #    # /100/active
-    #    #> ['100', 'active']
     alias action_params action_params__array
+  end
+
+  # following methods are delegated to class
+  def base_url
+    self.class.base_url
   end
 
   def setups position
     self.class.setups position, action, format
   end
 
-  def format
-    @__e__format
+  def app
+    self.class.app
   end
-  alias format? format
 
   def formats
     self.class.formats action
   end
-
-  def canonical
-    @__e__canonical
-  end
-  alias canonical? canonical
 
   def canonicals
     self.class.canonicals
@@ -239,6 +225,5 @@ class E
   def user
     env[ENV__REMOTE_USER]
   end
-  alias user? user
 
 end

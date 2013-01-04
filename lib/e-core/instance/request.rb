@@ -43,9 +43,6 @@ class EspressoFrameworkRequest < Rack::Request # partially borrowed from Sinatra
     end
   end
 
-  alias accept? preferred_type
-  alias secure? ssl?
-
   def forwarded?
     env.include? ENV__HTTP_X_FORWARDED_HOST
   end

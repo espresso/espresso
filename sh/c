@@ -1,0 +1,6 @@
+#!/bin/bash
+if [ `which pry` ]; then
+   pry -r ./sh/environment.rb
+else
+   irb -r ./sh/environment.rb
+fi                           

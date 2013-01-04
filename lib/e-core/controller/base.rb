@@ -1,7 +1,7 @@
 class << E
 
   attr_reader :app, :url_map, :action_map
-  alias urlmap url_map
+
 
   # build URL from given action name(or path) and consequent params
   # @return [String]
@@ -32,8 +32,6 @@ class << E
   def mount *roots, &setup
     @app ||= EApp.new.mount(self, *roots, &setup)
   end
-  alias to_app  mount
-  alias to_app! mount
 
   def run *args
     mount.run *args
@@ -92,7 +90,7 @@ class << E
     @mounted = true
   end
 
-  # remap served root(s) by prepend given path 
+  # remap served root(s) by prepend given path
   # to controller's root and canonical paths
   #
   # @note Important: all actions should be defined before re-mapping
@@ -128,22 +126,22 @@ class << E
   # when an argument is a String it is treated as format,
   #   and the setup will be effective only for actions that serve given format.
   # any other arguments ignored.
-  # 
+  #
   # @note when passing a format as matcher:
   #       if URL has NO format, format-related setups are excluded.
   #       when URL does contain a format, ALL action-related setups becomes effective.
-  # 
+  #
   # @note Regexp matchers are used ONLY to match action names,
   #       not formats nor action names with format.
   #       thus, NONE of this will work: /\.(ht|x)ml/, /.*pi\.xml/  etc.
-  # 
+  #
   # @example
   #   class App < E
-  #    
+  #
   #     format '.json', '.xml'
   #
   #     layout :master
-  #    
+  #
   #     setup 'index.xml' do
   #       # ...
   #     end
@@ -159,11 +157,11 @@ class << E
   #     def index
   #       # on /index, will use following setups:
   #       #   - `layout ...` (matched via *)
-  #       #   
+  #       #
   #       # on /index.json, will use following setups:
   #       #   - `layout ...` (matched via *)
   #       #   - `setup '.json'...`  (matched via .json)
-  #       #   
+  #       #
   #       # on /index.xml, will use following setups:
   #       #   - `layout ...` (matched via *)
   #       #   - `setup 'index.xml'...`  (matched via index.xml)
@@ -173,12 +171,12 @@ class << E
   #       # on /api, will use following setups:
   #       #   - `layout ...` (matched via *)
   #       #   - `setup /api/...`  (matched via /api/)
-  #       #   
+  #       #
   #       # on /api.json, will use following setups:
   #       #   - `layout ...` (matched via *)
   #       #   - `setup /api/...`  (matched via /api/)
   #       #   - `setup '.json'...`  (matched via .json)
-  #       #   
+  #       #
   #       # on /api.xml, will use following setups:
   #       #   - `layout ...` (matched via *)
   #       #   - `setup /api/...`  (matched via /api/)
@@ -187,11 +185,11 @@ class << E
   #     def read
   #       # on /read, will use following setups:
   #       #   - `layout ...` (matched via *)
-  #       #   
+  #       #
   #       # on /read.json, will use following setups:
   #       #   - `layout ...` (matched via *)
   #       #   - `setup '.json'...`  (matched via .json)
-  #       #   
+  #       #
   #       # on /read.xml, will use following setups:
   #       #   - `layout ...` (matched via *)
   #       #   - `setup ... 'read.xml'`  (matched via read.xml)
@@ -200,18 +198,18 @@ class << E
   #   end
   def expand_setups!
     @expanded_setups = public_actions.inject({}) do |map, action|
-      
+
       # making sure it will work for both ".format" and "action.format" matchers
       action_formats = formats(action) + formats(action).map {|f| action.to_s + f}
 
       (@setups||{}).each_pair do |position, setups|
-        
+
         action_setups = setups.select do |(m,_)| # |(m)| does not work on 1.8
           m == :* || m == action ||
             (m.is_a?(Regexp) && action.to_s =~ m) ||
             (m.is_a?(String) && action_formats.include?(m))
         end
-        
+
         ((map[position]||={})[action]||={})[nil] = action_setups.inject([]) do |f,s|
           # excluding format-related setups
           s.first.is_a?(String) ? f : f << s.last
@@ -236,11 +234,11 @@ class << E
     strict_formats = (@formats_for||[]).inject([]) do |u,(m,f)|
       u << [m, f.map {|e| '.' << e.to_s.sub('.', '')}.uniq]
     end
-    
+
     # defining a handy #format? method for each format.
     # eg. #json? for .json, #xml? for .xml etc.
     # these methods are aimed to replace the `if format == '.json'` redundancy
-    # 
+    #
     # @example
     #
     #   class App < E
@@ -262,7 +260,7 @@ class << E
     end
 
     @expanded_formats = public_actions.inject({}) do |map, action|
-      
+
       map[action] = global_formats
 
       action_formats = strict_formats.inject([]) do |formats,(m,f)|
