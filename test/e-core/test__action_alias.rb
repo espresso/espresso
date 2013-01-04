@@ -43,49 +43,52 @@ module ECoreTest__ActionAlias
 
   Spec.new AnyRequestMethod do
 
-    ['endpoint', 'some-url', 'some-another/url'].each do |url|
-      get url
-      expect(last_response.status) == 200
+    it do
+      ['endpoint', 'some-url', 'some-another/url'].each do |url|
+        get url
+        is_ok?
 
-      post url
-      expect(last_response.status) == 200
+        post url
+        is_ok?
+      end
+
+      get '/blah'
+      is_not_found?
     end
-
-    get '/blah'
-    expect(last_response.status) == 404
-
   end
 
   Spec.new SpecificRequestMethod do
 
-    ['endpoint', 'some-url', 'some-another/url'].each do |url|
-      get url
-      expect(last_response.status) == 200
+    it  do
+      ['endpoint', 'some-url', 'some-another/url'].each do |url|
+        get url
+        is_ok?
 
-      post url
-      expect(last_response.status) == 404
+        post url
+        is_not_found?
+      end
+
+      get '/blah'
+      is_not_found?
     end
-
-    get '/blah'
-    expect(last_response.status) == 404
-
   end
 
   Spec.new PrivateZone do
 
-    ['some-url', 'some-another/url'].each do |url|
-      get url
-      expect(last_response.status) == 200
+    it do
+      ['some-url', 'some-another/url'].each do |url|
+        get url
+        is_ok?
 
-      post
-      expect(last_response.status) == 200
+        post
+        is_ok?
+      end
+
+      %w(private_method protected_method blah).each do |m|
+        get "/#{m}"
+        is_not_found?
+      end
     end
-
-    %w(private_method protected_method blah).each do |m|
-      get "/#{m}"
-      expect(last_response.status) == 404
-    end
-
   end
 
 end
