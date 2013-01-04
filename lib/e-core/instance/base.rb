@@ -11,7 +11,7 @@ class E
       script_name = env[ENV__SCRIPT_NAME]
       script_name = '/' if script_name.size == 0
       rest_map    = self.class.url_map[script_name] || {}
-      
+
       @__e__format,
         @__e__canonical,
         @__e__action,
@@ -96,7 +96,7 @@ class E
   #     # so extracting it from last argument
   #   end
   #
-  # the second meaning of this method is 
+  # the second meaning of this method is
   # to remove extension from last param
   # so user get clean data
   # ex: /foo/bar.html => /foo/bar => ['foo', 'bar']
@@ -121,12 +121,11 @@ class E
   def request
     @__e__request
   end
-  alias rq request
+
 
   def response
     @__e__response ||= Rack::Response.new
   end
-  alias rs response
 
   def params
     @__e__params ||= EspressoFrameworkUtils.indifferent_params(request.params)
@@ -141,14 +140,13 @@ class E
   def base_url
     self.class.base_url
   end
-  alias baseurl base_url
 
   def action
     @__e__action
   end
 
   def action_with_format
-    @__e__action_with_format ||= 
+    @__e__action_with_format ||=
       (format ? action.to_s + format : action).freeze
   end
 
@@ -201,7 +199,7 @@ class E
   def format
     @__e__format
   end
-  alias format? format
+
 
   def formats
     self.class.formats action
@@ -210,7 +208,6 @@ class E
   def canonical
     @__e__canonical
   end
-  alias canonical? canonical
 
   def canonicals
     self.class.canonicals
@@ -239,6 +236,5 @@ class E
   def user
     env[ENV__REMOTE_USER]
   end
-  alias user? user
 
 end
