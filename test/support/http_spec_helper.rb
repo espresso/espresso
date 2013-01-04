@@ -4,15 +4,23 @@ module HttpSpecHelper
   end
 
   def protected?
-    check { last_response.status } == 401
+    is_status? 401
   end
 
   def authorized?
-    check { last_response.status } == 200
+    is_status? 200
   end
 
-  def ok? response
-    check(response.status) == AppetiteConstants::STATUS__OK
+  def is_ok?
+    is_status? 200
+  end
+
+  def is_not_found?
+    is_status? 404
+  end
+
+  def is_redirect?(status=302)
+    is_status?(status)
   end
 
   def is_charset?(charset)
@@ -42,18 +50,6 @@ module HttpSpecHelper
   def is_ok_body?(val)
     is_ok?
     is_body?(val)
-  end
-
-  def is_ok?
-    ok?(last_response)
-  end
-
-  def is_not_found?
-    is_status? 404
-  end
-
-  def is_redirect?(status=302)
-    is_status?(status)
   end
 
   def is_location?(location)
