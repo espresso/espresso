@@ -14,6 +14,12 @@ class EApp
 end
 
 
+class EspressoFrameworkRewriter
+  include Rack::Utils
+  include EspressoFrameworkConstants
+  include EspressoFrameworkUtils
+end
+
 class << E
   # creates a generic setup method for various
   def define_setup_method meth
