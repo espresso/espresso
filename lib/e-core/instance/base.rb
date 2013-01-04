@@ -1,9 +1,5 @@
 class E
 
-  def app
-    self.class.app
-  end
-
   def call env
     @__e__env = env
     e_response = catch :__e__catch__response__ do
@@ -103,13 +99,16 @@ class E
   #
   def clean_format_from_last_param!
     if action_params__array.any? && formats.any? && format.nil?
-      last_param_ext = File.extname(action_params__array.last)
-      if last_param_ext.size > 0 && formats.find { |f| last_param_ext == f }
+      last_param_ext = File.extname(action_params__array.last).presence
+      if last_param_ext && formats.any?{ |f|  f == last_param_ext }
+        #REVIEW why are we inserting the extension into the params array before the last element?
+        # expect "[:read, nil, \"book.xml\"]" == "[:read, \".xml\", \"book\"]" ## output, if I don't call the method
         action_params__array[action_params__array.size - 1] = action_params__array.last.remove_extension
         @__e__format = last_param_ext
       end
     end
-    action_params__array.freeze # it is highly important to freeze path params
+    # it is highly important to freeze path params
+    action_params__array.freeze
   end
   private :clean_format_from_last_param!
 
@@ -121,6 +120,17 @@ class E
     @__e__request
   end
 
+  def action
+    @__e__action
+  end
+
+  def format
+    @__e__format
+  end
+
+  def canonical
+    @__e__canonical
+  end
 
   def response
     @__e__response ||= Rack::Response.new
@@ -140,9 +150,7 @@ class E
     self.class.base_url
   end
 
-  def action
-    @__e__action
-  end
+
 
   def action_with_format
     @__e__action_with_format ||=
@@ -197,17 +205,12 @@ class E
     self.class.setups position, action, format
   end
 
-  def format
-    @__e__format
+  def app
+    self.class.app
   end
-
 
   def formats
     self.class.formats action
-  end
-
-  def canonical
-    @__e__canonical
   end
 
   def canonicals
