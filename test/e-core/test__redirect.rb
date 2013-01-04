@@ -59,7 +59,7 @@ module ECoreTest__Redirect
       is?(VARS['redirected']) == val
     end
 
-    it :redirect do
+    testing :redirect do
       VARS['redirected'] = (rand = rand())
       get :test_redirect
       is_redirect?
@@ -67,34 +67,34 @@ module ECoreTest__Redirect
       vars_redirected? rand
     end
 
-    it :permanent_redirect do
+    testing :permanent_redirect do
       VARS['redirected'] = (rand = rand())
       get :test_permanent_redirect
       is_redirect? 301
       vars_redirected? rand
     end
 
-    it :delayed_redirect do
+    testing :delayed_redirect do
       VARS['redirected'] = (rand = rand())
       get :test_delayed_redirect
       is_redirect?
       vars_redirected? :test_delayed_redirect
     end
 
-    it :reload do
+    testing :reload do
       get :test_reload, :reload => '1'
       is_redirect?
       follow_redirect!
       is_ok_body? 'reloaded'
     end
 
-    Test :inner_app do
+    testing :inner_app do
       get :inner_app
       is_redirect?
       is_location? Cms::News.route(:index, :var => :val)
     end
 
-    Test :redirect_outer do
+    testing :redirect_outer do
       target = 'http://google.com'
       get :redirect_outer, :target => target
       is_redirect?

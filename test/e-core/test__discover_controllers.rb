@@ -18,7 +18,7 @@ module ECoreTest__DiscoverControllers
   Spec.new self do
 
     describe 'String name' do
-      it do
+      testing do
         app EApp.new(false).mount('ControllerNumberOne')
         get :one
         is_ok?
@@ -36,7 +36,7 @@ module ECoreTest__DiscoverControllers
     end
 
     describe 'Symbol name' do
-      it do
+      testing do
         app EApp.new(false).mount(:ControllerNumberTwo)
         get :one
         is_not_found?
@@ -46,7 +46,7 @@ module ECoreTest__DiscoverControllers
     end
 
     describe 'Regex name' do
-      it do
+      testing do
         app EApp.new(false).mount(/ControllerNumber/)
         get :one
         is_ok?

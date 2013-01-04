@@ -15,7 +15,7 @@ module ECoreTest__AppAuth
     }
 
     describe 'existing controllers are Basic protected' do
-      it do
+      testing do
         reset_basic_auth!
 
         get
@@ -32,7 +32,7 @@ module ECoreTest__AppAuth
         protected?
       end
 
-      it 'any location, existing or not, requested via any request method, are Basic protected' do
+      testing 'any location, existing or not, requested via any request method, are Basic protected' do
         reset_auth!
 
         get :foo
@@ -55,7 +55,7 @@ module ECoreTest__AppAuth
     }
 
     describe 'existing controllers are Digest protected' do
-      it do
+      testing do
         reset_digest_auth!
 
         get
@@ -72,7 +72,7 @@ module ECoreTest__AppAuth
         protected?
       end
 
-      it 'any location, existing or not, requested via any request method, are Digest protected' do
+      testing 'any location, existing or not, requested via any request method, are Digest protected' do
         reset_auth!
 
         get :foo

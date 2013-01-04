@@ -25,13 +25,13 @@ module ECoreTest__Error
 
   Spec.new App do
 
-    it 404 do
+    testing 404 do
       get :blah!
       is_not_found?
       is_body? 'NoLuckTryAgain - max params accepted: 0; params given: 1'
     end
 
-    it 500 do
+    testing 500 do
       get :raise_error
       is_status? 500
       is_body? /FatalErrorOccurred: undefined local variable or method `code'/

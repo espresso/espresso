@@ -43,7 +43,7 @@ module ECoreTest__ActionAlias
 
   Spec.new AnyRequestMethod do
 
-    it do
+    testing do
       ['endpoint', 'some-url', 'some-another/url'].each do |url|
         get url
         is_ok?
@@ -59,7 +59,7 @@ module ECoreTest__ActionAlias
 
   Spec.new SpecificRequestMethod do
 
-    it  do
+    testing  do
       ['endpoint', 'some-url', 'some-another/url'].each do |url|
         get url
         is_ok?
@@ -75,7 +75,7 @@ module ECoreTest__ActionAlias
 
   Spec.new PrivateZone do
 
-    it do
+    testing do
       ['some-url', 'some-another/url'].each do |url|
         get url
         is_ok?

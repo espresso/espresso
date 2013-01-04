@@ -19,7 +19,7 @@ module ECoreTest__InnerApps
     end
     app eapp
 
-    it do
+    testing do
       get
       is_ok_body? 'index'
 

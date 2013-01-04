@@ -4,6 +4,7 @@ module BddApi
       alias it Testing
       alias describe Describe
       alias specify describe
+      alias testing Testing
     end
   end
 end

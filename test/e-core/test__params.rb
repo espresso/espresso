@@ -34,7 +34,7 @@ module ECoreTest__Params
   end
 
   Spec.new ParamsApp do
-    it 'be able to access params by both string and symbol keys' do
+    it 'can access params by both string and symbol keys' do
       var, val = 'foo', 'bar'
       get :symbolized, var, false, var => val
       is_body? val
@@ -97,7 +97,7 @@ module ECoreTest__Params
 
   Spec.new ActionParams do
     if RUBY_VERSION.to_f > 1.8
-      it "works" do
+      it  do
         a1, a2 = rand.to_s, rand.to_s
         get a1, a2
         is_body? ({:a1 => a1, :a2 => a2}).inspect

@@ -57,7 +57,7 @@ module ECoreTest__PathRules
       end
     end
 
-    it "default_rules" do
+    testing "default_rules" do
       check_path_rules(DefaultRules,
         %w[
           four.slashes
@@ -67,7 +67,7 @@ module ECoreTest__PathRules
       )
     end
 
-    it "custom_rules" do
+    testing "custom_rules" do
       check_path_rules(CustomRules,
         %w[
           dot.html

@@ -11,7 +11,7 @@ module ECoreTest__Accept
 
   Spec.new AcceptApp do
 
-    it 'content type' do
+    testing 'content type' do
       field, val = 'accept', Rack::Mime::MIME_TYPES.fetch('.txt')
       headers['Accept'] = val
 
@@ -19,7 +19,7 @@ module ECoreTest__Accept
       is_body? val
     end
 
-    it 'charset' do
+    testing 'charset' do
       field, val = 'charset', 'UTF-32'
       headers['Accept-Charset'] = val
 
@@ -27,7 +27,7 @@ module ECoreTest__Accept
       is_body? /#{val}/
     end
 
-    it 'encoding' do
+    testing 'encoding' do
       field, val = 'encoding', 'gzip'
       headers['Accept-Encoding'] = val
 
@@ -35,7 +35,7 @@ module ECoreTest__Accept
       is_body? /#{val}/
     end
 
-    it 'language' do
+    testing 'language' do
       field, val = 'language', 'en-gb'
       headers['Accept-Language'] = val
 
@@ -43,7 +43,7 @@ module ECoreTest__Accept
       is_body? /#{val}/
     end
 
-    it 'ranges' do
+    testing 'ranges' do
       field, val = 'ranges', 'bytes'
       headers['Accept-Ranges'] = val
 

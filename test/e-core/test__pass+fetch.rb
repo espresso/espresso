@@ -63,33 +63,33 @@ module ECoreTest__Pass
       PARAMS.dup
     end
 
-    it :get_pass do
+    testing :get_pass do
       get args, params
       refute(last_response.body) =~ /index/
       is_body? [ARGS, PARAMS].inspect
     end
 
-    it :post_pass do
+    testing :post_pass do
       post args, params
       is_body? [ARGS, PARAMS].inspect
     end
 
-    it :custom_query_string do
+    testing :custom_query_string do
       get :custom_query_string, args, params
       is_body? [ARGS, {ARGS.first => ARGS.last}].inspect
     end
 
-    it :inner_app do
+    testing :inner_app do
       get :inner_app, :catcher, args, params
       is_body? "k=v/var=val"
     end
 
-    it :invoke do
+    testing :invoke do
       get :invoke, :catcher, args, params
       is_body? "200/k=v/var=val"
     end
 
-    it :fetch do
+    testing :fetch do
       get :fetch, :catcher, args, params
       is_body? "k=v/var=val"
     end

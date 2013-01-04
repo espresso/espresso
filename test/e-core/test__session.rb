@@ -45,7 +45,7 @@ module ECoreTest__Session
       is_body?  /#{val}/
     end
 
-    Testing 'keys/values' do
+    testing 'keys/values' do
       get :keys
       is_body? [var].inspect
 
@@ -53,7 +53,7 @@ module ECoreTest__Session
       is_body? [val].inspect
     end
 
-    Testing :flash do
+    testing :flash do
       var, val = rand.to_s, rand.to_s
       get :flash_set, var, val
 

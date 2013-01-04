@@ -17,7 +17,7 @@ module ECoreTest__Halt
 
   Spec.new App do
 
-    it 'sending status and body' do
+    testing 'sending status and body' do
       r = get :haltme, :status => 500, :body => :fatal_error!
       is_status? 500
       is_body? 'fatal_error!'
@@ -39,7 +39,7 @@ module ECoreTest__Halt
       is_ok_body? ''
     end
 
-    it 'custom response' do
+    testing 'custom response' do
       r = post :send_response, 301, 'redirecting...', 'Location' => 'http://to.the.sky'
       is_redirect? 301
       is_body? 'redirecting...'

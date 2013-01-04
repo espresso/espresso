@@ -26,7 +26,7 @@ module ECoreTest__Canonical
     include Hlp
     app(App.mount '/', '/a')
 
-    it "base_url" do
+    testing "base_url" do
       variations = [
         [:get, [:index], '/index'],
         [:get, [], '/'],
@@ -36,7 +36,7 @@ module ECoreTest__Canonical
       check_variations(variations)
     end
 
-    it "controller_canonicals" do
+    testing "controller_canonicals" do
       variations = [
         [:get, [:cms, :index], '/cms/index'],
         [:get, [:cms], '/cms'],
