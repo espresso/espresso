@@ -105,8 +105,7 @@ class E
     if action_params__array.any? && formats.any? && format.nil?
       last_param_ext = File.extname(action_params__array.last)
       if last_param_ext.size > 0 && formats.find { |f| last_param_ext == f }
-        action_params__array[action_params__array.size - 1] =
-          File.basename(action_params__array.last, last_param_ext)
+        action_params__array[action_params__array.size - 1] = action_params__array.last.remove_extension
         @__e__format = last_param_ext
       end
     end
