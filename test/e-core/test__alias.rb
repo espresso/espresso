@@ -1,6 +1,6 @@
 module ECoreTest__Alias
 
-  class App < E
+  class AliasApp < E
     map '/', '/cms'
 
     def news
@@ -12,33 +12,28 @@ module ECoreTest__Alias
 
   end
 
-  Spec.new App do
+  Spec.new AliasApp do
 
-    r = get :news
-    expect(r.status) == 200
-    is(r.body) == '[:news, :news]'
+    it do
+      get :news
+      is_ok_body? '[:news, :news]'
 
-    r = get 'news.html'
-    is(r.body) == '[:news, :news____html]'
-    expect(r.status) == 200
+      get 'news.html'
+      is_ok_body? '[:news, :news____html]'
 
-    r = get 'headlines/recent.html'
-    is(r.body) == '[:news, :headlines__recent____html]'
-    expect(r.status) == 200
-
-    Testing 'canonical aliases' do
-      r = get :cms, :news
-      expect(r.status) == 200
-      is(r.body) == '[:news, :news]'
-
-      r = get :cms, 'news.html'
-      is(r.body) == '[:news, :news____html]'
-      expect(r.status) == 200
-
-      r = get :cms, :headlines, 'recent.html'
-      is(r.body) == '[:news, :headlines__recent____html]'
-      expect(r.status) == 200
+      get 'headlines/recent.html'
+      is_ok_body? '[:news, :headlines__recent____html]'
     end
 
+    it 'canonical aliases' do
+      get :cms, :news
+      is_ok_body? '[:news, :news]'
+
+      get :cms, 'news.html'
+      is_ok_body? '[:news, :news____html]'
+
+      get :cms, :headlines, 'recent.html'
+      is_ok_body? '[:news, :headlines__recent____html]'
+    end
   end
 end
