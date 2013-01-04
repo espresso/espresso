@@ -14,7 +14,7 @@ module ECoreTest__Files
     get :path => path
 
     Dir[path + '/*.rb'].each do |file|
-      expect(last_response.body) =~ /app\/#{File.basename(__FILE__)}/
+      is_body? /app\/#{File.basename(__FILE__)}/
     end
 
   end

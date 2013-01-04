@@ -29,87 +29,82 @@ module ECoreTest__Format
   end
 
   Spec.new App do
+    describe 'global setup' do
 
-    def of_type? response, type
-      check(response.header['Content-Type']) == 
-        Rack::Mime::MIME_TYPES.fetch(type)
-    end
-
-    Testing 'global setup' do
-
-      Should 'return html(default Content-Type)' do
+      it 'return html(default Content-Type)' do
         get
-        is(last_response).of_type?('.html')
+        is_content_type?('.html')
       end
 
-      Should 'return xml' do
+      it 'returns xml' do
         get 'index.xml'
-        is(last_response).of_type?('.xml')
+        is_content_type?('.xml')
       end
 
-      Should 'return xsl' do
+      it 'returns xsl' do
         get 'index.xsl'
-        is(last_response).of_type?('.xsl')
+        is_content_type?('.xsl')
 
         get 'some_action.xsl'
-        is(last_response).of_type?('.xsl')
+        is_content_type?('.xsl')
       end
 
-      Should 'return 404 error' do
+      it 'returns 404 error' do
         get 'index.html'
-        is?(last_response.status) == 404
+        is_not_found?
       end
     end
 
-    Testing 'per-action setup' do
-      Should 'return 404 error' do
+    describe 'per-action setup' do
+      it 'returns 404 error' do
         get 'api.xml'
-        is?(last_response.status) == 404
+        is_not_found?
         get 'api.html'
-        is?(last_response.status) == 404
+        is_not_found?
       end
-      Should 'return json' do
+      it 'returns json' do
         get 'api.json'
-        is(last_response).of_type?('.json')
+        is_content_type?('.json')
       end
-      Should 'return html' do
+      it 'returns html' do
         get 'api'
-        is(last_response).of_type?('.html')
+        is_content_type?('.html')
       end
 
-      Should 'override type set by format' do
+      it 'overrides type set by format' do
         get :txt
-        is(last_response).of_type?('.txt')
+        is_content_type?('.txt')
         get 'txt.xml'
-        is(last_response).of_type?('.txt')
+        is_content_type?('.txt')
       end
 
     end
 
-    Testing 'format disabler' do
+    it 'format disabler' do
       get :plain
-      expect(last_response.status) == 200
+      is_ok?
 
       get 'plain.xml'
-      expect(last_response.status) == 404
-      
+      is_not_found?
+
       get 'plain.xsl'
-      expect(last_response.status) == 404
+      is_not_found?
     end
 
-    Testing 'by appending format to last param' do
+    describe 'by appending format to last param' do
+      it do
+        get :read, 'book.xml'
+        is_body?'[:read, ".xml", "book"]'
 
-      get :read, 'book.xml'
-      expect(last_response.body) == '[:read, ".xml", "book"]'
+        get :read, :book
+        is_body? '[:read, nil, "book"]'
+      end
 
-      get :read, :book
-      expect(last_response.body) == '[:read, nil, "book"]'
-
-      Ensure 'that when format is passed with action, the format passed with last param has no effect' do
+      it 'that when format is passed with action, the format passed with last param has no effect' do
         get 'read.xml', 'book.xsl'
-        expect(last_response.body) == '[:read, ".xml", "book.xsl"]'
+        is_body? '[:read, ".xml", "book.xsl"]'
       end
     end
-    
+
   end
 end
