@@ -1,6 +1,6 @@
 module ExtTest__String
   Spec.new self do
-    it :remove_extension do
+    testing :remove_extension do
       variations = [
         ["test.json", 'test'],
         ["action/test.xml", 'test']
