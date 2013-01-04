@@ -65,10 +65,10 @@ module EspressoFrameworkUtils
   def build_path path, *args
     path = path.to_s
     args.compact!
-    
+
     query_string = args.last.is_a?(Hash) && (h = args.pop.delete_if{|k,v| v.nil?}).any? ?
       '?' << ::Rack::Utils.build_nested_query(h) : ''
-    
+
     args.size == 0 || path =~ /\/\Z/ || args.unshift('')
     path + args.join('/') << query_string
   end
@@ -117,5 +117,9 @@ module EspressoFrameworkUtils
       VIEW__EXT_BY_ENGINE[Slim::Template] = '.slim'.freeze
     end
     def __method__; end
+  end
+
+  def is_ruby19?
+    RUBY_VERSION.to_f > 1.8
   end
 end
