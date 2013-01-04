@@ -37,31 +37,32 @@ module ECoreTest__ContentType
 
   Spec.new App do
 
-    rsp = get
-    expect(rsp.header['Content-Type']) == Rack::Mime::MIME_TYPES.fetch('.txt')
+    get
+    is_content_type?('.txt')
 
-    rsp = get :xml
-    expect(rsp.header['Content-Type']) == Rack::Mime::MIME_TYPES.fetch('.xml')
+    get :xml
+    is_content_type?('.xml')
 
-    rsp = get :read, 'feed.json'
-    expect(rsp.header['Content-Type']) == Rack::Mime::MIME_TYPES.fetch('.json')
+    get :read, 'feed.json'
+    is_content_type?('.json')
 
     rsp = get :json
-    expect(rsp.header['Content-Type']) == Rack::Mime::MIME_TYPES.fetch('.json')
+    is_content_type?('.json')
 
     Ensure 'type set by `content_type` is overridden by type set by format' do
       get :readme
-      expect(last_response.header['Content-Type']) == 'readme'
+      is_content_type?('readme')
 
       get 'readme.json'
-      expect(last_response.header['Content-Type']) == Rack::Mime::MIME_TYPES.fetch('.json')
+      is_content_type?('.json')
     end
 
     Testing 'setup by giving action name along with format' do
       get
-      expect(last_response.header['Content-Type']) == Rack::Mime::MIME_TYPES.fetch('.txt')
+      is_content_type?('.txt')
       get 'index.json'
-      expect(last_response.header['Content-Type']) == 'Blah!'
+      is_content_type?('Blah!')
     end
+
   end
 end
