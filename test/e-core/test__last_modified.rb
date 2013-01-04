@@ -18,7 +18,7 @@ module ECoreTest__LastModified
       @time ||= (Time.now - 100).httpdate
     end
 
-    it do
+    testing do
       get :time => time
       is_ok?
       is_last_modified?(time)
@@ -31,7 +31,7 @@ module ECoreTest__LastModified
       is_last_modified?(time)
     end
 
-    it 'return 304 code cause If-Modified-Since header is set to a later time' do
+    it 'returns 304 code cause If-Modified-Since header is set to a later time' do
       ims = (Time.now - 90).httpdate
       header['If-Modified-Since'] = ims
 
@@ -40,7 +40,7 @@ module ECoreTest__LastModified
       is_last_modified?(time)
     end
 
-    Should 'return 412 code cause If-Unmodified-Since header is set to a time in future' do
+    it 'returns 412 code cause If-Unmodified-Since header is set to a time in future' do
       ims = (Time.now - 110).httpdate
 
       headers.clear

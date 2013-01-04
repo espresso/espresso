@@ -60,55 +60,49 @@ module ECoreTest__Setup
 
   Spec.new App do
 
-    Testing :matchers do
-      get :foo
-      expect(last_response.body) == '7/1'
+    testing :matchers do
+      # FIXME: this is a fragile test...
+      variations = {
+        :foo       => '7/1',
+        'foo.xml'  => '8/1',
+        'foo.json' => '8/1',
+        'bar'      => '4/1',
+        'bar.xml'  => '5/1',
+        'bar.json' => '6/1',
+        'blah'     => '3/2',
+        'black'    => '3/3',
+      }
 
-      get 'foo.xml'
-      expect(last_response.body) == '8/1'
-
-      get 'foo.json'
-      expect(last_response.body) == '8/1'
-
-      get :bar
-      expect(last_response.body) == '4/1'
-
-      get 'bar.xml'
-      expect(last_response.body) == '5/1'
-
-      get 'bar.json'
-      expect(last_response.body) == '6/1'
-
-      get :blah
-      expect(last_response.body) == '3/2'
-
-      get :black
-      expect(last_response.body) == '3/3'
-    end
-
-    Ensure 'format disabled' do
-      Testing 'exact matcher' do
-        get :blah
-        expect(last_response.status) == 200
-
-        get 'blah.xml'
-        expect(last_response.status) == 404
-
-        get 'blah.json'
-        expect(last_response.status) == 404
-      end
-      
-      Testing 'regex matcher' do
-        get :black
-        expect(last_response.status) == 200
-
-        get 'black.xml'
-        expect(last_response.status) == 404
-
-        get 'black.json'
-        expect(last_response.status) == 404
+      variations.each do |k,v|
+        get k
+        is_body? v
       end
     end
 
+    testing 'format disabled' do
+      def check_variations(variations)
+        variations.each do |k,v|
+          get k
+          is_status? v
+        end
+      end
+      testing 'exact matcher' do
+        variations = {
+          :blah       => 200,
+          'blah.xml'  => 404,
+          'blah.json' => 404
+        }
+        check_variations(variations)
+      end
+
+      testing 'regex matcher' do
+        variations = {
+          :black       => 200,
+          'black.xml'  => 404,
+          'black.json' => 404
+        }
+        check_variations(variations)
+      end
+    end
   end
 end

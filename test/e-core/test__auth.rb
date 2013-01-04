@@ -28,7 +28,7 @@ module ECoreTest__Auth
   end
 
   Spec.new App do
-    it 'Basic via GET' do
+    testing 'Basic via GET' do
       get :basic
       protected?
 
@@ -43,7 +43,7 @@ module ECoreTest__Auth
       protected?
     end
 
-    it 'Basic via POST' do
+    testing 'Basic via POST' do
       reset_basic_auth!
 
       post :basic
@@ -60,7 +60,7 @@ module ECoreTest__Auth
       protected?
     end
 
-    it 'Digest via GET' do
+    testing 'Digest via GET' do
 
       reset_digest_auth!
 
@@ -78,7 +78,7 @@ module ECoreTest__Auth
       protected?
     end
 
-    it 'Digest via POST' do
+    testing 'Digest via POST' do
 
       reset_digest_auth!
 

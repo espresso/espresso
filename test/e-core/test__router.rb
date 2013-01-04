@@ -68,12 +68,12 @@ module ECoreTest__Router
         is_not_found?
       end
 
-      it 'return 404 cause redundant args provided' do
+      it 'returns 404 cause redundant args provided' do
         post :exact, :arg, :redundant_arg
         is_not_found?
       end
 
-      it 'return 404 cause :head_exact action does not exists' do
+      it 'returns 404 cause :head_exact action does not exists' do
         head :exact
         is_not_found?
       end
@@ -95,17 +95,17 @@ module ECoreTest__Router
         end
       end
 
-      it 'return 404 cause no args provided' do
+      it 'returns 404 cause no args provided' do
         r = get :one_or_two
         is_not_found?
       end
 
-      it 'return 404 cause redundant args provided' do
+      it 'returns 404 cause redundant args provided' do
         r = get :one_or_two, 1, 2, 3, 4, 5, 6
         is_not_found?
       end
 
-      it 'return 404 cause :post_one_or_two action does not exists' do
+      it 'returns 404 cause :post_one_or_two action does not exists' do
         r = post :one_or_two
         is_not_found?
       end
@@ -127,19 +127,17 @@ module ECoreTest__Router
       end
     end
 
-  describe 'any number of args' do
-      it do
-        r = get :any
-        is_ok_body? [].to_s
+    describe 'any number of args' do
+      r = get :any
+      is_ok_body? [].to_s
 
-        r = get :any, :number, :of, :args
-        if E.is_ruby19?
-          is_ok_body? ['number', 'of', 'args'].to_s
-        else
-          #'return 404 cause splat params does not work on Appetite running on ruby1.8' do
-          is_not_found?
-          is_body? 'max params accepted: 0; params given: 3'
-        end
+      r = get :any, :number, :of, :args
+      if E.is_ruby19?
+        is_ok_body? ['number', 'of', 'args'].to_s
+      else
+        #'return 404 cause splat params does not work on Appetite running on ruby1.8' do
+        is_not_found?
+        is_body? 'max params accepted: 0; params given: 3'
       end
     end
 
@@ -174,14 +172,14 @@ module ECoreTest__Router
         is?(object.route(:blah)) == (map() + '/blah')
       end
 
-      it 'called at class level' do
+      testing 'called at class level' do
         @map.each_pair do |action, url|
           url = map() + url
           check_route_functions(App, action, url)
         end
       end
 
-      it 'when called at instance level' do
+      testing 'when called at instance level' do
         ctrl = App.new
         @map.each_pair do |action, url|
           url = map() + url

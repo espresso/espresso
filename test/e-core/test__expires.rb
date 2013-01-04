@@ -56,20 +56,21 @@ module ECoreTest__Expires
       check(expires) <= Time.now + amount
     end
 
-    get
-    does(last_response).contain_suitable_headers? GENERIC_AMOUNT, *GENERIC
+    testing do
+      get
+      does(last_response).contain_suitable_headers? GENERIC_AMOUNT, *GENERIC
 
-    get :private
-    does(last_response).contain_suitable_headers? PRIVATE_AMOUNT, *PRIVATE
+      get :private
+      does(last_response).contain_suitable_headers? PRIVATE_AMOUNT, *PRIVATE
 
-    get :inline
-    does(last_response).contain_suitable_headers? INLINE_AMOUNT, *INLINE
+      get :inline
+      does(last_response).contain_suitable_headers? INLINE_AMOUNT, *INLINE
 
-    get 'index.xml'
-    does(last_response).contain_suitable_headers? XML_AMOUNT, *XML
+      get 'index.xml'
+      does(last_response).contain_suitable_headers? XML_AMOUNT, *XML
 
-    get :read, 'book.xml'
-    does(last_response).contain_suitable_headers? XML_AMOUNT, *XML
-
+      get :read, 'book.xml'
+      does(last_response).contain_suitable_headers? XML_AMOUNT, *XML
+    end
   end
 end

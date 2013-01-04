@@ -35,7 +35,7 @@ module ECoreTest__Charset
   end
 
   Spec.new CharsetApp do
-    it do
+    testing do
       get
       is_charset? 'ISO-8859-1'
 
@@ -50,7 +50,7 @@ module ECoreTest__Charset
       is_content_type? '.xml'
     end
 
-    it 'setup by giving action name along with format' do
+    testing 'setup by giving action name along with format' do
       get 'index.json'
       is_charset? 'UTF-32'
     end

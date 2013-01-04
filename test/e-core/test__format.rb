@@ -31,7 +31,7 @@ module ECoreTest__Format
   Spec.new App do
     describe 'global setup' do
 
-      it 'return html(default Content-Type)' do
+      it 'returns html(default Content-Type)' do
         get
         is_content_type?('.html')
       end
@@ -80,7 +80,7 @@ module ECoreTest__Format
 
     end
 
-    it 'format disabler' do
+    testing 'format disabler' do
       get :plain
       is_ok?
 
@@ -92,7 +92,7 @@ module ECoreTest__Format
     end
 
     describe 'by appending format to last param' do
-      it do
+      testing do
         get :read, 'book.xml'
         is_body?'[:read, ".xml", "book"]'
 
@@ -100,7 +100,7 @@ module ECoreTest__Format
         is_body? '[:read, nil, "book"]'
       end
 
-      it 'that when format is passed with action, the format passed with last param has no effect' do
+      testing 'that when format is passed with action, the format passed with last param has no effect' do
         get 'read.xml', 'book.xsl'
         is_body? '[:read, ".xml", "book.xsl"]'
       end

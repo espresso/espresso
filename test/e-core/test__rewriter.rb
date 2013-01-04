@@ -104,52 +104,37 @@ module ECoreTest__Rewriter
       is_location? location
     end
 
-    describe :redirect do
-      it do
-        page, product = rand(1000000).to_s, rand(1000000).to_s
-        get '/landing-page/%s/%s' % [page, product]
-        check_redir_location(Store.route(:buy, product, :page => page))
-      end
+    testing :redirect do
+      page, product = rand(1000000).to_s, rand(1000000).to_s
+      get '/landing-page/%s/%s' % [page, product]
+      check_redir_location(Store.route(:buy, product, :page => page))
 
-      it do
-        var = rand 1000000
-        get '/articles/%s.html' % var
-        check_redir_location('/page?title=%s' % var)
-      end
+      var = rand 1000000
+      get '/articles/%s.html' % var
+      check_redir_location('/page?title=%s' % var)
 
-      it do
-        var = rand.to_s
-        get '/News/%s.php' % var
-        check_redir_location('/news/%s/' % var)
-      end
+      var = rand.to_s
+      get '/News/%s.php' % var
+      check_redir_location('/news/%s/' % var)
 
-      it do
-        var, val = rand.to_s, rand.to_s
-        get '/News/%s.php' % var, var => val
-        check_redir_location('/news/%s/?%s=%s' % [var, var, val])
-      end
+      var, val = rand.to_s, rand.to_s
+      get '/News/%s.php' % var, var => val
+      check_redir_location('/news/%s/?%s=%s' % [var, var, val])
 
-      it do
-        var = rand.to_s
-        get '/old_news/%s.php' % var
-        check_redir_location('/news/%s' % var, 301)
-      end
+      var = rand.to_s
+      get '/old_news/%s.php' % var
+      check_redir_location('/news/%s' % var, 301)
 
-      it do
-        name, id = rand(1000000), rand(100000)
-        get '/pages/%s-%s.html' % [name, id]
-        check_redir_location('/page/%s?id=%s' % [name, id])
-      end
+      name, id = rand(1000000), rand(100000)
+      get '/pages/%s-%s.html' % [name, id]
+      check_redir_location('/page/%s?id=%s' % [name, id])
 
-      it do
-        name, id = rand(1000000), rand(100000)
-        get '/old_pages/%s-%s.html' % [name, id]
-        check_redir_location('/page?name=%s&id=%s' % [name, id], 301)
-      end
+      name, id = rand(1000000), rand(100000)
+      get '/old_pages/%s-%s.html' % [name, id]
+      check_redir_location('/page?name=%s&id=%s' % [name, id], 301)
     end
 
-    it :pass do
-
+    testing :pass do
       name = rand(100000).to_s
       response = get '/pass_test_I/%s' % name
       if RUBY_VERSION.to_f > 1.8
@@ -165,7 +150,7 @@ module ECoreTest__Rewriter
       is_ok_body? [name, {'name' => name}].to_s
     end
 
-    it :halt do
+    testing :halt do
       def check_result(code, body)
         is_status? code
         is_body? body
@@ -181,7 +166,7 @@ module ECoreTest__Rewriter
       check_result(code, body)
     end
 
-    it "context" do
+    testing :context do
       name = rand(100000).to_s
       get '/context_sensitive/%s' % name
       is_redirect?

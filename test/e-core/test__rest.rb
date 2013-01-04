@@ -30,41 +30,36 @@ module ECoreTest__REST
       end
     end
 
-    describe 'defined actions responds only to given request method' do
-      it do
-        get :edit
-        is_not_found?
+    testing 'defined actions responds only to given request method' do
+      get :edit
+      is_not_found?
 
-        post :edit
-        is_ok?
+      post :edit
+      is_ok?
 
-        get :create
-        is_not_found?
+      get :create
+      is_not_found?
 
-        put :create
-        is_ok?
+      put :create
+      is_ok?
 
-        post :details
-        is_not_found?
+      post :details
+      is_not_found?
 
-        head :details
-        is_ok?
+      head :details
+      is_ok?
 
-        head :edit
-        is_not_found?
-      end
+      head :edit
+      is_not_found?
     end
 
-    describe 'it uses only first verb as request method' do
-      it do
-        post :get_verb
-        is(last_response).ok?
+    it 'uses only first verb as request method' do
+      post :get_verb
+      is(last_response).ok?
 
-        get :verb
-        is(last_response).not_found?
-      end
+      get :verb
+      is(last_response).not_found?
     end
 
   end
-
 end

@@ -14,7 +14,7 @@ module ECoreTest__Alias
 
   Spec.new AliasApp do
 
-    it do
+    testing do
       get :news
       is_ok_body? '[:news, :news]'
 
@@ -25,7 +25,7 @@ module ECoreTest__Alias
       is_ok_body? '[:news, :headlines__recent____html]'
     end
 
-    it 'canonical aliases' do
+    testing 'canonical aliases' do
       get :cms, :news
       is_ok_body? '[:news, :news]'
 
