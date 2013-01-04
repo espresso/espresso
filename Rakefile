@@ -14,34 +14,41 @@ namespace :test do
     session.exit_code == 0 || fail
   end
 
-  session = Specular.new
-  session.boot do
-    include Sonar
-    include BddApi
-    include HttpSpecHelper
-  end
-  session.before do |app|
-    if app && EspressoFrameworkUtils.is_app?(app)
-      app.use Rack::Lint
-      app(app.mount)
-      map(app.base_url)
+  def default_session
+    session = Specular.new
+    session.boot do
+      include Sonar
+      include BddApi
+      include HttpSpecHelper
     end
+    session.before do |app|
+      if app && EspressoFrameworkUtils.is_app?(app)
+        app.use Rack::Lint
+        app(app.mount)
+        map(app.base_url)
+      end
+    end
+    session
   end
 
   task :core do
-    run_test(/ECoreTest/, "Testing Core", session)
+    run_test(/ECoreTest/, "Testing Core", default_session)
   end
 
   task :cache do
-    run_test(/EMoreTest__Cache/, "Testing Cache", session)
+    run_test(/EMoreTest__Cache/, "Testing Cache", default_session)
   end
 
   task :crud do
-    run_test(/EMoreTest__CRUD/, "Testing Crud", session)
+    run_test(/EMoreTest__CRUD/, "Testing Crud", default_session)
   end
 
   task :ipcm do
-    run_test(/EMoreTest__IPCM/, "Testing InterProcess Cache Manager", session)
+    run_test(/EMoreTest__IPCM/, "Testing InterProcess Cache Manager", default_session)
+  end
+
+  task :ext do
+    run_test(/ExtTest__/, "Testing Ruby Extensions", default_session)
   end
 
   task :view do
@@ -58,7 +65,7 @@ namespace :test do
   end
 end
 
-task :test => ['test:core', 'test:view', 'test:crud', 'test:cache']
+task :test => ['test:core', 'test:view', 'test:crud', 'test:cache', 'test:ext']
 task :overhead do
   require './test/overhead/run'
 end
