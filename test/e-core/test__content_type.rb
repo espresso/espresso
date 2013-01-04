@@ -36,33 +36,19 @@ module ECoreTest__ContentType
   end
 
   Spec.new App do
+    variations = [
+      [[], '.txt'],
+      [[:xml], '.xml'],
+      [[:read, 'feed.json'], '.json'],
+      [[:json], '.json'],
+      [[:readme], 'readme'], #type set by `content_type` is overridden by type set by format
+      [['readme.json'], '.json'],
+      [['index.json'], 'Blah!'], # setup by giving action name along with format
+    ]
 
-    get
-    is_content_type?('.txt')
-
-    get :xml
-    is_content_type?('.xml')
-
-    get :read, 'feed.json'
-    is_content_type?('.json')
-
-    rsp = get :json
-    is_content_type?('.json')
-
-    Ensure 'type set by `content_type` is overridden by type set by format' do
-      get :readme
-      is_content_type?('readme')
-
-      get 'readme.json'
-      is_content_type?('.json')
+    variations.each do |args|
+      get *args[0]
+      is_content_type? args[1]
     end
-
-    Testing 'setup by giving action name along with format' do
-      get
-      is_content_type?('.txt')
-      get 'index.json'
-      is_content_type?('Blah!')
-    end
-
   end
 end
