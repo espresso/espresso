@@ -1,17 +1,13 @@
 class EspressoFrameworkRewriter
   attr_reader :env, :request
 
-  class << self
-    attr_accessor :rules
-  end
-
-  def initialize app
-    @app = app
+  def initialize rules
+    @rules = rules
   end
 
   def call env
     @env, @request = env, Rack::Request.new(env)
-    matched? ? [@status, @headers, @body] : @app.call(env)
+    matched? ? [@status, @headers, @body] : nil
   end
 
   def matched?
@@ -19,7 +15,7 @@ class EspressoFrameworkRewriter
     @status, @headers, @body = nil, {}, []
 
     catch :__e__rewriter__halt_symbol__ do
-      self.class.rules.each do |rule|
+      @rules.each do |rule|
         next unless (matches = path.match(rule.first))
         self.instance_exec *matches.captures, &rule.last
         break

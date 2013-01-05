@@ -189,13 +189,18 @@ class << E
     path = rootify_url(base_url, path).freeze
 
     action_arguments, required_arguments = action_parameters(action)
+
+    format_regexp = formats(action).any? ?
+      /(#{formats(action).map {|f| Regexp.escape f}.join("|")})\Z/ : nil
+
     {
       :ctrl     => self,
       :action   => action,
       :action_arguments => action_arguments,
       :required_arguments => required_arguments,
-      :path     => path,
-      :regexp   => /\A#{Regexp.escape(path).gsub('/', '/+')}(.*)/n,
+      :path => path,
+      :regexp => /\A#{Regexp.escape(path).gsub('/', '/+')}(.*)/n,
+      :format_regexp => format_regexp,
       :request_methods => request_methods,
     }.freeze
   end

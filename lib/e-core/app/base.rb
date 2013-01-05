@@ -139,8 +139,7 @@ class EApp
       if (pi = route[:regexp].match(env[ENV__PATH_INFO].to_s)) && (pi = pi[1])
         
         format = nil
-        (af = route[:ctrl].formats(route[:action]).map {|f| Regexp.escape f}).any? &&
-          (pi, format = pi.split(/(#{af.join("|")})\Z/))
+        (format_regexp = route[:format_regexp]) && (pi, format = pi.split(format_regexp))
 
         env[ENV__SCRIPT_NAME] = route[:path]
         env[ENV__PATH_INFO]   = pi
@@ -149,6 +148,10 @@ class EApp
         (middleware + route[:ctrl].middleware).each {|w,a,p| app.use w, *a, &p}
         return app.call(env)
       end
+    end
+    if rewrite_rules.any?
+      status, headers, body = EspressoFrameworkRewriter.new(rewrite_rules).call(env)
+      return [status, headers, body] if status
     end
     [404, {"Content-Type" => "text/plain", "X-Cascade" => "pass"}, ["Not Found: #{env[ENV__PATH_INFO]}"]]
   end
