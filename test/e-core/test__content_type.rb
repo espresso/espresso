@@ -48,7 +48,7 @@ module ECoreTest__ContentType
 
     variations.each do |args|
       get *args[0]
-      is_content_type? args[1]
+      is(args[1]).current_content_type?
     end
   end
 end

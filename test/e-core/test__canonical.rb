@@ -14,10 +14,10 @@ module ECoreTest__Canonical
   end
 
   module Hlp
-    def check_variations(variations)
+    def pass_validation? variations
       variations.each do |args|
         self.send(args[0], *args[1])
-        is_ok_body? args[2]
+        is(args[2]).ok_body?
       end
     end
   end
@@ -26,17 +26,17 @@ module ECoreTest__Canonical
     include Hlp
     app(App.mount '/', '/a')
 
-    testing "base_url" do
+    Testing "base_url" do
       variations = [
         [:get, [:index], '/index'],
         [:get, [], '/'],
         [:post, [:eatme], '/eatme'],
       ]
 
-      check_variations(variations)
+      does(variations).pass_validation?
     end
 
-    testing "controller_canonicals" do
+    Testing "controller_canonicals" do
       variations = [
         [:get, [:cms, :index], '/cms/index'],
         [:get, [:cms], '/cms'],
@@ -46,7 +46,7 @@ module ECoreTest__Canonical
         [:post, [:pages, :eatme], '/pages/eatme'],
       ]
 
-      check_variations(variations)
+      does(variations).pass_validation?
     end
 
   end
@@ -65,7 +65,7 @@ module ECoreTest__Canonical
         [:post, [:a, :pages, :eatme], '/a/pages/eatme'],
       ]
 
-      check_variations(variations)
+      does(variations).pass_validation?
     end
 
   end

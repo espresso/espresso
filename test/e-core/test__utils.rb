@@ -1,6 +1,6 @@
 module ECoreTest__Utils
   Spec.new self do
-    testing 'rootify_url' do
+    Testing 'rootify_url' do
       variations = [
         [["/", "/main"], "/main"],
         [["/main", "/second"], "/main/second"],
@@ -12,7 +12,7 @@ module ECoreTest__Utils
       end
     end
 
-    testing 'underscore' do
+    Testing 'underscore' do
       variations = [
         ["SuperClass", "super_class"]
       ]
@@ -22,7 +22,7 @@ module ECoreTest__Utils
       end
     end
 
-    testing "demodulize" do
+    Testing "demodulize" do
       module Inner
         class TestClass
         end
@@ -31,7 +31,7 @@ module ECoreTest__Utils
       is?(EspressoFrameworkUtils::demodulize(Inner::TestClass)) == "TestClass"
     end
 
-    testing "build_path" do
+    Testing "build_path" do
       # shouldn't this be  "some/page?and=some_param" ?
       variations = [
         [[:some, :page, {:and => :some_param}], "some/page?and"],

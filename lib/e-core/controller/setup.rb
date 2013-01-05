@@ -30,7 +30,7 @@ class << E
       gsub(/([A-Z]+)([A-Z][a-z])/, '\1_\2').
       gsub(/([a-z\d])([A-Z])/, '\1_\2').downcase).freeze
   end
-
+  alias baseurl base_url
 
   def canonicals
     @canonicals || []
@@ -207,6 +207,8 @@ class << E
   def before *matchers, &proc
     add_setup :a, *matchers, &proc
   end
+  alias on    before
+  alias setup before
 
   # (see #before)
   def after *matchers, &proc

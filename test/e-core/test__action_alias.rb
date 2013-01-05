@@ -43,50 +43,50 @@ module ECoreTest__ActionAlias
 
   Spec.new AnyRequestMethod do
 
-    testing do
+    Testing do
       ['endpoint', 'some-url', 'some-another/url'].each do |url|
         get url
-        is_ok?
+        is(last_response).ok?
 
         post url
-        is_ok?
+        is(last_response).ok?
       end
 
       get '/blah'
-      is_not_found?
+      is(last_response).not_found?
     end
   end
 
   Spec.new SpecificRequestMethod do
 
-    testing  do
+    Testing  do
       ['endpoint', 'some-url', 'some-another/url'].each do |url|
         get url
-        is_ok?
+        is(last_response).ok?
 
         post url
-        is_not_found?
+        is(last_response).not_found?
       end
 
       get '/blah'
-      is_not_found?
+      is(last_response).not_found?
     end
   end
 
   Spec.new PrivateZone do
 
-    testing do
+    Testing do
       ['some-url', 'some-another/url'].each do |url|
         get url
-        is_ok?
+        is(last_response).ok?
 
         post
-        is_ok?
+        is(last_response).ok?
       end
 
       %w(private_method protected_method blah).each do |m|
         get "/#{m}"
-        is_not_found?
+        is(last_response).not_found?
       end
     end
   end

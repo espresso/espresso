@@ -29,80 +29,80 @@ module ECoreTest__Format
   end
 
   Spec.new App do
-    describe 'global setup' do
+    Describe 'global setup' do
 
-      it 'returns html(default Content-Type)' do
+      It 'returns html(default Content-Type)' do
         get
-        is_content_type?('.html')
+        is('.html').current_content_type?
       end
 
-      it 'returns xml' do
+      It 'returns xml' do
         get 'index.xml'
-        is_content_type?('.xml')
+        is('.xml').current_content_type?
       end
 
-      it 'returns xsl' do
+      It 'returns xsl' do
         get 'index.xsl'
-        is_content_type?('.xsl')
+        is('.xsl').current_content_type?
 
         get 'some_action.xsl'
-        is_content_type?('.xsl')
+        is('.xsl').current_content_type?
       end
 
-      it 'returns 404 error' do
+      It 'returns 404 error' do
         get 'index.html'
-        is_not_found?
+        is(last_response).not_found?
       end
     end
 
-    describe 'per-action setup' do
-      it 'returns 404 error' do
+    Describe 'per-action setup' do
+      It 'returns 404 error' do
         get 'api.xml'
-        is_not_found?
+        is(last_response).not_found?
         get 'api.html'
-        is_not_found?
+        is(last_response).not_found?
       end
-      it 'returns json' do
+      It 'returns json' do
         get 'api.json'
-        is_content_type?('.json')
+        is('.json').current_content_type?
       end
-      it 'returns html' do
+      It 'returns html' do
         get 'api'
-        is_content_type?('.html')
+        is('.html').current_content_type?
       end
 
-      it 'overrides type set by format' do
+      It 'overrides type set by format' do
         get :txt
-        is_content_type?('.txt')
+        is('.txt').current_content_type?
         get 'txt.xml'
-        is_content_type?('.txt')
+        is('.txt').current_content_type?
       end
 
     end
 
-    testing 'format disabler' do
+    Testing 'format disabler' do
       get :plain
-      is_ok?
+      is(last_response).ok?
 
       get 'plain.xml'
-      is_not_found?
+      is(last_response).not_found?
 
       get 'plain.xsl'
-      is_not_found?
+      is(last_response).not_found?
     end
 
-    describe 'by appending format to last param' do
-      testing do
+    Describe 'by appending format to last param' do
+      Testing do
         get :read, 'book.xml'
-        is_body?'[:read, ".xml", "book"]'
+        is('[:read, ".xml", "book"]').current_body?
 
         get :read, :book
-        is_body? '[:read, nil, "book"]'
+        is('[:read, nil, "book"]').current_body?
       end
 
-      testing 'that when format is passed with action, the format passed with last param has no effect' do
+      Testing 'that when format is passed with action, the format passed with last param has no effect' do
         get 'read.xml', 'book.xsl'
-        is_body? '[:read, ".xml", "book.xsl"]'
+        is('[:read, ".xml", "book.xsl"]').current_body?
       end
     end
 

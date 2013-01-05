@@ -100,11 +100,11 @@ module ECoreTest__Rewriter
     end
 
     def check_redir_location(location, status=302)
-      is_redirect?(status)
-      is_location? location
+      is(status).current_redirect_code?
+      is(location).current_location?
     end
 
-    testing :redirect do
+    Testing :redirect do
       page, product = rand(1000000).to_s, rand(1000000).to_s
       get '/landing-page/%s/%s' % [page, product]
       check_redir_location(Store.route(:buy, product, :page => page))
@@ -134,27 +134,27 @@ module ECoreTest__Rewriter
       check_redir_location('/page?name=%s&id=%s' % [name, id], 301)
     end
 
-    testing :pass do
+    Testing :pass do
       name = rand(100000).to_s
       response = get '/pass_test_I/%s' % name
       if RUBY_VERSION.to_f > 1.8
-        is_ok_body? [name, {'name' => name}].inspect
+        is([name, {'name' => name}].inspect).ok_body?
       else
         #returns 404 cause splat params does not work on E running on ruby1.8' do
-        is_not_found?
-        is_body? 'max params accepted: 0; params given: 1'
+        is(last_response).not_found?
+        is('max params accepted: 0; params given: 1').current_body?
       end
 
       name = rand(100000).to_s
       response = get '/pass_test_II/%s' % name
-      is_ok_body? [name, {'name' => name}].to_s
+      is([name, {'name' => name}].to_s).ok_body?
     end
 
-    testing :halt do
+    Testing :halt do
       def check_result(code, body)
-        is_status? code
-        is_body? body
-        is_header? 'TEST', '%s|%s' % [body, code]
+        is(code).current_status?
+        is(body).current_body?
+        expect(last_response.headers['TEST']) == '%s|%s' % [body, code]
       end
 
       body, code = rand(100000).to_s, 500
@@ -166,18 +166,18 @@ module ECoreTest__Rewriter
       check_result(code, body)
     end
 
-    testing :context do
+    Testing :context do
       name = rand(100000).to_s
       get '/context_sensitive/%s' % name
-      is_redirect?
+      is(302).current_redirect_code?
       follow_redirect!
-      is_ok_body? [name, {}].inspect
+      is([name, {}].inspect).ok_body?
 
       header['User-Agent'] = 'google'
       get '/context_sensitive/%s' % name
-      is_redirect? 301
+      is( 301).current_redirect_code?
       follow_redirect!
-      is_ok_body? [name, {}].inspect
+      is([name, {}].inspect).ok_body?
     end
   end
 end

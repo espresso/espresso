@@ -13,14 +13,14 @@ module ECoreTest__File
   end
 
   Spec.new App do
-    testing :inline do
+    Testing :inline do
 
       get :inline
-      is_body? /module ECoreTest__File/
+      does(/module ECoreTest__File/).match_body?
 
     end
 
-    testing :attachment do
+    Testing :attachment do
       get :attach
       is(last_response.headers['Content-Disposition']) ==
                    'attachment; filename="%s"' % File.basename(__FILE__)

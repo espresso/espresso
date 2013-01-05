@@ -34,87 +34,86 @@ module ECoreTest__Params
   end
 
   Spec.new ParamsApp do
-    it 'can access params by both string and symbol keys' do
+    It 'can access params by both string and symbol keys' do
       var, val = 'foo', 'bar'
       get :symbolized, var, false, var => val
-      is_body? val
+      is(val).current_body?
 
       var, val = 'foo', 'bar'
       get :symbolized, var, true, var => val
-      is_body? val
+      is(val).current_body?
 
       var, val = 'foo', 'bar'
       post :symbolized, var, false, var => val
-      is_body? val
+      is(val).current_body?
 
       var, val = 'foo', 'bar'
       post :symbolized, var, true, var => val
-      is_body? val
+      is(val).current_body?
     end
 
     if RUBY_VERSION.to_f > 1.8
-      describe 'splat params' do
+      Describe 'splat params' do
 
-        it 'works with zero and more' do
+        It 'works with zero and more' do
           get :splat_params_0
-          is_ok_body? '{:args=>[]}'
+          is('{:args=>[]}').ok_body?
 
           get :splat_params_0, 1, 2, 3
-          is_ok_body? '{:args=>["1", "2", "3"]}'
+          is('{:args=>["1", "2", "3"]}').ok_body?
         end
 
-        it 'works with one and more' do
+        It 'works with one and more' do
 
           get :splat_params_1
-          is_not_found?
-          is_body? %r{min params accepted\: 1}
+          is(last_response).not_found?
+          does(%r{min params accepted\: 1}).match_body?
 
           get :splat_params_1, 1
-          is_ok_body? '{:a1=>"1", :args=>[]}'
+          is('{:a1=>"1", :args=>[]}').ok_body?
 
           get :splat_params_1, 1, 2, 3
-          is_ok_body? '{:a1=>"1", :args=>["2", "3"]}'
+          is('{:a1=>"1", :args=>["2", "3"]}').ok_body?
         end
 
       end
     end
 
-    describe 'nested params' do
-      specify do
-        params = {"user"=>{"username"=>"user", "password"=>"pass"}}
+    Describe 'nested params' do
+      params = {"user"=>{"username"=>"user", "password"=>"pass"}}
 
-        # using regex cause ruby1.8 sometimes reverses the order
-        regex  = Regexp.union(/"user"=>/, /"username"=>"user"/, /"password"=>"pass"/)
+      # using regex cause ruby1.8 sometimes reverses the order
+      regex  = Regexp.union(/"user"=>/, /"username"=>"user"/, /"password"=>"pass"/)
 
-        get :nested, params
-        is_body? regex
+      get :nested, params
+      does(regex).match_body?
 
-        post :nested, params
-        is_body? regex
-      end
+      post :nested, params
+      does(regex).match_body?
+    
     end
   end
 
   Spec.new ActionParams do
     if RUBY_VERSION.to_f > 1.8
-      it  do
+      It  do
         a1, a2 = rand.to_s, rand.to_s
         get a1, a2
-        is_body? ({:a1 => a1, :a2 => a2}).inspect
+        is({:a1 => a1, :a2 => a2}.inspect).current_body?
         get a1
-        is_body? ({:a1 => a1, :a2 => nil}).inspect
+        is({:a1 => a1, :a2 => nil}.inspect).current_body?
       end
     else
-      it 'returns 404 cause trailing default params does not work on Appetite running on ruby1.8' do
+      It 'returns 404 cause trailing default params does not work on Appetite running on ruby1.8' do
         a1, a2 = rand.to_s, rand.to_s
         get a1, a2
-        is_not_found?
-        is_body? 'max params accepted: 1; params given: 2'
+        is(last_response).not_found?
+        is('max params accepted: 1; params given: 2').current_body?
       end
-      it "works with one default param" do
+      It "works with one default param" do
         a1 = rand.to_s
         get a1
-        is_body? [a1].inspect
+        is([a1].inspect).current_body?
       end
     end
   end

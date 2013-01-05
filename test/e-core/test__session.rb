@@ -42,26 +42,26 @@ module ECoreTest__Session
 
     5.times do
       get :get, var
-      is_body?  /#{val}/
+      does(/#{val}/).match_body?
     end
 
-    testing 'keys/values' do
+    Testing 'keys/values' do
       get :keys
-      is_body? [var].inspect
+      is([var].inspect).current_body?
 
       get :values
-      is_body? [val].inspect
+      is([val].inspect).current_body?
     end
 
-    testing :flash do
+    Testing :flash do
       var, val = rand.to_s, rand.to_s
       get :flash_set, var, val
 
       r = get :flash_get, var
-      is_body? /#{val}/
+      does(/#{val}/).match_body?
 
       r = get :flash_get, var
-      is_body? /notSet/
+      does(/notSet/).match_body?
     end
 
   end

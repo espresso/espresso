@@ -60,7 +60,7 @@ module ECoreTest__Setup
 
   Spec.new App do
 
-    testing :matchers do
+    Testing :matchers do
       # FIXME: this is a fragile test...
       variations = {
         :foo       => '7/1',
@@ -75,33 +75,33 @@ module ECoreTest__Setup
 
       variations.each do |k,v|
         get k
-        is_body? v
+        is(v).current_body?
       end
     end
 
-    testing 'format disabled' do
-      def check_variations(variations)
+    Testing 'format disabled' do
+      def pass_validation?(variations)
         variations.each do |k,v|
           get k
-          is_status? v
+          is(v).current_status?
         end
       end
-      testing 'exact matcher' do
+      Testing 'exact matcher' do
         variations = {
           :blah       => 200,
           'blah.xml'  => 404,
           'blah.json' => 404
         }
-        check_variations(variations)
+        does(variations).pass_validation?
       end
 
-      testing 'regex matcher' do
+      Testing 'regex matcher' do
         variations = {
           :black       => 200,
           'black.xml'  => 404,
           'black.json' => 404
         }
-        check_variations(variations)
+        does(variations).pass_validation?
       end
     end
   end

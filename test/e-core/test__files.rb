@@ -9,12 +9,12 @@ module ECoreTest__Files
   end
 
   Spec.new App do
-    testing do
+    Testing do
       path = File.expand_path('..', __FILE__)
       get :path => path
 
       Dir[path + '/*.rb'].each do |file|
-        is_body? /app\/#{File.basename(__FILE__)}/
+        does(/app\/#{File.basename(__FILE__)}/).match_body?
       end
     end
   end

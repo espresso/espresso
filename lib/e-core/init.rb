@@ -35,17 +35,15 @@ class << E
     if block
       #TODO
     else
-      self.class_eval(
-        %Q{
-          def #{var}
-            @__e__#{var}
-          end
+      self.class_eval(%Q{
+        def #{var}
+          @__e__#{var}
+        end
 
-          def #{var}=(value)
-            @__e__#{var} = value
-          end
-        }
-      )
+        def #{var}=(value)
+          @__e__#{var} = value
+        end
+      })
     end
   end
 

@@ -24,7 +24,8 @@ module ECoreTest__Charset
     end
 
     def utf_32
-      content_type '.txt', :charset => 'UTF-32' # making sure it keeps charset
+      # making sure charset are kept
+      content_type '.txt', :charset => 'UTF-32' 
       __method__
     end
 
@@ -35,24 +36,24 @@ module ECoreTest__Charset
   end
 
   Spec.new CharsetApp do
-    testing do
+    Testing do
       get
-      is_charset? 'ISO-8859-1'
+      is('ISO-8859-1').current_charset?
 
       get :utf_16
-      is_charset? 'UTF-16'
+      is('UTF-16').current_charset?
 
       get :utf_32
-      is_charset? 'UTF-32'
+      is('UTF-32').current_charset?
 
       get :iso_8859_2
-      is_charset? 'ISO-8859-2'
-      is_content_type? '.xml'
+      is('ISO-8859-2').current_charset?
+      is('.xml').current_content_type?
     end
 
-    testing 'setup by giving action name along with format' do
+    Testing 'setup by giving action name along with format' do
       get 'index.json'
-      is_charset? 'UTF-32'
+      is('UTF-32').current_charset?
     end
   end
 end

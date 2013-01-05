@@ -17,41 +17,41 @@ module ECoreTest__DiscoverControllers
 
   Spec.new self do
 
-    describe 'String name' do
-      testing do
+    Describe 'String name' do
+      Testing do
         app EApp.new(false).mount('ControllerNumberOne')
         get :one
-        is_ok?
+        is(last_response).ok?
         get :two
-        is_not_found?
+        is(last_response).not_found?
       end
 
-      it 'works with full qualified name' do
+      It 'works with full qualified name' do
         app EApp.new(false).mount('ECoreTest__DiscoverControllers::ControllerNumberTwo')
         get :one
-        is_not_found?
+        is(last_response).not_found?
         get :two
-        is_ok?
+        is(last_response).ok?
       end
     end
 
-    describe 'Symbol name' do
-      testing do
+    Describe 'Symbol name' do
+      Testing do
         app EApp.new(false).mount(:ControllerNumberTwo)
         get :one
-        is_not_found?
+        is(last_response).not_found?
         get :two
-        is_ok?
+        is(last_response).ok?
       end
     end
 
-    describe 'Regex name' do
-      testing do
+    Describe 'Regex name' do
+      Testing do
         app EApp.new(false).mount(/ControllerNumber/)
         get :one
-        is_ok?
+        is(last_response).ok?
         get :two
-        is_ok?
+        is(last_response).ok?
       end
     end
 

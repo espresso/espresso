@@ -14,38 +14,38 @@ module ECoreTest__AppAuth
       auth { |u, p| [u, p] == ['b', 'b'] }
     }
 
-    describe 'existing controllers are Basic protected' do
-      testing do
+    Describe 'existing controllers are Basic protected' do
+      Testing do
         reset_basic_auth!
 
         get
-        protected?
+        is(last_response).protected?
 
         authorize 'b', 'b'
 
         get
-        authorized?
+        is(last_response).authorized?
 
         reset_basic_auth!
 
         get
-        protected?
+        is(last_response).protected?
       end
 
-      testing 'any location, existing or not, requested via any request method, are Basic protected' do
+      Testing 'any location, existing or not, requested via any request method, are Basic protected' do
         reset_auth!
 
         get :foo
-        protected?
+        is(last_response).protected?
 
         post
-        protected?
+        is(last_response).protected?
 
         head :blah
-        protected?
+        is(last_response).protected?
 
         put :doh
-        protected?
+        is(last_response).protected?
       end
     end
 
@@ -54,38 +54,38 @@ module ECoreTest__AppAuth
       digest_auth { |u| {'d' => 'd'}[u]  }
     }
 
-    describe 'existing controllers are Digest protected' do
-      testing do
+    Describe 'existing controllers are Digest protected' do
+      Testing do
         reset_digest_auth!
 
         get
-        protected?
+        is(last_response).protected?
 
         digest_authorize 'd', 'd'
 
         get
-        authorized?
+        is(last_response).authorized?
 
         reset_digest_auth!
 
         get
-        protected?
+        is(last_response).protected?
       end
 
-      testing 'any location, existing or not, requested via any request method, are Digest protected' do
+      Testing 'any location, existing or not, requested via any request method, are Digest protected' do
         reset_auth!
 
         get :foo
-        is(protected?)
+        is(last_response).protected?
 
         post
-        protected?
+        is(last_response).protected?
 
         head :blah
-        protected?
+        is(last_response).protected?
 
         put :doh
-        protected?
+        is(last_response).protected?
       end
     end
 

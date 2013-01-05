@@ -28,72 +28,72 @@ module ECoreTest__Auth
   end
 
   Spec.new App do
-    testing 'Basic via GET' do
+    Testing 'Basic via GET' do
       get :basic
-      protected?
+      is(last_response).protected?
 
       authorize 'b', 'b'
 
       get :basic
-      authorized?
+      is(last_response).authorized?
 
       reset_basic_auth!
 
       get :basic
-      protected?
+      is(last_response).protected?
     end
 
-    testing 'Basic via POST' do
+    Testing 'Basic via POST' do
       reset_basic_auth!
 
       post :basic
-      protected?
+      is(last_response).protected?
 
       authorize 'b', 'b'
 
       post :basic
-      authorized?
+      is(last_response).authorized?
 
       reset_basic_auth!
 
       post :basic
-      protected?
+      is(last_response).protected?
     end
 
-    testing 'Digest via GET' do
+    Testing 'Digest via GET' do
 
       reset_digest_auth!
 
       get :digest
-      protected?
+      is(last_response).protected?
 
       digest_authorize 'd', 'd'
 
       get :digest
-      authorized?
+      is(last_response).authorized?
 
       reset_digest_auth!
 
       get :digest
-      protected?
+      is(last_response).protected?
     end
 
-    testing 'Digest via POST' do
+    Testing 'Digest via POST' do
 
       reset_digest_auth!
 
       post :digest
-      protected?
+      is(last_response).protected?
 
       digest_authorize 'd', 'd'
 
       post :digest
-      authorized?
+      is(last_response).authorized?
 
       reset_digest_auth!
 
       post :digest
-      protected?
+      is(last_response).protected?
     end
   end
 

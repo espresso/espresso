@@ -7,7 +7,7 @@ module ECoreTest__Pass
       def index key, val
         pass :destination, key, val
         puts 'this should not be happen'
-        exit 1
+        raise :something
       end
 
       def post_index key, val
@@ -63,35 +63,35 @@ module ECoreTest__Pass
       PARAMS.dup
     end
 
-    testing :get_pass do
+    Testing :get_pass do
       get args, params
       refute(last_response.body) =~ /index/
-      is_body? [ARGS, PARAMS].inspect
+      is([ARGS, PARAMS].inspect).current_body?
     end
 
-    testing :post_pass do
+    Testing :post_pass do
       post args, params
-      is_body? [ARGS, PARAMS].inspect
+      is([ARGS, PARAMS].inspect).current_body?
     end
 
-    testing :custom_query_string do
+    Testing :custom_query_string do
       get :custom_query_string, args, params
-      is_body? [ARGS, {ARGS.first => ARGS.last}].inspect
+      is([ARGS, {ARGS.first => ARGS.last}].inspect).current_body?
     end
 
-    testing :inner_app do
+    Testing :inner_app do
       get :inner_app, :catcher, args, params
-      is_body? "k=v/var=val"
+      is("k=v/var=val").current_body?
     end
 
-    testing :invoke do
+    Testing :invoke do
       get :invoke, :catcher, args, params
-      is_body? "200/k=v/var=val"
+      is("200/k=v/var=val").current_body?
     end
 
-    testing :fetch do
+    Testing :fetch do
       get :fetch, :catcher, args, params
-      is_body? "k=v/var=val"
+      is("k=v/var=val").current_body?
     end
 
   end

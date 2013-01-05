@@ -1,10 +1,20 @@
 class E
-  e_attributes :env, :request, :action, :format, :canonical, :required_arguments
+  e_attributes :env, :action, :required_arguments
   e_attributes :response, :params, :action_with_format, :action_arguments # getters will be overridden
+
+  e_attribute :request
+  alias rq request
+
+  e_attribute :format
+  alias format? format
+
+  e_attribute :canonical
+  alias canonical? canonical
 
   def response
     @__e__response ||= Rack::Response.new
   end
+  alias rs response
 
   def params
     @__e__params ||= EspressoFrameworkUtils.indifferent_params(request.params)
@@ -103,11 +113,12 @@ class E
   #
   def clean_format_from_last_param!
     if action_params__array.any? && formats.any? && format.nil?
-      last_param_ext = File.extname(action_params__array.last).presence
+      last_param_ext = File.extname(action_params__array.last)
       if last_param_ext && formats.any?{ |f|  f == last_param_ext }
         #REVIEW why are we inserting the extension into the params array before the last element?
         # expect "[:read, nil, \"book.xml\"]" == "[:read, \".xml\", \"book\"]" ## output, if I don't call the method
-        action_params__array[action_params__array.size - 1] = action_params__array.last.remove_extension
+        action_params__array[action_params__array.size - 1] = 
+          File.basename(action_params__array.last, last_param_ext)
         self.format = last_param_ext
       end
     end
@@ -185,6 +196,7 @@ class E
   def base_url
     self.class.base_url
   end
+  alias baseurl base_url
 
   def setups position
     self.class.setups position, action, format
@@ -225,5 +237,6 @@ class E
   def user
     env[ENV__REMOTE_USER]
   end
+  alias user? user
 
 end

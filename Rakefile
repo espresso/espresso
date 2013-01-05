@@ -18,7 +18,6 @@ namespace :test do
     session = Specular.new
     session.boot do
       include Sonar
-      include BddApi
       include HttpSpecHelper
     end
     session.before do |app|
@@ -47,10 +46,6 @@ namespace :test do
     run_test(/EMoreTest__IPCM/, "Testing InterProcess Cache Manager", default_session)
   end
 
-  task :ext do
-    run_test(/ExtTest__/, "Testing Ruby Extensions", default_session)
-  end
-
   task :view do
     session = Specular.new
     session.boot { include Sonar }
@@ -65,7 +60,7 @@ namespace :test do
   end
 end
 
-task :test => ['test:core', 'test:view', 'test:crud', 'test:cache', 'test:ext']
+task :test => ['test:core', 'test:view', 'test:crud', 'test:cache']
 task :overhead do
   require './test/overhead/run'
 end

@@ -19,14 +19,14 @@ module ECoreTest__InnerApps
     end
     app eapp
 
-    testing do
+    Testing do
       get
-      is_ok_body? 'index'
+      is('index').ok_body?
 
-      %w(custom-module canonical).each do |url|
-        get "/#{url}"
-        is_ok_body? 'InnerApp'
-        is_content_type? 'custom'
+      %w[custom-module canonical].each do |url|
+        get "#{url}"
+        is('InnerApp').ok_body?
+        is('custom').current_content_type?
       end
     end
 

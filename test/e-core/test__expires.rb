@@ -56,7 +56,7 @@ module ECoreTest__Expires
       check(expires) <= Time.now + amount
     end
 
-    testing do
+    Testing do
       get
       does(last_response).contain_suitable_headers? GENERIC_AMOUNT, *GENERIC
 

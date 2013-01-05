@@ -9,7 +9,7 @@ results = {}
   'espresso' => 60082,
 }.each_pair do |app, port|
   if pid = Process.spawn("ruby #{wd + app}-app.rb #{port}")
-    puts 'testing %s app ... ' % app
+    puts 'Testing %s app ... ' % app
     sleep 2
     status = %x[curl -s -o /dev/null -w "%{http_code}" 127.0.0.1:#{port}].strip.to_i
     unless status == 200

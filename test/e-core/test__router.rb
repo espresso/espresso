@@ -32,119 +32,119 @@ module ECoreTest__Router
 
   Spec.new App do
 
-    describe 'zero args' do
-      it do
+    Describe 'zero args' do
+      It do
         r = get
-        is_ok_body? 'index'
+        is('index').ok_body?
 
         r = post
-        is_ok_body? 'index'
+        is('index').ok_body?
 
       end
 
-      it 'returns 404 cause it does not accept any args' do
+      It 'returns 404 cause It does not accept any args' do
         r = get :a1
-        is_not_found?
+        is(last_response).not_found?
 
         r = get :a1, :a2
-        is_not_found?
+        is(last_response).not_found?
       end
     end
 
-    describe 'one arg' do
-      it do
+    Describe 'one arg' do
+      It do
         get :exact, :arg
-        is_ok_body? 'arg'
+        is('arg').ok_body?
 
         post :exact, :arg
-        is_ok_body? 'arg'
+        is('arg').ok_body?
       end
 
-      it 'returns 404 cause called without args' do
+      It 'returns 404 cause called without args' do
         get :exact
-        is_not_found?
+        is(last_response).not_found?
 
         post :exact
-        is_not_found?
+        is(last_response).not_found?
       end
 
-      it 'returns 404 cause redundant args provided' do
+      It 'returns 404 cause redundant args provided' do
         post :exact, :arg, :redundant_arg
-        is_not_found?
+        is(last_response).not_found?
       end
 
-      it 'returns 404 cause :head_exact action does not exists' do
+      It 'returns 404 cause :head_exact action does not exists' do
         head :exact
-        is_not_found?
+        is(last_response).not_found?
       end
     end
 
 
-    describe 'one or two args' do
-      it do
+    Describe 'one or two args' do
+      It do
         r = get :one_or_two, :a1
-        is_ok_body? ['a1', nil].to_s
+        is(['a1', nil].to_s).ok_body?
 
         r = get :one_or_two, :a1, :a2
 
         if E.is_ruby19?
-          is_ok_body? ['a1', 'a2'].to_s
+          is(['a1', 'a2'].to_s).ok_body?
         else
-          is_not_found?
-          is_body? 'max params accepted: 1; params given: 2'
+          is(last_response).not_found?
+          is('max params accepted: 1; params given: 2').current_body?
         end
       end
 
-      it 'returns 404 cause no args provided' do
+      It 'returns 404 cause no args provided' do
         r = get :one_or_two
-        is_not_found?
+        is(last_response).not_found?
       end
 
-      it 'returns 404 cause redundant args provided' do
+      It 'returns 404 cause redundant args provided' do
         r = get :one_or_two, 1, 2, 3, 4, 5, 6
-        is_not_found?
+        is(last_response).not_found?
       end
 
-      it 'returns 404 cause :post_one_or_two action does not exists' do
+      It 'returns 404 cause :post_one_or_two action does not exists' do
         r = post :one_or_two
-        is_not_found?
+        is(last_response).not_found?
       end
     end
 
-    describe 'one or more' do
-      it do
+    Describe 'one or more' do
+      It do
         r = get :one_or_more, :a1
-        is_ok_body? ['a1'].to_s
+        is(['a1'].to_s).ok_body?
 
         r = get :one_or_more, :a1, :a2, :a3, :etc
         if E.is_ruby19?
-          is_ok_body? ['a1', 'a2', 'a3', 'etc'].to_s
+          is(['a1', 'a2', 'a3', 'etc'].to_s).ok_body?
         else
           #'return 404 cause trailing default params does not work on Appetite running on ruby1.8'
-          is_not_found?
-          is_body? 'max params accepted: 1; params given: 4'
+          is(last_response).not_found?
+          is('max params accepted: 1; params given: 4').current_body?
         end
       end
     end
 
-    describe 'any number of args' do
+    Describe 'any number of args' do
       r = get :any
-      is_ok_body? [].to_s
+      is([].to_s).ok_body?
 
       r = get :any, :number, :of, :args
       if E.is_ruby19?
-        is_ok_body? ['number', 'of', 'args'].to_s
+        is(['number', 'of', 'args'].to_s).ok_body?
       else
         #'return 404 cause splat params does not work on Appetite running on ruby1.8' do
-        is_not_found?
-        is_body? 'max params accepted: 0; params given: 3'
+        is(last_response).not_found?
+        is('max params accepted: 0; params given: 3').current_body?
       end
     end
 
 
 
 
-    describe '`[]` and `route` works properly' do
+    Describe '`[]` and `route` works properly' do
       @map = {
           :index      => '/index',
           :exact      => '/exact',
@@ -172,14 +172,14 @@ module ECoreTest__Router
         is?(object.route(:blah)) == (map() + '/blah')
       end
 
-      testing 'called at class level' do
+      Testing 'called at class level' do
         @map.each_pair do |action, url|
           url = map() + url
           check_route_functions(App, action, url)
         end
       end
 
-      testing 'when called at instance level' do
+      Testing 'when called at instance level' do
         ctrl = App.new
         @map.each_pair do |action, url|
           url = map() + url

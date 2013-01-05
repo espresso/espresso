@@ -20,18 +20,18 @@ class EspressoFrameworkRequest < Rack::Request # partially borrowed from Sinatra
   #    accept_ranges? 'bytes'
   #
   ['', '_CHARSET', '_ENCODING', '_LANGUAGE', '_RANGES'].each do |field|
-    define_method "accept#{field.downcase}?" do |value|
-      @__e__accept_entries ||= {}
-      @__e__accept_entries[field] ||= env[ENV__HTTP_ACCEPT + field]
-      return unless @__e__accept_entries[field]
-      @__e__accept_entries[field] =~ value.is_a?(Regexp) ? value : /#{value}/
+    define_method "accept#{field.downcase}?" do |expected_value|
+      return unless actual_value = env[ENV__HTTP_ACCEPT + field]
+      return unless actual_value =~ 
+        (expected_value.is_a?(Regexp) ? expected_value : /#{expected_value}/)
+      actual_value
     end
   end
 
   # Returns an array of acceptable media types for the response
   def accept
     @__e__accept ||= env[ENV__HTTP_ACCEPT].to_s.split(',').
-      map { |e| accept_entry(e) }.sort_by(&:last).map(&:first)
+      map {|e| accept_entry(e)}.sort_by {|e| e.last}.map {|e| e.first}
   end
 
   def preferred_type(*types)
@@ -42,6 +42,8 @@ class EspressoFrameworkRequest < Rack::Request # partially borrowed from Sinatra
       return type if type
     end
   end
+
+  alias secure? ssl?
 
   def forwarded?
     env.include? ENV__HTTP_X_FORWARDED_HOST

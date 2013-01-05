@@ -76,6 +76,8 @@ class EApp
     @global_setup = proc
     self
   end
+  alias setup_controllers global_setup
+  alias setup global_setup
 
   # displays URLs the app will respond to,
   # with controller and action that serving each URL.
@@ -103,7 +105,7 @@ class EApp
     end
     map
   end
-
+  alias urlmap url_map
 
   # by default, Espresso will use WEBrick server.
   # pass :server option and any option accepted by selected(or default) server:
@@ -138,7 +140,7 @@ class EApp
   def app
     @app ||= builder
   end
-
+  alias to_app app
 
   private
   def builder

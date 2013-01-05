@@ -53,11 +53,11 @@ module ECoreTest__PathRules
       map app_to_test.base_url
       methods.each do |action|
         get action
-        is_body? action
+        is(action).current_body?
       end
     end
 
-    testing "default_rules" do
+    Testing "default_rules" do
       check_path_rules(DefaultRules,
         %w[
           four.slashes
@@ -67,7 +67,7 @@ module ECoreTest__PathRules
       )
     end
 
-    testing "custom_rules" do
+    Testing "custom_rules" do
       check_path_rules(CustomRules,
         %w[
           dot.html

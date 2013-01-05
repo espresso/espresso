@@ -66,6 +66,7 @@ class E
     def basic_auth opts = {}, &proc
       __e__authorize! Rack::Auth::Basic, opts[:realm] || 'AccessRestricted', &proc
     end
+    alias auth basic_auth
     define_setup_method :auth
     define_setup_method :basic_auth
 

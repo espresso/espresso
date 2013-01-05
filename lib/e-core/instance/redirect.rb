@@ -38,5 +38,6 @@ class E
     response.body = []
     response.redirect target, status
   end
+  alias deferred_redirect delayed_redirect
 
 end

@@ -71,6 +71,11 @@ class E
     end
     halt error_code.to_i, body
   end
+  alias fail!  fail
+  alias quit   fail
+  alias quit!  fail
+  alias error  fail
+  alias error! fail
 
   def error_handler_defined? error_code
     self.class.error_handler(error_code) || self.class.error_handler(:*)

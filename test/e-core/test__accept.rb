@@ -11,44 +11,44 @@ module ECoreTest__Accept
 
   Spec.new AcceptApp do
 
-    testing 'content type' do
+    Testing 'content type' do
       field, val = 'accept', Rack::Mime::MIME_TYPES.fetch('.txt')
       headers['Accept'] = val
 
       get :match, field, :val => val
-      is_body? val
+      does(/#{val}/).match_body?
     end
 
-    testing 'charset' do
+    Testing 'charset' do
       field, val = 'charset', 'UTF-32'
       headers['Accept-Charset'] = val
 
       get :match, field, :val => val
-      is_body? /#{val}/
+      does(/#{val}/).match_body?
     end
 
-    testing 'encoding' do
+    Testing 'encoding' do
       field, val = 'encoding', 'gzip'
       headers['Accept-Encoding'] = val
 
       get :match, field, :val => val
-      is_body? /#{val}/
+      does(/#{val}/).match_body?
     end
 
-    testing 'language' do
+    Testing 'language' do
       field, val = 'language', 'en-gb'
       headers['Accept-Language'] = val
 
       get :match, field, :val => val
-      is_body? /#{val}/
+      does(/#{val}/).match_body?
     end
 
-    testing 'ranges' do
+    Testing 'ranges' do
       field, val = 'ranges', 'bytes'
       headers['Accept-Ranges'] = val
 
       get :match, field, :val => val
-      is_body? /#{val}/
+      does(/#{val}/).match_body?
     end
 
   end

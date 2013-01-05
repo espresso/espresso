@@ -1,11 +1,6 @@
-require 'digest'
-require 'fileutils'
 require 'cgi'
-require 'erb'
-
 require 'rubygems'
 require 'rack'
-require 'tilt'
 
 require 'e-core/constants'
 require 'e-core/utils'
@@ -29,4 +24,3 @@ require 'e-core/instance/send_file'
 require 'e-core/instance/session'
 require 'e-core/instance/stream'
 require 'e-core/instance/helpers'
-require 'e-core/convenience'

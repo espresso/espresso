@@ -1,7 +1,9 @@
 class << E
 
-  attr_reader :app, :url_map, :action_map
+  attr_reader :app, :action_map
 
+  attr_reader :url_map
+  alias urlmap url_map
 
   # build URL from given action name(or path) and consequent params
   # @return [String]
@@ -89,6 +91,8 @@ class << E
     ].map {|v| v.freeze}
     @mounted = true
   end
+  alias to_app  mount
+  alias to_app! mount
 
   # remap served root(s) by prepend given path
   # to controller's root and canonical paths

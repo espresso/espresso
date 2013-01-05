@@ -22,18 +22,18 @@ module ECoreTest__Cookies
 
   Spec.new App do
 
-    testing 'set/get' do
+    Testing 'set/get' do
       var, val = 2.times.map { rand.to_s }
       get :set, var, val
       r = get :get, var
-      is_body? /#{val}/
+      does(/#{val}/).match_body?
 
-      testing 'keys/values' do
+      Testing 'keys/values' do
         get :keys
-        is_body?([var].inspect)
+        is([var].inspect).current_body?
 
         get :values
-        is_body?([val].inspect)
+        is([val].inspect).current_body?
       end
     end
   end
