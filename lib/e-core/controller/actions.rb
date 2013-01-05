@@ -149,6 +149,58 @@ class << E
     [request_methods, pages + dirs].freeze
   end
 
+  def generate_route_map!
+    @routes, @route_by_action, @route_by_action_with_format = [], {}, {}
+    public_actions.each do |action|
+      route = action_to_route(action)
+      
+      @route_by_action[action] = route[:path]
+      (formats = formats(action)).each do |format|
+        @route_by_action_with_format[action.to_s + format] = route[:path]
+      end
+      
+      @routes << route
+      
+      canonicals.each do |c|
+        @routes << route.merge(:path => rootify_url(c, route), :canonical => route).freeze
+      end
+
+      ((@action_aliases||{})[action]||[]).each do |url|
+        @routes << route.merge(:path => rootify_url(base_url, url)).freeze
+      end
+    end
+    @routes.freeze
+  end
+
+  def action_to_route action
+    path = action.to_s
+    request_methods = Array.new(HTTP__REQUEST_METHODS)
+    HTTP__REQUEST_METHODS.each do |m|
+      regex = /\A#{m}_/i
+      if action.to_s =~ regex
+        request_methods = [m]
+        path = path.sub(regex, '')
+        break
+      end
+    end
+    
+    path == E__INDEX_ROUTE ?  path = '' :
+      path_rules.each_pair {|from, to| path = path.gsub(from, to)}
+
+    arguments, min_arguments, max_arguments = action_parameters(action)
+    {
+      :ctrl     => self,
+      :action   => action,
+      :args     => arguments,
+      :min_args => min_arguments,
+      :max_args => max_arguments,
+      :path     => rootify_url(base_url, path).freeze,
+      :regexp   => /\A#{Regexp.escape(path).gsub('/', '/+')}(.*)/n,
+      :formats  => formats,
+      :request_methods => request_methods,
+    }.freeze
+  end
+
   if RESPOND_TO__PARAMETERS # ruby 1.9
     # returning required parameters calculated by arity,
     # and, if available, parameters list.
@@ -174,13 +226,13 @@ class << E
         min += 1 if increment
       end
       max = nil if unlimited
-      [parameters, [min, max]]
+      [parameters, min, max]
     end
   else # ruby 1.8
     def action_parameters action
       method = self.instance_method(action)
       min = max = (method.arity < 0 ? -method.arity - 1 : method.arity)
-      [nil, [min, max]]
+      [nil, min, max]
     end
   end
   

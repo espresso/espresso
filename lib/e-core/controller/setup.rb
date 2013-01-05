@@ -43,12 +43,25 @@ class << E
   #    - "___"  (3 underscores) => "/" (slash)
   #    - "____" (4 underscores) => "." (period)
   #
-  # @example define custom rules
-  #    path_rule  "__dh__" => "-",
-  #    path_rule  "__dt__" => "."
+  # @example
+  #    path_rule  "__d__" => "-"
   #
-  #    def some__dh__action__dt__html
-  #      # will resolve to some-action.html
+  #    def some__d__action
+  #      # will resolve to some-action
+  #    end
+  #
+  # @example
+  #    path_rule  "!" => ".html"
+  #
+  #    def some_action!
+  #      # will resolve to some_action.html
+  #    end
+  #
+  # @example
+  #    path_rule  /_j$/ => ".json"
+  #
+  #    def some_action_j
+  #      # will resolve to some_action.json
   #    end
   #
   def path_rule from, to
@@ -57,7 +70,12 @@ class << E
   end
 
   def path_rules
-    @path_rules || E__PATH_RULES
+    return @sorted_path_rules if @sorted_path_rules
+    rules = (@path_rules || E__PATH_RULES).inject({}) do |f,(from, to)|
+      from = /#{from}/ unless from.is_a?(Regex)
+      f.merge from => to
+    end
+    @sorted_path_rules = Hash[rules.sort {|a,b| b.first.source.size <=> a.first.source.size}]
   end
 
   # allow to set routes directly, without relying on path rules.

@@ -125,23 +125,23 @@ The default map looks like this:
 **Example:**
 
 ```ruby
-def read____html   # 4 underscores
+def users__online  # 2 underscores
   # ...
 end
-# will serve read.html
+# will serve users/online
 
 def latest___news  # 3 underscores
   # ...
 end
 # will serve latest-news
 
-def users__online  # 2 underscores
+def read____html   # 4 underscores
   # ...
 end
-# will serve users/online
+# will serve read.html
 ```
 
-*Worth to note* that you can define your own rules by using `path_rule` at class level.
+You can **define your own rules** by using `path_rule` at class level.
 
 **Example:** - Convert bang methods into .html suffixed paths
 
@@ -156,7 +156,7 @@ class App < E
   end
 end
 
-# `news!` will serve /news.html
+# :news! action will serve /news.html path
 ```
 
 **Example:** - Convert methods ending in "_j" into .json suffixed paths
@@ -171,7 +171,7 @@ class App < E
     # ...
   end
 end
-# `news_j` will serve /news.json
+# :news_j action will serve /news.json path
 ```
 
 

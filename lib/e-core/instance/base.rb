@@ -1,6 +1,5 @@
 class E
-  e_attributes :env, :action, :required_arguments
-  e_attributes :response, :params, :action_with_format, :action_arguments # getters will be overridden
+  e_attributes :env, :action, :required_arguments, :action_arguments
 
   e_attribute :request
   alias rq request

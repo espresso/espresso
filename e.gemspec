@@ -1,6 +1,6 @@
-# -*- encoding: utf-8 -*-
+# encoding: UTF-8
 
-version = "0.3.8"
+version = "0.4.0"
 Gem::Specification.new do |s|
 
   s.name = 'e'
