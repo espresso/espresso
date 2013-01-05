@@ -12,6 +12,10 @@ module HttpSpecHelper
     response.status == 404
   end
 
+  def not_implemented? response
+    response.status == 501
+  end
+
   def current_status?(status)
     is(last_response.status) == status
   end

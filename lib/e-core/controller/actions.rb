@@ -91,11 +91,11 @@ class << E
   end
 
   def action_to_route action
-    path, request_method = action.to_s, nil
+    path, request_methods = action.to_s, Array.new(HTTP__REQUEST_METHODS)
     HTTP__REQUEST_METHODS.each do |m|
       regex = /\A#{m}_/i
       if action.to_s =~ regex
-        request_method = m
+        request_methods = [m]
         path = path.sub(regex, '')
         break
       end
@@ -110,16 +110,14 @@ class << E
     format_regexp = formats(action).any? ?
       /(#{formats(action).map {|f| Regexp.escape f}.join("|")})\Z/ : nil
 
-    {
-      :ctrl                => self,
-      :action              => action,
-      :action_arguments    => action_arguments,
-      :required_arguments  => required_arguments,
-      :path                => path,
-      :regexp              => /\A#{Regexp.escape(path).gsub('/', '/+')}(.*)/n,
-      :format_regexp       => format_regexp,
-      :request_method      => request_method,
-    }.freeze
+    [{
+        :ctrl                => self,
+        :action              => action,
+        :action_arguments    => action_arguments,
+        :required_arguments  => required_arguments,
+        :path                => path,
+        :format_regexp       => format_regexp,
+      }.freeze, request_methods.freeze]
   end
 
   if RESPOND_TO__PARAMETERS # ruby 1.9

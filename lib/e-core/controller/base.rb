@@ -97,27 +97,40 @@ class << E
   end
 
   def generate_routes!
-    @routes, @route_setup = [], {}
+    @routes, @route_setup = {}, {}
     @route_by_action, @route_by_action_with_format = {}, {}
     public_actions.each do |action|
-      route = action_to_route(action)
-      
-      @route_by_action[action] = route[:path]
-      formats(action).each do |format|
-        @route_by_action_with_format[action.to_s + format] = route[:path]
-      end
-      
-      @routes << route
-      @route_setup[action] = route
-      
-      canonicals.each do |c|
-        @routes << route.merge(:path => rootify_url(c, route), :canonical => route).freeze
-      end
 
-      ((@action_aliases||{})[action]||[]).each do |url|
-        @routes << route.merge(:path => rootify_url(base_url, url)).freeze
+      route_setup, request_methods = action_to_route(action)
+      route_regexp = route_to_regexp(route_setup[:path])
+
+      @route_by_action[action] = route_setup[:path]
+      formats(action).each do |format|
+        @route_by_action_with_format[action.to_s + format] = route_setup[:path] + format
+      end
+      
+      @route_setup[action] = route_setup
+
+      request_methods.each do |rm|
+        (@routes[route_regexp] ||= {})[rm] = route_setup
+
+        canonicals.each do |c|
+          c_path   = rootify_url(c, route_setup[:path])
+          c_regexp = route_to_regexp(c_path)
+          (@routes[c_regexp] ||= {})[rm] = route_setup.merge(:path => c_path, :canonical => route_setup[:path]).freeze
+        end
+
+        ((@action_aliases||{})[action]||[]).each do |a|
+          a_path   = rootify_url(base_url, a)
+          a_regexp = route_to_regexp(a_path)
+          (@routes[a_regexp] ||= {})[rm] = route_setup.merge(:path => a_path).freeze
+        end
       end
     end
+  end
+
+  def route_to_regexp route
+    /\A#{Regexp.escape(route).gsub('/', '/+')}(.*)/n
   end
 
   # avoid regexp operations at runtime

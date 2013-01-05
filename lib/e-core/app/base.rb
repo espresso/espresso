@@ -23,7 +23,7 @@ class EApp
   end
 
   def initialize automount = false, &proc
-    @routes = []
+    @routes = {}
     @controllers = automount ? discover_controllers : []
     @mounted_controllers = []
     @controllers.each {|c| mount_controller c}
@@ -130,21 +130,24 @@ class EApp
       status, headers, body = EspressoFrameworkRewriter.new(rewrite_rules).call(env)
       return [status, headers, body] if status
     end
-    @sorted_routes ||= @routes.sort {|a,b| b[:regexp].source.size <=> a[:regexp].source.size}
+    @sorted_routes ||= @routes.keys.sort {|a,b| b.source.size <=> a.source.size}
     @sorted_routes.each do |route|
-      if (pi = route[:regexp].match(env[ENV__PATH_INFO].to_s)) && (pi = pi[1])
+      if (pi = route.match(env[ENV__PATH_INFO].to_s)) && (pi = pi[1])
         
-        epi, format = nil
-        (format_regexp = route[:format_regexp]) && (epi, format = pi.split(format_regexp))
-        env[ENV__ESPRESSO_PATH_INFO] = epi.to_s
-        env[ENV__ESPRESSO_FORMAT]    = format
+        if route_setup = @routes[route][env[ENV__REQUEST_METHOD]]
 
-        env[ENV__SCRIPT_NAME] = route[:path]
-        env[ENV__PATH_INFO]   = '/' << pi.to_s
+          env[ENV__SCRIPT_NAME] = route_setup[:path]
+          env[ENV__PATH_INFO]   = '/' << pi.to_s
 
-        app = Rack::Builder.new(route[:ctrl].new(route[:action]))
-        (middleware + route[:ctrl].middleware).each {|w,a,p| app.use w, *a, &p}
-        return app.call(env)
+          epi, format = nil
+          (format_regexp = route_setup[:format_regexp]) && (epi, format = pi.split(format_regexp))
+          env[ENV__ESPRESSO_PATH_INFO] = epi || env[ENV__PATH_INFO]
+          env[ENV__ESPRESSO_FORMAT]    = format
+
+          app = Rack::Builder.new(route_setup[:ctrl].new(route_setup))
+          (middleware + route_setup[:ctrl].middleware).each {|w,a,p| app.use w, *a, &p}
+          return app.call(env)
+        end
       end
     end
     [404, {"Content-Type" => "text/plain", "X-Cascade" => "pass"}, ["Not Found: #{env[ENV__PATH_INFO]}"]]
@@ -162,7 +165,7 @@ class EApp
     setup && controller.class_exec(&setup)
     @global_setup && controller.class_exec(&@global_setup)
     controller.mount! self
-    @routes.concat controller.routes
+    @routes.update controller.routes
 
     @mounted_controllers << controller
   end

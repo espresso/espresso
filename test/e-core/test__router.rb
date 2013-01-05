@@ -73,9 +73,9 @@ module ECoreTest__Router
         is(last_response).not_found?
       end
 
-      It 'returns 404 cause :head_exact action does not exists' do
+      It 'returns 501 cause :head_exact action does not exists' do
         head :exact
-        is(last_response).not_found?
+        is(last_response).not_implemented?
       end
     end
 
@@ -141,15 +141,12 @@ module ECoreTest__Router
       end
     end
 
-
-
-
     Describe '`[]` and `route` works properly' do
       @map = {
-          :index      => '/index',
-          :exact      => '/exact',
-          :post_exact => '/exact',
-        }
+        :index      => '',
+        :exact      => '/exact',
+        :post_exact => '/exact',
+      }
 
       def check_route_functions(object, action, url)
         is?(object[action]) == url
