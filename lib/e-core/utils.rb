@@ -9,25 +9,12 @@ module EspressoFrameworkUtils
       '..%5C', '%5C..%5C', '%5C..',
   ].freeze
 
-  # "fluffing" potentially hostile paths.
-  # to avoid paths traversing, replacing the matches below with a slash:
-  # ../
-  # /../
-  # /..
-  # ..\
-  # \..\
-  # \..
-  # ..%2F
-  # %2F..%2F
-  # %2F..
-  # ..%5C
-  # %5C..%5C
-  # %5C..
+  # "fluffing" potentially hostile paths to avoid paths traversing.
   #
   # @note
   #   it will also remove duplicating slashes.
   #
-  # @note slow method! use only at load time
+  # @note TERRIBLE SLOW METHOD! use only at load time
   #
   # @param [String, Symbol] *chunks
   # @return [String]
@@ -107,13 +94,11 @@ module EspressoFrameworkUtils
   end
   module_function :underscore
 
-
   # returns the class names without modules
   def demodulize(const)
     const.name.to_s.split('::').last
   end
   module_function :demodulize
-
 
   # instance_exec at runtime is expensive enough,
   # so compiling procs into methods at load time.
@@ -123,15 +108,6 @@ module EspressoFrameworkUtils
     define_method name, &proc
     private name
     name
-  end
-
-  def register_slim_engine!
-    if Object.const_defined?(:Slim)
-      VIEW__ENGINE_BY_EXT['.slim'] = Slim::Template
-      VIEW__ENGINE_BY_SYM[:Slim]  = Slim::Template
-      VIEW__EXT_BY_ENGINE[Slim::Template] = '.slim'.freeze
-    end
-    def __method__; end
   end
 
   def is_ruby19?

@@ -39,13 +39,15 @@ module ECoreTest__Expires
     end
 
   end
+  App.mount
 
   Spec.new App do
 
     def contain_suitable_headers? response, amount, *directives
       date_format = '%a, %d %b %Y %H:%M:%S %Z'
       cache_control = response.headers['Cache-Control']
-      expect(E.new.cache_control(*directives << {:max_age => amount})) == cache_control
+      cc = App.new(:index).cache_control(*directives << {:max_age => amount})
+      expect(cc) == cache_control
 
       raw_expires = response.headers['Expires']
       begin

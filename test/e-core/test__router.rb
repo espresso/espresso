@@ -180,7 +180,7 @@ module ECoreTest__Router
       end
 
       Testing 'when called at instance level' do
-        ctrl = App.new
+        ctrl = App.new(:index)
         @map.each_pair do |action, url|
           url = map() + url
           check_route_functions(ctrl, action, url)

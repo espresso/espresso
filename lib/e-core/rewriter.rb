@@ -41,7 +41,6 @@ class EspressoFrameworkRewriter
     action = args.shift
     route = ctrl[action] ||
       raise(ArgumentError, '%s controller does not respond to %s action' % [ctrl, action.inspect])
-    rest_map = ctrl.url_map[route]
 
     env.update 'SCRIPT_NAME' => route, 'REQUEST_URI' => '', 'PATH_INFO' => ''
     if args.size > 0
@@ -51,7 +50,7 @@ class EspressoFrameworkRewriter
       params.size > 0 &&
         env.update('QUERY_STRING' => build_nested_query(params))
     end
-    @status, @headers, @body = ctrl.allocate.call(env)
+    @status, @headers, @body = ctrl.new(action).call(env)
   end
 
   def halt *args

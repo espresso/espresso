@@ -1,6 +1,6 @@
 module ECoreTest__Accept
 
-  class AcceptApp < E
+  class App < E
 
     def match field
       meth = (field == 'accept' ? field : 'accept_' + field) + '?'
@@ -9,7 +9,7 @@ module ECoreTest__Accept
 
   end
 
-  Spec.new AcceptApp do
+  Spec.new App do
 
     Testing 'content type' do
       field, val = 'accept', Rack::Mime::MIME_TYPES.fetch('.txt')

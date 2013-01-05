@@ -21,3 +21,15 @@ module EspressoFrameworkConstants
   VIEW__DEFAULT_ENGINE = [Tilt::ERBTemplate]
 
 end
+
+module EspressoFrameworkUtils
+  def register_slim_engine!
+    if Object.const_defined?(:Slim)
+      VIEW__ENGINE_BY_EXT['.slim'] = Slim::Template
+      VIEW__ENGINE_BY_SYM[:Slim]  = Slim::Template
+      VIEW__EXT_BY_ENGINE[Slim::Template] = '.slim'.freeze
+    end
+    def __method__; end
+  end
+  module_function :register_slim_engine!
+end

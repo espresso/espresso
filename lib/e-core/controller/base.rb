@@ -1,6 +1,6 @@
 class << E
 
-  attr_reader :app, :action_map, :routes
+  attr_reader :app, :routes, :route_setup
 
   attr_reader :url_map
   alias urlmap url_map
@@ -28,66 +28,42 @@ class << E
   #    App['posts.json']       #=> nil
   def [] action_or_action_with_format
     mounted? || raise("`[]' method works only on mounted controllers")
-    @action_map[action_or_action_with_format]
+    @route_by_action[action_or_action_with_format] ||
+      @route_by_action_with_format[action_or_action_with_format]
   end
 
   def mount *roots, &setup
     @app ||= EApp.new.mount(self, *roots, &setup)
   end
+  alias to_app  mount
+  alias to_app! mount
 
   def run *args
     mount.run *args
+  end
+
+  def call env
+    mount.call(env)
   end
 
   def mounted?
     @mounted
   end
 
-  # build action_map and url_map.
-  #
-  # action_map is a hash having actions as keys
-  # and showing what urls are served by each action.
-  #
-  # url_map is a hash having urls as keys
-  # and showing to what action by what request method each url is mapped.
-  #
   # @param [EApp] app EApp instance
-  #
   def mount! app
     return if mounted?
-    @app, @action_map, @url_map = app, {}, {}
+    @app = app
 
     # IMPORTANT! expand_formats should run before public_actions iteration
     # and before expand_setups!
     expand_formats!
     expand_setups!
     generate_routes!
-    register_slim_engine!
+    lock!
 
-    public_actions.each do |action|
-      request_methods, routes = action_routes(action)
-      @action_map[action] = routes.first[nil].first
-      routes.each do |route_map|
-        route_map.each_pair do |format, route_setup|
-          route, canonical = route_setup
-          request_methods.each do |request_method|
-            (@url_map[route] ||= {})[request_method] =
-              [format, canonical, action, *action_parameters(action)]
-          end
-          format && @action_map[action.to_s + format] = route
-        end
-      end
-    end
-    [
-      @base_url, @canonicals, @path_rules,
-      @action_aliases, @action_map, @url_map,
-      @expanded_formats, @expanded_setups,
-      @middleware,
-    ].map {|v| v.freeze}
     @mounted = true
   end
-  alias to_app  mount
-  alias to_app! mount
 
   # remap served root(s) by prepend given path
   # to controller's root and canonical paths
@@ -110,6 +86,39 @@ class << E
   end
 
   private
+
+  def lock!
+    [
+      @base_url, @canonicals, @path_rules, @action_aliases,
+      @routes, @route_setup, @route_by_action, @route_by_action_with_format,
+      @expanded_formats, @expanded_setups,
+      @middleware,
+    ].map {|v| v.freeze}
+  end
+
+  def generate_routes!
+    @routes, @route_setup = [], {}
+    @route_by_action, @route_by_action_with_format = {}, {}
+    public_actions.each do |action|
+      route = action_to_route(action)
+      
+      @route_by_action[action] = route[:path]
+      formats(action).each do |format|
+        @route_by_action_with_format[action.to_s + format] = route[:path]
+      end
+      
+      @routes << route
+      @route_setup[action] = route
+      
+      canonicals.each do |c|
+        @routes << route.merge(:path => rootify_url(c, route), :canonical => route).freeze
+      end
+
+      ((@action_aliases||{})[action]||[]).each do |url|
+        @routes << route.merge(:path => rootify_url(base_url, url)).freeze
+      end
+    end
+  end
 
   # avoid regexp operations at runtime
   # by turning Regexp and * matchers into real action names at loadtime.
@@ -235,8 +244,8 @@ class << E
     end
 
     # defining a handy #format? method for each format.
-    # eg. #json? for .json, #xml? for .xml etc.
-    # these methods are aimed to replace the `if format == '.json'` redundancy
+    # eg. json? for ".json", xml? for ".xml" etc.
+    # these methods aimed to replace the `if format == '.json'` redundancy
     #
     # @example
     #
@@ -245,8 +254,8 @@ class << E
     #     format '.json'
     #
     #     def page
-    #       # on /page, #json? will return nil
-    #       # on /page.json, #json? will return '.json'
+    #       # on /page, json? will return nil
+    #       # on /page.json, json? will return '.json'
     #     end
     #   end
     #
@@ -256,6 +265,7 @@ class << E
         # Hash searching is a lot faster than String comparison
         all_formats[format]
       end
+      private '%s?' % f.sub('.', '')
     end
 
     @expanded_formats = public_actions.inject({}) do |map, action|

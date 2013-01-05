@@ -25,9 +25,9 @@ class E
       (format ? action.to_s + format : action).freeze
   end
 
-  def initialize route_setup, format = nil
+  def initialize action
+    route_setup = self.class.route_setup[action]
     self.action = route_setup[:action]
-    self.format = format
     self.canonical = route_setup[:canonical]
     self.action_arguments = route_setup[:action_arguments]
     self.required_arguments = route_setup[:required_arguments]
@@ -38,6 +38,7 @@ class E
     
     self.env = env
     self.request = EspressoFrameworkRequest.new(env)
+    self.format  = env[ENV__ESPRESSO_FORMAT]
     
     e_response = catch :__e__catch__response__ do
 
@@ -106,7 +107,7 @@ class E
     # they will be frozen by #call
     # after format extension removed from last param.
     @__e__action_params__array ||=
-      env[ENV__PATH_INFO].to_s.split('/').reject { |s| s.empty? }
+      env[ENV__ESPRESSO_PATH_INFO].to_s.split('/').reject { |s| s.empty? }
   end
 
   # @example ruby 1.9+

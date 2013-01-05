@@ -126,24 +126,26 @@ class EApp
   end
 
   def call env
-    @sorted_routes ||= @routes.sort {|a,b| b[:regexp].source.size <=> a[:regexp].source.size}
-    @sorted_routes.each do |route|
-      if (pi = route[:regexp].match(env[ENV__PATH_INFO].to_s)) && (pi = pi[1])
-
-        format = nil
-        (format_regexp = route[:format_regexp]) && (pi, format = pi.split(format_regexp))
-
-        env[ENV__SCRIPT_NAME] = route[:path]
-        env[ENV__PATH_INFO]   = pi
-
-        app = Rack::Builder.new(route[:ctrl].new(route, format))
-        (middleware + route[:ctrl].middleware).each {|w,a,p| app.use w, *a, &p}
-        return app.call(env)
-      end
-    end
     if rewrite_rules.any?
       status, headers, body = EspressoFrameworkRewriter.new(rewrite_rules).call(env)
       return [status, headers, body] if status
+    end
+    @sorted_routes ||= @routes.sort {|a,b| b[:regexp].source.size <=> a[:regexp].source.size}
+    @sorted_routes.each do |route|
+      if (pi = route[:regexp].match(env[ENV__PATH_INFO].to_s)) && (pi = pi[1])
+        
+        epi, format = nil
+        (format_regexp = route[:format_regexp]) && (epi, format = pi.split(format_regexp))
+        env[ENV__ESPRESSO_PATH_INFO] = epi.to_s
+        env[ENV__ESPRESSO_FORMAT]    = format
+
+        env[ENV__SCRIPT_NAME] = route[:path]
+        env[ENV__PATH_INFO]   = '/' << pi.to_s
+
+        app = Rack::Builder.new(route[:ctrl].new(route[:action]))
+        (middleware + route[:ctrl].middleware).each {|w,a,p| app.use w, *a, &p}
+        return app.call(env)
+      end
     end
     [404, {"Content-Type" => "text/plain", "X-Cascade" => "pass"}, ["Not Found: #{env[ENV__PATH_INFO]}"]]
   end

@@ -38,6 +38,9 @@ module EspressoFrameworkConstants
   ENV__HTTP_IF_MODIFIED_SINCE   = 'HTTP_IF_MODIFIED_SINCE'.freeze
   ENV__HTTP_IF_UNMODIFIED_SINCE = 'HTTP_IF_UNMODIFIED_SINCE'.freeze
 
+  ENV__ESPRESSO_PATH_INFO = 'e.path_info'.freeze
+  ENV__ESPRESSO_FORMAT    = 'e.format'.freeze
+
   HEADER__CONTENT_TYPE  = 'Content-Type'.freeze
   HEADER__LAST_MODIFIED = 'Last-Modified'.freeze
   HEADER__CACHE_CONTROL = 'Cache-Control'.freeze

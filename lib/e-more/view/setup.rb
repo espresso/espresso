@@ -19,6 +19,7 @@ class E
   # @param [String] *args
   #   any args to be passed to engine at initialization
   def engine engine, engine_opts = {}
+    EspressoFrameworkUtils.register_slim_engine!
     engine = VIEW__ENGINE_BY_SYM[engine] ||
       raise(ArgumentError, '%s engine not supported. Supported engines: %s' %
         [engine, VIEW__ENGINE_BY_SYM.keys.join(', ')])
@@ -110,6 +111,7 @@ class E
 
   # set custom path for layouts.
   # default value: view path
+  #
   # @note should be relative to view path
   def layouts_path path
     @__e__layouts_path = path.freeze
