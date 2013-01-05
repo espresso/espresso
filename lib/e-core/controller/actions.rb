@@ -155,7 +155,7 @@ class << E
       route = action_to_route(action)
       
       @route_by_action[action] = route[:path]
-      (formats = formats(action)).each do |format|
+      formats(action).each do |format|
         @route_by_action_with_format[action.to_s + format] = route[:path]
       end
       
@@ -186,17 +186,16 @@ class << E
     
     path == E__INDEX_ROUTE ?  path = '' :
       path_rules.each_pair {|from, to| path = path.gsub(from, to)}
+    path = rootify_url(base_url, path).freeze
 
-    arguments, min_arguments, max_arguments = action_parameters(action)
+    action_arguments, required_arguments = action_parameters(action)
     {
       :ctrl     => self,
       :action   => action,
-      :args     => arguments,
-      :min_args => min_arguments,
-      :max_args => max_arguments,
-      :path     => rootify_url(base_url, path).freeze,
+      :action_arguments => arguments,
+      :required_arguments => required_arguments,
+      :path     => path,
       :regexp   => /\A#{Regexp.escape(path).gsub('/', '/+')}(.*)/n,
-      :formats  => formats,
       :request_methods => request_methods,
     }.freeze
   end
@@ -226,13 +225,13 @@ class << E
         min += 1 if increment
       end
       max = nil if unlimited
-      [parameters, min, max]
+      [parameters, [min, max]]
     end
   else # ruby 1.8
     def action_parameters action
       method = self.instance_method(action)
       min = max = (method.arity < 0 ? -method.arity - 1 : method.arity)
-      [nil, min, max]
+      [nil, [min, max]]
     end
   end
   

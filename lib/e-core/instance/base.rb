@@ -1,5 +1,5 @@
 class E
-  e_attributes :env, :action, :required_arguments, :action_arguments
+  e_attributes :env, :action, :action_arguments
 
   e_attribute :request
   alias rq request
@@ -24,23 +24,25 @@ class E
       (format ? action.to_s + format : action).freeze
   end
 
-  def call env
+  def call route_setup, env, format = nil
+    self.action = route_setup[:action]
+    self.format = format
+    self.canonical = route_setup[:canonical]
+    self.action_arguments = route_setup[:action_arguments]
+    
     self.env = env
+    self.request = EspressoFrameworkRequest.new(env)
+    
     e_response = catch :__e__catch__response__ do
+      min, max = route_setup[:required_arguments]
+      given = action_params__array.size
 
-      script_name = env[ENV__SCRIPT_NAME]
-      script_name = '/' if script_name.size == 0
-      rest_map    = self.class.url_map[script_name] || {}
+      min && given < min &&
+        fail(STATUS__NOT_FOUND, 'min params accepted: %s; params given: %s' % [min, given])
 
-      self.format,
-        self.canonical,
-        self.action,
-        self.action_arguments,
-        self.required_arguments =
-        (rest_map[env[ENV__REQUEST_METHOD]] || []).map { |e| e.freeze }
-      self.request = EspressoFrameworkRequest.new(env)
-      handle_request_errors!
-      clean_format_from_last_param!
+      max && given > max &&
+        fail(STATUS__NOT_FOUND, 'max params accepted: %s; params given: %s' % [max, given])
+
       call!
     end
     e_response.body = [] if request.head?
@@ -75,77 +77,12 @@ class E
   end
   private :call!
 
-  # if action serve some formats and it accepts at least one argument,
-  # the format will be attached to last argument rather than to action name.
-  #
-  # @example
-  #   format '.json'
-  #
-  #   def foo
-  #     # will serve /foo.json
-  #     # SCRIPT_NAME => '/foo.json' and PATH_INFO => '/'
-  #     # format is automatically set to .json(extracted from rest_map)
-  #   end
-  #
-  #   def bar id
-  #     # will serve /bar/something.json
-  #     # SCRIPT_NAME => '/bar' and PATH_INFO => '/something.json'
-  #     # format are NOT automatically set,
-  #     # so extracting it from last argument
-  #   end
-  #
-  #   def baz id = nil
-  #     # on /baz.json
-  #     # SCRIPT_NAME => '/baz.json' and PATH_INFO => '/'
-  #     # so format are set automatically
-  #     #
-  #     # on /baz/something.json
-  #     # SCRIPT_NAME => '/baz' and PATH_INFO => '/something.json'
-  #     # format are NOT automatically set,
-  #     # so extracting it from last argument
-  #   end
-  #
-  # the second meaning of this method is
-  # to remove extension from last param
-  # so user get clean data
-  # ex: /foo/bar.html => /foo/bar => ['foo', 'bar']
-  #
-  def clean_format_from_last_param!
-    if action_params__array.any? && formats.any? && format.nil?
-      last_param_ext = File.extname(action_params__array.last)
-      if last_param_ext && formats.any?{ |f|  f == last_param_ext }
-        #REVIEW why are we inserting the extension into the params array before the last element?
-        # expect "[:read, nil, \"book.xml\"]" == "[:read, \".xml\", \"book\"]" ## output, if I don't call the method
-        action_params__array[action_params__array.size - 1] = 
-          File.basename(action_params__array.last, last_param_ext)
-        self.format = last_param_ext
-      end
-    end
-    # it is highly important to freeze path params
-    action_params__array.freeze
-  end
-  private :clean_format_from_last_param!
-
-  def handle_request_errors!
-    action || fail(STATUS__NOT_FOUND)
-
-    min, max = required_arguments
-    given    = action_params__array.size
-
-    min && given < min &&
-      fail(STATUS__NOT_FOUND, 'min params accepted: %s; params given: %s' % [min, given])
-
-    max && given > max &&
-      fail(STATUS__NOT_FOUND, 'max params accepted: %s; params given: %s' % [max, given])
-  end
 
   # Set or retrieve the response status code.
   def status(value=nil)
     response.status = value if value
     response.status
   end
-
-
 
   # @example ruby 1.8
   #    def index id, status

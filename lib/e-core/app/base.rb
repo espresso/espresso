@@ -23,6 +23,7 @@ class EApp
   end
 
   def initialize automount = false, &proc
+    @routes = []
     @controllers = automount ? discover_controllers : []
     @mounted_controllers = []
     @controllers.each {|c| mount_controller c}
@@ -132,9 +133,24 @@ class EApp
     Rack::Handler.const_get(server).run app, opts
   end
 
-  # Rack interface to mounted controllers
   def call env
-    app.call env
+    @sorted_routes ||= @routes.sort {|a,b| b[:regexp].source.size <=> a[:regexp].source.size}
+    @sorted_routes.each do |route|
+      if (pi = route[:regexp].match(env[ENV__PATH_INFO].to_s)) && (pi = pi[1])
+        format = nil
+        formats(action).each do |f|
+          p,f = pi.partition(f)
+          if f.size > 0
+            pi, format = p, f
+            break
+          end
+        end
+        env[ENV__SCRIPT_NAME] = route[:path]
+        env[ENV__PATH_INFO]   = pi
+        return route[:ctrl].allocate.call(route, env, format)
+      end
+    end
+    [404, {"Content-Type" => "text/plain", "X-Cascade" => "pass"}, ["Not Found: #{env[ENV__PATH_INFO]}"]]
   end
 
   def app
@@ -178,6 +194,7 @@ class EApp
     setup && controller.class_exec(&setup)
     @global_setup && controller.class_exec(&@global_setup)
     controller.mount! self
+    @routes.concat controller.routes
 
     @mounted_controllers << controller
   end
