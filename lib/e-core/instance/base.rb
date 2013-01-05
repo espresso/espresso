@@ -1,5 +1,6 @@
 class E
-  e_attributes :env, :action, :action_arguments, :required_arguments
+  e_attributes :env, :action, :action_arguments
+  e_attributes :required_arguments, :required_request_method
 
   e_attribute :request
   alias rq request
@@ -30,6 +31,7 @@ class E
     self.canonical = route_setup[:canonical]
     self.action_arguments = route_setup[:action_arguments]
     self.required_arguments = route_setup[:required_arguments]
+    self.required_request_method = route_setup[:request_method]
   end
 
   def call env
@@ -38,6 +40,11 @@ class E
     self.request = EspressoFrameworkRequest.new(env)
     
     e_response = catch :__e__catch__response__ do
+
+      if required_request_method
+        fail(STATUS__NOT_IMPLEMENTED) unless env[ENV__REQUEST_METHOD] == required_request_method
+      end
+
       min, max = required_arguments
       given = action_params__array.size
 

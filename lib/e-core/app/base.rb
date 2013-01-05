@@ -27,22 +27,14 @@ class EApp
     @controllers = automount ? discover_controllers : []
     @mounted_controllers = []
     @controllers.each {|c| mount_controller c}
-    @inner_apps = []
     proc && self.instance_exec(&proc)
   end
 
   # mount a controller or a namespace(a module, a class or a regexp) containing controllers.
   # proc given here will be executed inside given controller/namespace,
-  # as well as any global setup defined before this method called.
-  #
+  # as well as any global setup defined before this method will be called.
   def mount namespace_or_app, *roots, &setup
-    if namespace_or_app.respond_to?(:call) && !is_app?(namespace_or_app)
-      # seems a Rack app given
-      roots.empty? && raise(ArgumentError, "Please provide at least one root to mount given app on")
-      @inner_apps << [namespace_or_app, roots] # setup ignored on Rack apps
-    else
-      extract_controllers(namespace_or_app).each {|c| mount_controller c, *roots, &setup}
-    end
+    extract_controllers(namespace_or_app).each {|c| mount_controller c, *roots, &setup}
     self
   end
 
@@ -137,7 +129,7 @@ class EApp
     @sorted_routes ||= @routes.sort {|a,b| b[:regexp].source.size <=> a[:regexp].source.size}
     @sorted_routes.each do |route|
       if (pi = route[:regexp].match(env[ENV__PATH_INFO].to_s)) && (pi = pi[1])
-        
+
         format = nil
         (format_regexp = route[:format_regexp]) && (pi, format = pi.split(format_regexp))
 
@@ -156,36 +148,7 @@ class EApp
     [404, {"Content-Type" => "text/plain", "X-Cascade" => "pass"}, ["Not Found: #{env[ENV__PATH_INFO]}"]]
   end
 
-  def app
-    @app ||= builder
-  end
-  alias to_app app
-
   private
-  def builder
-    app, builder = self, Rack::Builder.new
-    middleware.each { |w| builder.use w[0], *w[1], &w[2] }
-    if rewrite_rules.any?
-      EspressoFrameworkRewriter.rules = rewrite_rules.freeze
-      builder.use EspressoFrameworkRewriter
-    end
-    @mounted_controllers.each do |ctrl|
-      ctrl.url_map.each_key do |route|
-        builder.map route do
-          ctrl.middleware.each { |w| use w[0], *w[1], &w[2] }
-          run ctrl
-        end
-      end
-    end
-    @inner_apps.each do |a|
-      inner_app, inner_app_roots = a
-      inner_app_roots.each do |inner_app_root|
-        builder.map(inner_app_root) { run inner_app }
-      end
-    end
-    builder.to_app
-  end
-
   def mount_controller controller, *roots, &setup
     return if @mounted_controllers.include?(controller)
 

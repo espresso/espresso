@@ -173,12 +173,11 @@ class << E
   end
 
   def action_to_route action
-    path = action.to_s
-    request_methods = Array.new(HTTP__REQUEST_METHODS)
+    path, request_method = action.to_s, nil
     HTTP__REQUEST_METHODS.each do |m|
       regex = /\A#{m}_/i
       if action.to_s =~ regex
-        request_methods = [m]
+        request_method = m
         path = path.sub(regex, '')
         break
       end
@@ -201,7 +200,7 @@ class << E
       :path => path,
       :regexp => /\A#{Regexp.escape(path).gsub('/', '/+')}(.*)/n,
       :format_regexp => format_regexp,
-      :request_methods => request_methods,
+      :request_method => request_method,
     }.freeze
   end
 
