@@ -72,7 +72,7 @@ class << E
   def path_rules
     return @sorted_path_rules if @sorted_path_rules
     rules = (@path_rules || E__PATH_RULES).inject({}) do |f,(from, to)|
-      from = /#{from}/ unless from.is_a?(Regex)
+      from = /#{from}/ unless from.is_a?(Regexp)
       f.merge from => to
     end
     @sorted_path_rules = Hash[rules.sort {|a,b| b.first.source.size <=> a.first.source.size}]

@@ -120,7 +120,7 @@ class << E
 
     route.empty? && raise(ArgumentError, 'Wrong action name "%s"' % action)
 
-    path_rules.keys.sort.reverse.each do |key|
+    path_rules.keys.each do |key|
       route = route.gsub(key.is_a?(Regexp) ? key : /#{key}/, path_rules[key])
     end
 
@@ -149,7 +149,7 @@ class << E
     [request_methods, pages + dirs].freeze
   end
 
-  def generate_route_map!
+  def generate_routes!
     @routes, @route_by_action, @route_by_action_with_format = [], {}, {}
     public_actions.each do |action|
       route = action_to_route(action)
@@ -192,7 +192,7 @@ class << E
     {
       :ctrl     => self,
       :action   => action,
-      :action_arguments => arguments,
+      :action_arguments => action_arguments,
       :required_arguments => required_arguments,
       :path     => path,
       :regexp   => /\A#{Regexp.escape(path).gsub('/', '/+')}(.*)/n,

@@ -130,24 +130,24 @@ class EApp
     host = opts.delete(:host) || opts.delete(:bind)
     opts[:Host] = host if host
 
-    Rack::Handler.const_get(server).run app, opts
+    Rack::Handler.const_get(server).run self, opts
   end
 
   def call env
     @sorted_routes ||= @routes.sort {|a,b| b[:regexp].source.size <=> a[:regexp].source.size}
     @sorted_routes.each do |route|
       if (pi = route[:regexp].match(env[ENV__PATH_INFO].to_s)) && (pi = pi[1])
+        
         format = nil
-        formats(action).each do |f|
-          p,f = pi.partition(f)
-          if f.size > 0
-            pi, format = p, f
-            break
-          end
-        end
+        (af = route[:ctrl].formats(route[:action]).map {|f| Regexp.escape f}).any? &&
+          (pi, format = pi.split(/(#{af.join("|")})\Z/))
+
         env[ENV__SCRIPT_NAME] = route[:path]
         env[ENV__PATH_INFO]   = pi
-        return route[:ctrl].allocate.call(route, env, format)
+
+        app = Rack::Builder.new(route[:ctrl].new(route, format))
+        (middleware + route[:ctrl].middleware).each {|w,a,p| app.use w, *a, &p}
+        return app.call(env)
       end
     end
     [404, {"Content-Type" => "text/plain", "X-Cascade" => "pass"}, ["Not Found: #{env[ENV__PATH_INFO]}"]]

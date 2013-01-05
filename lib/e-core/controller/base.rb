@@ -1,6 +1,6 @@
 class << E
 
-  attr_reader :app, :action_map
+  attr_reader :app, :action_map, :routes
 
   attr_reader :url_map
   alias urlmap url_map
@@ -39,11 +39,6 @@ class << E
     mount.run *args
   end
 
-  def call env
-    mounted? || raise("=== Please mount the %s controller before use it as a Rack app ===" % self)
-    allocate.call env
-  end
-
   def mounted?
     @mounted
   end
@@ -65,8 +60,8 @@ class << E
     # IMPORTANT! expand_formats should run before public_actions iteration
     # and before expand_setups!
     expand_formats!
-
     expand_setups!
+    generate_routes!
     register_slim_engine!
 
     public_actions.each do |action|

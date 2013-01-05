@@ -1,5 +1,5 @@
 class E
-  e_attributes :env, :action, :action_arguments
+  e_attributes :env, :action, :action_arguments, :required_arguments
 
   e_attribute :request
   alias rq request
@@ -24,17 +24,21 @@ class E
       (format ? action.to_s + format : action).freeze
   end
 
-  def call route_setup, env, format = nil
+  def initialize route_setup, format = nil
     self.action = route_setup[:action]
     self.format = format
     self.canonical = route_setup[:canonical]
     self.action_arguments = route_setup[:action_arguments]
+    self.required_arguments = route_setup[:required_arguments]
+  end
+
+  def call env
     
     self.env = env
     self.request = EspressoFrameworkRequest.new(env)
     
     e_response = catch :__e__catch__response__ do
-      min, max = route_setup[:required_arguments]
+      min, max = required_arguments
       given = action_params__array.size
 
       min && given < min &&
