@@ -136,16 +136,19 @@ class EApp
         
         if route_setup = @routes[route][env[ENV__REQUEST_METHOD]]
 
-          env[ENV__SCRIPT_NAME] = route_setup[:path]
-          env[ENV__PATH_INFO]   = '/' << pi.to_s
+          env[ENV__SCRIPT_NAME] = (route_setup[:path]).freeze
+          env[ENV__PATH_INFO]   = (pi.empty? || pi =~ /\A\// ? pi : '/' << pi.to_s).freeze
 
           epi, format = nil
-          (format_regexp = route_setup[:format_regexp]) && (epi, format = pi.split(format_regexp))
-          env[ENV__ESPRESSO_PATH_INFO] = epi || env[ENV__PATH_INFO]
+          (fr = route_setup[:format_regexp]) && (epi, format = pi.split(fr))
+          env[ENV__ESPRESSO_PATH_INFO] = epi
           env[ENV__ESPRESSO_FORMAT]    = format
 
-          app = Rack::Builder.new(route_setup[:ctrl].new(route_setup))
-          (middleware + route_setup[:ctrl].middleware).each {|w,a,p| app.use w, *a, &p}
+          app = Rack::Builder.new
+          middleware.each {|w,a,p| app.use w, *a, &p}
+          app.run route_setup[:ctrl].new(route_setup[:action])
+          route_setup[:ctrl].middleware.each {|w,a,p| app.use w, *a, &p}
+          p app.mw
           return app.call(env)
         end
       end

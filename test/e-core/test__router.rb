@@ -73,9 +73,9 @@ module ECoreTest__Router
         is(last_response).not_found?
       end
 
-      It 'returns 501 cause :head_exact action does not exists' do
+      It 'returns 404 cause :head_exact action does not exists' do
         head :exact
-        is(last_response).not_implemented?
+        is(last_response).not_found?
       end
     end
 

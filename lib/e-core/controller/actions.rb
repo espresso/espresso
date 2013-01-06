@@ -108,7 +108,7 @@ class << E
     action_arguments, required_arguments = action_parameters(action)
 
     format_regexp = formats(action).any? ?
-      /(#{formats(action).map {|f| Regexp.escape f}.join("|")})\Z/ : nil
+      /(?:\A(?:\/{0,})?#{action})?(#{formats(action).map {|f| Regexp.escape f}.join("|")})\Z/ : nil
 
     [{
         :ctrl                => self,

@@ -31,7 +31,7 @@ namespace :test do
   end
 
   task :core do
-    run_test(/ECoreTest__Accept/, "Testing Core", default_session)
+    run_test(/ECoreTest__Session/, "Testing Core", default_session)
   end
 
   task :cache do

@@ -29,19 +29,20 @@ module ECoreTest__Format
   end
 
   Spec.new App do
+
     Describe 'global setup' do
 
-      It 'returns html(default Content-Type)' do
+      Should 'return html(default Content-Type)' do
         get
         is('.html').current_content_type?
       end
 
-      It 'returns xml' do
+      Should 'return xml' do
         get 'index.xml'
         is('.xml').current_content_type?
       end
 
-      It 'returns xsl' do
+      Should 'return xsl' do
         get 'index.xsl'
         is('.xsl').current_content_type?
 
@@ -49,29 +50,29 @@ module ECoreTest__Format
         is('.xsl').current_content_type?
       end
 
-      It 'returns 404 error' do
+      Should 'returns error' do
         get 'index.html'
         is(last_response).not_found?
       end
     end
 
     Describe 'per-action setup' do
-      It 'returns 404 error' do
+      Should 'return 404 error' do
         get 'api.xml'
         is(last_response).not_found?
         get 'api.html'
         is(last_response).not_found?
       end
-      It 'returns json' do
+      Should 'return json' do
         get 'api.json'
         is('.json').current_content_type?
       end
-      It 'returns html' do
+      Should 'return html' do
         get 'api'
         is('.html').current_content_type?
       end
 
-      It 'overrides type set by format' do
+      Should 'override type set by format' do
         get :txt
         is('.txt').current_content_type?
         get 'txt.xml'
@@ -100,9 +101,9 @@ module ECoreTest__Format
         is('[:read, nil, "book"]').current_body?
       end
 
-      Testing 'that when format is passed with action, the format passed with last param has no effect' do
+      Ensure '404 when format is passed with both action and last param' do
         get 'read.xml', 'book.xsl'
-        is('[:read, ".xml", "book.xsl"]').current_body?
+        is(last_response).not_found?
       end
     end
 

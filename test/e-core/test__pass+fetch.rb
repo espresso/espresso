@@ -36,6 +36,9 @@ module ECoreTest__Pass
       end
 
       def get_fetch action, key, val
+        fetch(:destination, key, val)
+      end
+      def get_fetch_inner action, key, val
         fetch(InnerApp, action.to_sym, key, val)
       end
     end
@@ -91,6 +94,10 @@ module ECoreTest__Pass
 
     Testing :fetch do
       get :fetch, :catcher, args, params
+      is([ARGS, PARAMS].inspect).current_body?
+    end
+    Testing :fetch_inner do
+      get :fetch_inner, :catcher, args, params
       is("k=v/var=val").current_body?
     end
 

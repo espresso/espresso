@@ -26,7 +26,7 @@ class EspressoFrameworkRewriter
 
   def redirect location
     @status = STATUS__REDIRECT
-    @headers['Location'] = location
+    @headers[HEADER__LOCATION] = location
   end
 
   def permanent_redirect location
@@ -42,13 +42,16 @@ class EspressoFrameworkRewriter
     route = ctrl[action] ||
       raise(ArgumentError, '%s controller does not respond to %s action' % [ctrl, action.inspect])
 
-    env.update 'SCRIPT_NAME' => route, 'REQUEST_URI' => '', 'PATH_INFO' => ''
+    env[ENV__SCRIPT_NAME] = route
+    env[ENV__REQUEST_URI] = env[ENV__PATH_INFO] = ''
+    env[ENV__ESPRESSO_PATH_INFO] = nil
+
     if args.size > 0
       path, params = '/', {}
       args.each { |a| a.is_a?(Hash) ? params.update(a) : path << a.to_s << '/' }
-      env.update('PATH_INFO' => path)
+      env[ENV__PATH_INFO] = env[ENV__REQUEST_URI] = path
       params.size > 0 &&
-        env.update('QUERY_STRING' => build_nested_query(params))
+        env.update(ENV__QUERY_STRING => build_nested_query(params))
     end
     @status, @headers, @body = ctrl.new(action).call(env)
   end

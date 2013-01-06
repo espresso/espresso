@@ -143,17 +143,19 @@ class E
     if block_given?
       yield env
     end
-    env.update ENV__SCRIPT_NAME  => route
-    env.update ENV__PATH_INFO    => '/'
+    env[ENV__SCRIPT_NAME] = route
+    env[ENV__REQUEST_URI] = env[ENV__PATH_INFO] = ''
+    env[ENV__ESPRESSO_PATH_INFO] = nil
 
     if args.size > 0
       path, params = '/', {}
       args.each { |a| a.is_a?(Hash) ? params.update(a) : path << a.to_s << '/' }
-      env.update ENV__PATH_INFO => path
+      env[ENV__PATH_INFO] = env[ENV__REQUEST_URI] = path
+      
       params.any? &&
         env.update(ENV__QUERY_STRING => build_nested_query(params))
     end
-    controller.allocate.call env
+    controller.new(action).call(env)
   end
 
   # same as `invoke` except it returns only body

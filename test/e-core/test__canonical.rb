@@ -28,7 +28,6 @@ module ECoreTest__Canonical
 
     Testing "base_url" do
       variations = [
-        [:get, [:index], '/index'],
         [:get, [], '/'],
         [:post, [:eatme], '/eatme'],
       ]
@@ -38,11 +37,9 @@ module ECoreTest__Canonical
 
     Testing "controller_canonicals" do
       variations = [
-        [:get, [:cms, :index], '/cms/index'],
-        [:get, [:cms], '/cms'],
+        [:get,  [:cms], '/cms'],
         [:post, [:cms, :eatme], '/cms/eatme'],
-        [:get, [:pages, :index], '/pages/index'],
-        [:get, [:pages], '/pages'],
+        [:get,  [:pages], '/pages'],
         [:post, [:pages, :eatme], '/pages/eatme'],
       ]
 
@@ -57,12 +54,10 @@ module ECoreTest__Canonical
 
     Testing :app_canonicals do
       variations = [
-        [:get, [:a], '/a'],
-        [:get, [:a, :cms], '/a/cms'],
-        [:get, [:a, :cms, :index], '/a/cms/index'],
-        [:get, [:a, :pages, :index], '/a/pages/index'],
-        [:get, [:a, :pages], '/a/pages'],
+        [:get,  [:a], '/a'],
         [:post, [:a, :pages, :eatme], '/a/pages/eatme'],
+        [:get,  [:a, :cms], '/a/cms'],
+        [:get,  [:a, :pages], '/a/pages'],
       ]
 
       does(variations).pass_validation?

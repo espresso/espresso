@@ -29,6 +29,7 @@ module EspressoFrameworkConstants
 
   ENV__SCRIPT_NAME    = 'SCRIPT_NAME'.freeze
   ENV__REQUEST_METHOD = 'REQUEST_METHOD'.freeze
+  ENV__REQUEST_URI    = 'REQUEST_URI'.freeze
   ENV__PATH_INFO      = 'PATH_INFO'.freeze
   ENV__HTTP_ACCEPT    = 'HTTP_ACCEPT'.freeze
   ENV__QUERY_STRING   = 'QUERY_STRING'.freeze
@@ -38,14 +39,15 @@ module EspressoFrameworkConstants
   ENV__HTTP_IF_MODIFIED_SINCE   = 'HTTP_IF_MODIFIED_SINCE'.freeze
   ENV__HTTP_IF_UNMODIFIED_SINCE = 'HTTP_IF_UNMODIFIED_SINCE'.freeze
 
-  ENV__ESPRESSO_PATH_INFO = 'e.path_info'.freeze
-  ENV__ESPRESSO_FORMAT    = 'e.format'.freeze
+  ENV__ESPRESSO_PATH_INFO = 'espresso.path_info'.freeze
+  ENV__ESPRESSO_FORMAT    = 'espresso.format'.freeze
 
   HEADER__CONTENT_TYPE  = 'Content-Type'.freeze
   HEADER__LAST_MODIFIED = 'Last-Modified'.freeze
   HEADER__CACHE_CONTROL = 'Cache-Control'.freeze
   HEADER__EXPIRES       = 'Expires'.freeze
   HEADER__CONTENT_DISPOSITION = 'Content-Disposition'.freeze
+  HEADER__LOCATION      = 'Location'.freeze
 
   RACK__WEBSOCKET = 'rack.websocket'.freeze
 end

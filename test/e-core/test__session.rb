@@ -39,6 +39,8 @@ module ECoreTest__Session
 
     var, val = 2.times.map { rand.to_s }
     get :set, var, val
+    p last_request
+    p last_response
 
     5.times do
       get :get, var

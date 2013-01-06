@@ -1,6 +1,5 @@
 class E
-  e_attributes :env, :action, :action_arguments
-  e_attributes :required_arguments, :required_request_method
+  e_attributes :env, :action, :action_arguments, :required_arguments
 
   e_attribute :request
   alias rq request
@@ -25,12 +24,12 @@ class E
       (format ? action.to_s + format : action).freeze
   end
 
-  def initialize route_setup
+  def initialize action
+    route_setup = self.class.route_setup[action]
     self.action = route_setup[:action]
     self.canonical = route_setup[:canonical]
     self.action_arguments = route_setup[:action_arguments]
     self.required_arguments = route_setup[:required_arguments]
-    self.required_request_method = route_setup[:request_method]
   end
 
   def call env
@@ -102,7 +101,8 @@ class E
     # they will be frozen by #call
     # after format extension removed from last param.
     @__e__action_params__array ||=
-      env[ENV__ESPRESSO_PATH_INFO].to_s.split('/').reject { |s| s.empty? }
+      (env[ENV__ESPRESSO_PATH_INFO] || env[ENV__PATH_INFO]).
+        to_s.split('/').reject { |s| s.empty? }
   end
 
   # @example ruby 1.9+
