@@ -145,10 +145,10 @@ class EApp
           env[ENV__ESPRESSO_FORMAT]    = format
 
           app = Rack::Builder.new
-          middleware.each {|w,a,p| app.use w, *a, &p}
           app.run route_setup[:ctrl].new(route_setup[:action])
           route_setup[:ctrl].middleware.each {|w,a,p| app.use w, *a, &p}
-          p app.mw
+          middleware.each {|w,a,p| w.new(nil, *a, &p).call(env)}
+
           return app.call(env)
         end
       end
