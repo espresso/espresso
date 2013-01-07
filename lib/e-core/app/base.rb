@@ -126,6 +126,15 @@ class EApp
   end
 
   def call env
+    unless @app
+      app = proc {|env| call! env}
+      @app = middleware.reverse.inject(app) { |a,e| e[a] }
+    end
+    @app.call(env)
+  end
+
+  private
+  def call! env
     if rewrite_rules.any?
       status, headers, body = EspressoFrameworkRewriter.new(rewrite_rules).call(env)
       return [status, headers, body] if status
@@ -147,8 +156,6 @@ class EApp
           app = Rack::Builder.new
           app.run route_setup[:ctrl].new(route_setup[:action])
           route_setup[:ctrl].middleware.each {|w,a,p| app.use w, *a, &p}
-          middleware.each {|w,a,p| w.new(nil, *a, &p).call(env)}
-
           return app.call(env)
         end
       end
@@ -156,7 +163,6 @@ class EApp
     [404, {"Content-Type" => "text/plain", "X-Cascade" => "pass"}, ["Not Found: #{env[ENV__PATH_INFO]}"]]
   end
 
-  private
   def mount_controller controller, *roots, &setup
     return if @mounted_controllers.include?(controller)
 

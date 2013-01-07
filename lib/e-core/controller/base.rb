@@ -33,7 +33,7 @@ class << E
   end
 
   def mount *roots, &setup
-    @app ||= EApp.new.mount(self, *roots, &setup)
+    @app || EApp.new.mount(self, *roots, &setup)
   end
   alias to_app  mount
   alias to_app! mount
@@ -55,8 +55,7 @@ class << E
     return if mounted?
     @app = app
 
-    # IMPORTANT! expand_formats should run before public_actions iteration
-    # and before expand_setups!
+    # Important - expand_formats! should run before expand_setups!
     expand_formats!
     expand_setups!
     generate_routes!
@@ -111,17 +110,30 @@ class << E
       
       @route_setup[action] = route_setup
 
+      aliases = (@action_aliases || {})[action] || []
       request_methods.each do |rm|
         (@routes[route_regexp] ||= {})[rm] = route_setup
 
         canonicals.each do |c|
-          c_path   = rootify_url(c, route_setup[:path])
+          c_path = rootify_url(c, route_setup[:path])
           c_regexp = route_to_regexp(c_path)
-          (@routes[c_regexp] ||= {})[rm] = route_setup.merge(:path => c_path, :canonical => route_setup[:path]).freeze
+          (@routes[c_regexp] ||= {})[rm] = route_setup.merge(
+            :path => c_path,
+            :canonical => route_setup[:path]
+          ).freeze
+
+          aliases.each do |a|
+            a_path = rootify_url(c, a)
+            a_regexp = route_to_regexp(a_path)
+            (@routes[a_regexp] ||= {})[rm] = route_setup.merge(
+              :path => a_path,
+              :canonical => route_setup[:path]
+            ).freeze
+          end
         end
 
-        ((@action_aliases||{})[action]||[]).each do |a|
-          a_path   = rootify_url(base_url, a)
+        aliases.each do |a|
+          a_path = rootify_url(base_url, a)
           a_regexp = route_to_regexp(a_path)
           (@routes[a_regexp] ||= {})[rm] = route_setup.merge(:path => a_path).freeze
         end

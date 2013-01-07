@@ -40,7 +40,7 @@ module ECoreTest__CacheControl
 
     def contain_correct_header? response, *directives
       is?(response.headers['Cache-Control']) ==
-          E.new.cache_control(*directives)
+          App.new(:index).cache_control(*directives)
     end
 
     get

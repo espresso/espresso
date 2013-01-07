@@ -1,7 +1,6 @@
 require 'cgi'
 require 'rubygems'
 
-$:.unshift File.expand_path('../../../__contrib__/rack/lib', __FILE__)
 require 'rack'
 
 require 'e-core/constants'

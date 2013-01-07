@@ -135,8 +135,8 @@ class EApp
   #    app.use Rack::ShowExceptions
   #    app.run
   #
-  def use ware, *args, &proc
-    middleware << [ware, args, proc]
+  def use ware, *args, &block
+    middleware << proc { |app| ware.new(app, *args, &block) }
   end
 
   def middleware
