@@ -117,10 +117,22 @@ class << E
   end
 
   def reset_routes_data
-    @routes, @route_setup = {}, {}
+    @routes = {}
+    @route_setup = {}
     @route_by_action, @route_by_action_with_format = {}, {}
   end
 
+  def action_aliases
+    @action_aliases || {}
+  end
+
+  def set_route(path, rm, action_route_setup)
+    path_regexp = route_to_regexp(path)
+    (@routes[path_regexp] ||= {})[rm] = action_route_setup.merge(
+        :path => path,
+        :canonical => action_route_setup[:path]
+    ).freeze
+  end
 
   def generate_routes!
     reset_routes_data
@@ -136,25 +148,16 @@ class << E
 
       @route_setup[action] = action_route_setup
 
-      aliases = (@action_aliases || {})[action] || []
+      aliases = action_aliases[action] || []
       request_methods.each do |rm|
         (@routes[route_regexp] ||= {})[rm] = action_route_setup
 
         canonicals.each do |c|
           c_path = rootify_url(c, action_route_setup[:path])
-          c_regexp = route_to_regexp(c_path)
-          (@routes[c_regexp] ||= {})[rm] = action_route_setup.merge(
-            :path => c_path,
-            :canonical => action_route_setup[:path]
-          ).freeze
-
+          set_route(c_path, rm, action_route_setup)
           aliases.each do |a|
             a_path = rootify_url(c, a)
-            a_regexp = route_to_regexp(a_path)
-            (@routes[a_regexp] ||= {})[rm] = action_route_setup.merge(
-              :path => a_path,
-              :canonical => action_route_setup[:path]
-            ).freeze
+            set_route(a_path, rm, action_route_setup)
           end
         end
 
