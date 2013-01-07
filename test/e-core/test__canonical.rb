@@ -55,9 +55,9 @@ module ECoreTest__Canonical
     Testing :app_canonicals do
       variations = [
         [:get,  [:a], '/a'],
-        [:post, [:a, :pages, :eatme], '/a/pages/eatme'],
         [:get,  [:a, :cms], '/a/cms'],
         [:get,  [:a, :pages], '/a/pages'],
+        [:post, [:a, :pages, :eatme], '/a/pages/eatme'],
       ]
 
       does(variations).pass_validation?

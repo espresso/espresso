@@ -76,21 +76,18 @@ class EApp
   # with controller and action that serving each URL.
   def url_map opts = {}
     map = {}
-    @mounted_controllers.each do |c|
-      c.url_map.each_pair do |r, s|
-        s.each_pair { |rm, as| (map[r] ||= {})[rm] = as.dup.unshift(c) }
-      end
+    sorted_routes.each do |r|
+      @routes[r].each_pair { |rm, as| (map[r] ||= {})[rm] = as.dup }
     end
 
     def map.to_s
       out = []
-      self.each do |data|
-        route, request_methods = data
-        next if route.size == 0
-        out << "%s\n" % route
+      self.each_pair do |route, request_methods|
+        next if route.source.size == 0
+        out << "%s\n" % route.source
         request_methods.each_pair do |request_method, route_setup|
           out << "  %s%s" % [request_method, ' ' * (10 - request_method.size)]
-          out << "%s#%s\n" % [route_setup[0], route_setup[3]]
+          out << "%s#%s\n" % [route_setup[:ctrl], route_setup[:action]]
         end
         out << "\n"
       end
@@ -144,8 +141,7 @@ class EApp
   end
 
   def call! env
-    @sorted_routes ||= @routes.keys.sort {|a,b| b.source.size <=> a.source.size}
-    @sorted_routes.each do |route|
+    sorted_routes.each do |route|
       if (pi = route.match(env[ENV__PATH_INFO].to_s)) && (pi = pi[1])
         if route_setup = @routes[route][env[ENV__REQUEST_METHOD]]
 
@@ -165,6 +161,10 @@ class EApp
       end
     end
     [404, {"Content-Type" => "text/plain", "X-Cascade" => "pass"}, ["Not Found: #{env[ENV__PATH_INFO]}"]]
+  end
+
+  def sorted_routes
+    @sorted_routes ||= @routes.keys.sort {|a,b| b.source.size <=> a.source.size}
   end
 
   def path_ok? path

@@ -23,7 +23,7 @@ namespace :test do
     session.before do |app|
       if app && EspressoFrameworkUtils.is_app?(app)
         app.use Rack::Lint
-        app(app.mount)
+        app(app)
         map(app.base_url)
       end
     end

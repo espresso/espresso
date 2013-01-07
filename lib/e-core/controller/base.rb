@@ -2,9 +2,6 @@ class << E
 
   attr_reader :app, :routes, :route_setup
 
-  attr_reader :url_map
-  alias urlmap url_map
-
   # build URL from given action name(or path) and consequent params
   # @return [String]
   def route *args
@@ -67,24 +64,48 @@ class << E
   # remap served root(s) by prepend given path
   # to controller's root and canonical paths
   #
-  # @note Important: all actions should be defined before re-mapping
+  # @note Important: all actions should be defined before re-mapping occurring
+  #
+  # @example
+  #   class Forum < E
+  #     map '/forum', '/forums'
+  #   end
+  #   app = EApp.new.mount(Forum, '/site-01', '/site-one')
+  #   # app will serve:
+  #   #   - /site-01/forum
+  #   #   - /site-01/forums
+  #   #   - /site-one/forum
+  #   #   - /site-one/forums
   #
   def remap! root, *given_canonicals
     return if mounted?
     new_base_url   = rootify_url(root, base_url)
-    new_canonicals = Array.new(canonicals + given_canonicals)
+    new_canonicals = []
     canonicals.each do |ec|
+
       # each existing canonical should be prepended with new root
       new_canonicals << rootify_url(new_base_url, ec)
-      # as well as with each given canonical
+
+      # each existing canonical should be prepended with each given canonical
       given_canonicals.each do |gc|
-        new_canonicals << rootify_url(gc, ec)
+        new_canonicals << rootify_url(new_base_url, gc, ec)
       end
     end
-    map new_base_url, *new_canonicals.uniq
+
+    # app should respond to each given canonical
+    given_canonicals.each do |gc|
+      new_canonicals << rootify_url(new_base_url, gc)
+    end
+
+    map! new_base_url, *new_canonicals.uniq
   end
 
   private
+
+  def map! *paths
+    @base_url   = rootify_url(paths.shift.to_s).freeze
+    @canonicals = paths.map { |p| rootify_url(p.to_s) }.freeze
+  end
 
   def lock!
     [

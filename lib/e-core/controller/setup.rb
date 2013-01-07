@@ -8,8 +8,7 @@ class << E
   #
   def map *paths
     return if mounted?
-    @base_url   = rootify_url(paths.shift.to_s).freeze
-    @canonicals = paths.map { |p| rootify_url(p.to_s) }.freeze
+    map! *paths
   end
 
   def base_url
