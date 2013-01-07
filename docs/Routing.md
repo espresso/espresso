@@ -91,7 +91,7 @@ end
 **[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
 
-## Actions Mapping
+## Action Mapping
 
 
 Usually actions should also contain non-alphanumeric chars.<br>

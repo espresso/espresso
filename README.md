@@ -28,7 +28,7 @@ class App < E
   map '/'
 
   def index
-    # ...
+  # ...
   end
 end
 ```
@@ -38,12 +38,6 @@ end
 ```ruby
 App.run
 ```
-
-### Espresso in the wild?
-
-[CIBox](http://cibox.org) service are entirely built on Espresso Framework.
-
-<hr/>
 
 # Tutorial
 
@@ -60,11 +54,11 @@ App.run
 [Base URL](https://github.com/espresso/espresso/blob/master/docs/Routing.md#base-url) |
 [Canonicals](https://github.com/espresso/espresso/blob/master/docs/Routing.md#canonicals) |
 [Actions](https://github.com/espresso/espresso/blob/master/docs/Routing.md#actions) |
-[Actions Mapping](https://github.com/espresso/espresso/blob/master/docs/Routing.md#actions-mapping) |
+[Action Mapping](https://github.com/espresso/espresso/blob/master/docs/Routing.md#action-mapping) |
+[Action Aliases](https://github.com/espresso/espresso/blob/master/docs/Routing.md#action-aliases) |
 [Parametrization](https://github.com/espresso/espresso/blob/master/docs/Routing.md#parametrization) |
 [Format](https://github.com/espresso/espresso/blob/master/docs/Routing.md#format) |
 [RESTful Actions](https://github.com/espresso/espresso/blob/master/docs/Routing.md#restful-actions) |
-[Aliases](https://github.com/espresso/espresso/blob/master/docs/Routing.md#aliases) |
 [Rewriter](https://github.com/espresso/espresso/blob/master/docs/Routing.md#rewriter)
 
 
@@ -109,7 +103,7 @@ App.run
 [Extension](https://github.com/espresso/espresso/blob/master/docs/ViewAPI.md#extension) |
 [Templates Path](https://github.com/espresso/espresso/blob/master/docs/ViewAPI.md#templates-path) |
 [Layouts Path](https://github.com/espresso/espresso/blob/master/docs/ViewAPI.md#layouts-path) |
-[Layout](https://github.com/espresso/espresso/blob/master/docs/ViewAPI.md#layout) |
+[Layout](https://github.com/espresso/espresso/blob/master/docs/ViewAPI.md#layout)
 <br>
 [Rendering Templates](https://github.com/espresso/espresso/blob/master/docs/ViewAPI.md#rendering-templates) |
 [Rendering Layouts](https://github.com/espresso/espresso/blob/master/docs/ViewAPI.md#rendering-layouts) |
@@ -155,6 +149,12 @@ Note: Streaming in Espresso is working only with [Reel](https://github.com/cellu
 
 <hr/>
 
+# Espresso in the wild?
+
+[CIBox](http://cibox.org) service are entirely built on Espresso Framework.
+
+<hr/>
+
 # Highlights / Motivation
 
 
@@ -169,30 +169,30 @@ The tests that follows will allow to disclose the overhead added by various fram
 
 The overhead are calculated by dividing 1000 milliseconds to **framework’s standard speed**.
 
-The **framework’s standard speed** are the speed of HelloWorld app running on top of given framework.
+The **framework’s standard speed** are the speed of a "HelloWorld" app running on top of given framework.
 
 The **framework’s standard speed** means nothing by itself. It is only used to calculate the framework’s overhead.
 
-Tested apps will run on Thin web server and will return a trivial "Hello World!" response.
+Tested apps will run on `Thin` web server and will return a trivial "Hello World!" response.
 
 Hardware used:
 
-    Processor Name: Intel Core i5
-    Processor Speed: 3.31 GHz
-    Number of Processors: 1
-    Total Number of Cores: 4
-    Memory: 8 GB
+  Processor Name: Intel Core i5
+  Processor Speed: 3.31 GHz
+  Number of Processors: 1
+  Total Number of Cores: 4
+  Memory: 8 GB
 
 To run tests on your hardware, clone Espresso Framework repository and execute `rake overhead` inside it.
 
 Test results:
 
-    ---
-                Speed  Overhead  1ms-app  5ms-app  10ms-app  20ms-app  50ms-app  100ms-app
-      espresso  5518   0.18ms    847      193      98        49        19        9
-       sinatra  3629   0.28ms    783      189      97        49        19        9
-         rails  792    1.26ms    442      159      88        47        19        9
-    ---
+  ---
+        Speed  Overhead  1ms-app  5ms-app  10ms-app  20ms-app  50ms-app  100ms-app
+    espresso  5518   0.18ms  847    193    98    49    19    9
+     sinatra  3629   0.28ms  783    189    97    49    19    9
+     rails  792  1.26ms  442    159    88    47    19    9
+  ---
 
 **1ms-app** shows your app speed when your actions takes **1ms** to run.<br>
 **10ms-app** shows your app speed when your actions takes **10ms** to run.<br>
@@ -200,15 +200,15 @@ etc.
 
 The app speed are calculated as follow:
 
-    1000 / (time taken by action + time taken by framework)
+  1000 / (time taken by action + time taken by framework)
 
 So, if your actions takes about 1ms and you use a framework with overhead of 0.18ms, the app speed will be:
 
-    1000 / ( 1 + 0.18 ) = 847 requests per second
+  1000 / ( 1 + 0.18 ) = 847 requests per second
 
 However, if framework's overhead is of **1ms** or more, the app speed will decrease dramatically:
 
-    1000 / ( 1 + 1.26 ) = 442 requests per second
+  1000 / ( 1 + 1.26 ) = 442 requests per second
 
 
 **Conclusions?**
@@ -239,7 +239,7 @@ A good tradeoff would be to use some DSL.
 
 ```ruby
 get '/book/:id' do
-    params[:id]
+  params[:id]
 end
 ```
 
@@ -259,7 +259,7 @@ etc. etc.
 
 And why should i remember so many non-natural stuff?
 
-Is not Ruby powerfull enough? I guess it is:
+Is not Ruby powerful enough? I guess it is:
 
 ```ruby
 def book id
@@ -267,7 +267,7 @@ def book id
 end
 ```
 
-That's a regular **Ruby method** and a regular **Espresso action**.<br>
+That's a regular **Ruby method** and it's regular **Espresso action**.<br>
 That's also an Espresso route. Yes, the app will respond to "/book/100"<br>
 And of course action params are used naturally, through method arguments(`id` rather than `params[:id]`).
 
@@ -286,8 +286,8 @@ Instead, you will use few lines of code at class level to write instructions tha
 
 ```ruby
 class App < E
-    content_type :json
-    # ...
+  content_type '.json'
+  # ...
 end
 ```
 
@@ -300,14 +300,14 @@ Simple! Put your setup, well, inside `setup` block and pass action names as para
 ```ruby
 class App < E
 
-    setup :rss, :feed do
-        content_type :xml
-    end
-    # ...
+  setup :rss, :feed do
+    content_type :xml
+  end
+  # ...
 end
 ```
 
-Well, what if i need some setup for some 10 actions ad another setup for another 20 actions?
+Well, what if i need to setup for some 10 actions and another setup for another 20 actions?
 Should i pass 30 arguments to `setup`? I do not want to buy a new keyboard every month...
 
 That's simple too. Use regular expressions.
@@ -317,10 +317,10 @@ Ex: setup **only** news related actions:
 ```ruby
 class App < E
 
-    setup /news/ do
-        # some setup
-    end
-    # ...
+  setup /news/ do
+    # some setup
+  end
+  # ...
 end
 ```
 
@@ -345,26 +345,26 @@ And of course when mounting, you can give a mount point.
 ```ruby
 module Cms
 
-    class Articles < E
-        # ...
-    end
+  class Articles < E
+    # ...
+  end
 
-    class News < E
-        # ...
-    end
+  class News < E
+    # ...
+  end
 
-    class Pages < E
-        # ...
-    end
+  class Pages < E
+    # ...
+  end
 end
 
 app = Cms.mount do
-    # some setup that will run inside each controller
+  # some setup that will run inside each controller
 end
 
 # or
 app = Cms.mount do |ctrl|
-    # some setup that will run inside controllers that match `ctrl` param
+  # some setup that will run inside controllers that match `ctrl` param
 end
 
 app.run
@@ -381,22 +381,22 @@ simply prepend the corresponding verb to the action name.
 ```ruby
 # will respond to any request type
 def book
-    # ...
+  # ...
 end
 
 # GET
 def get_book
-    # ...
+  # ...
 end
 
 # POST
 def post_book
-    # ...
+  # ...
 end
 
 # PUT
 def put_book
-    # ...
+  # ...
 end
 
 # etc.
@@ -420,7 +420,7 @@ When rendering templates, most time are spent at reading and compiling.
 Espresso allow to easily skip these expensive operations by keeping compiled templates in memory
 and just render them on consequent requests.
 
-Cache
+Cache Manager
 ---
 
 If you have some expensive operations that basically return static data,

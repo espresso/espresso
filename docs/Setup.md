@@ -7,7 +7,7 @@ without touching the actions at all.
 That's allow to "remotely" control any number of actions with just few lines of code
 and manipulate their behavior without actions refactoring.
 
-To illustrate an example, let's suppose that all actions should return UTF-8 charset.
+To illustrate an example, let's suppose that all actions should return "UTF-8" charset.
 
 ```ruby
 class App < E
@@ -34,7 +34,7 @@ Global setup is just good for mostly trivial apps.
 
 But when it comes to develop more compelling apps, we need more control.
 
-And Espresso kindly offer it.
+And Espresso kindly offering it.
 
 **# 1** - Actions can be configured by name
 
@@ -54,7 +54,7 @@ class App < E
 end
 ```
 
-**# 2** - Actions can be configured via regular expressions
+**# 2** - Actions can also be configured by regular expressions
 
 **Example:** - all actions containing "_js_" will return "application/javascript" content type
 
@@ -80,7 +80,7 @@ It turns out that setting up actions by name and regular expressions are not eno
 
 We need even more control.
 
-Cause "/book.html" and "/book.xml" definitely may behave differently, even if they are backed by the same action.
+Cause "/book.html" and "/book.xml" definitely may behave differently, even if they are backed by same action.
 
 How for ex. to tell `book` action to return some charset on "/book.html" URL
 and another one on "/book.xml" URL without touching the action itself?
@@ -140,6 +140,26 @@ class App < E
 end
 ```
 
+It is also possible to use format helpers to determine current format.
+
+**Example:** - set engine for `:book` action depending on format:
+
+```ruby
+class App < E
+  format '.html', '.xml'  # this will generate `html?` and `xml?` helpers
+
+  setup :book do
+    if html?
+      engine :Slim
+    end
+    if xml?
+      engine :Nokogiri
+    end
+    # Disclaimer: this coding style are used just for docs readability
+  end
+end
+```
+
 
 **[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
@@ -163,12 +183,10 @@ That's ok for Server A.
 
 But for Server B we need it to serve /forum base URL and return UTF-8 charset.
 
-For this, we pass the base URL as first param and setting charset using bang method inside block.
-
 **Example:** - deploying Forum app on Server B
 
 ```ruby
-require 'my-mega-forum'
+require 'my-mega-forum-gem'
 
 run Forum.mount '/forum' {
   charset 'UTF-8'
@@ -204,7 +222,7 @@ app.mount App
 app.run
 ```
 
-Or you can setup controllers selectively - controller name are passed as first argument of setup proc
+Or you can setup controllers selectively - controller name are passed as first argument:
 
 ```ruby
 app = EApp.new

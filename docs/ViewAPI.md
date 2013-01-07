@@ -40,7 +40,7 @@ app.run
 
 If engine requires some arguments/options, simple pass them as consequent params.
 
-Just like
+Just like:
 
 ```ruby
 engine :SomeEngine, :some_arg, :some => :option
@@ -49,7 +49,7 @@ engine :SomeEngine, :some_arg, :some => :option
 **Example:** - Set default encoding
 
 ```ruby
-engine :Erubis, default_encoding: Encoding.default_external
+engine :Erubis, :default_encoding => Encoding.default_external
 ```
 
 
@@ -59,7 +59,7 @@ engine :Erubis, default_encoding: Encoding.default_external
 ## Extension
 
 
-Espresso will use the default extension of current engine.
+Espresso will use the default file extension of current engine(.haml for Haml, .erb for ERB etc)
 
 To set a custom extension, use `engine_ext`.
 
@@ -111,7 +111,7 @@ you should provide absolute path to templates by using `view_fullpath`:
 ```ruby
 class News < E
 
-  view_fullpath File.expand_path '../../../shared-templates', __FILE__
+  view_fullpath File.expand_path('../../../shared-templates', __FILE__)
   # ...
 end
 ```

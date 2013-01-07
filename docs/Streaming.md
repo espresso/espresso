@@ -128,7 +128,7 @@ Here is an example that will release the response instantly and then send body b
 ```ruby
 def some_heavy_action
   chunked_stream do |socket|
-    ExtractDataFromDB_OrSomePresumablySlowAPI.each do |data|
+    ExtractDataFromDBOrSomePresumablySlowAPI.each do |data|
       socket << data.to_s
     end
     socket.finish # close it, otherwise the browser will waiting for data forever
@@ -137,3 +137,4 @@ end
 ```
 
 Please make sure to do `socket.finish` after all your data sent.
+

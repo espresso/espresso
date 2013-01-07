@@ -14,26 +14,22 @@ If called without arguments it will return app's base URL.
 
 ```ruby
 class App < E
-    map '/books'
+  map '/books'
 
-    def read
-        # ...
-    end
+  def read
+    # ...
+  end
 
-    def test
-        route :read
-        #=> /books/read
-    end
+  def test
+    route :read #=> /books/read
+  end
 end
 
-App.route
-#=> /
+App.route #=> /
 
-App.route :read
-#=> /books/read
+App.route :read  #=> /books/read
 
-App.route :blah
-#=> /books/blah
+App.route :blah  #=> /books/blah
 ```
 
 If any params given(beside action name) they will become a part of generated URL.
@@ -43,23 +39,20 @@ If any params given(beside action name) they will become a part of generated URL
 ```ruby
 class News < E
 
-    def index
-        route :latest___items, 100
-        #=> /news/latest-items/100
-    end
+  def index
+    route :latest___items, 100 #=> /news/latest-items/100
+  end
 
-    def latest___items ipp = 10, order = 'asc'
-    end
+  def latest___items ipp = 10, order = 'asc'
+    # ...
+  end
 end
 
-News.route
-#=> /news
+News.route #=> /news
 
-News.route :latest___items
-#=> /news/latest-items
+News.route :latest___items #=> /news/latest-items
 
-News.route :latest___items, 20, :desc
-#=> /news/latest-items/20/desc
+News.route :latest___items, 20, :desc #=> /news/latest-items/20/desc
 ```
 
 If a Hash given, it will be passed as query string.
@@ -67,12 +60,10 @@ If a Hash given, it will be passed as query string.
 **Example:**
 
 ```ruby
-route :read, :var => 'val'
-#=> /read?var=val
+route :read, :var => 'val' #=> /read?var=val
 
 # nested params
-route :view, :var => ['1', '2', '3']
-#=> /view?var[]=1&var[]=2&var[]=3
+route :view, :var => ['1', '2', '3'] #=> /view?var[]=1&var[]=2&var[]=3
 
 route :open, :vars => {:var1 => '1', :var2 => '2'}
 #=> /open?vars[var1]=1&vars[var2]=2
@@ -85,12 +76,12 @@ If action does not support given format, it will simply be used as a part of URL
 
 ```ruby
 class Rss < E
-    map :reader
-    format :html, :xml
+  map :reader
+  format :html, :xml
 
-    def mini___news
-        # ...
-    end
+  def mini___news
+    # ...
+  end
 end
 
 Rss.route :mini___news
@@ -117,17 +108,16 @@ so you do not need to remove format manually.
 
 ```ruby
 class App < E
-    map '/'
-    format :html
+  map '/'
+  format :html
 
-    def read item = nil
-        # on /read                item == nil
-        # on /read/news           item == "news"
-        # on /read/book.html      item == "book"
-        # on /read/100.html       item == "100"
-        # on /read/etc.html       item == "etc"
-        # on /read/blah.xml       item == "blah.xml"
-    end
+  def read item = nil
+    # on /read              item == nil
+    # on /read/news         item == "news"
+    # on /read/book.html    item == "book", not "book.html"
+    # on /read/100.html     item == "100", not "100.html"
+    # on /read/blah.xml     item == "blah.xml", cause ".xml" format not served
+  end
 end
 
 App.route :read, 'book.html'
@@ -151,31 +141,31 @@ Will return `nil` if given action not found or does not support the given format
 
 ```ruby
 class Index < E
-    map :cms
-    format :html
+  map :cms
+  format :html
 
-    def read
-    end
+  def read
+  end
 
-    def quick___reader
-    end
+  def quick___reader
+  end
 
-    def test
-        self[:read]
-        #=> /cms/read
+  def test
+    self[:read]
+    #=> /cms/read
 
-        self[:quick___reader]
-        #=> /cms/quick-reader
+    self[:quick___reader]
+    #=> /cms/quick-reader
 
-        self['quick___reader.html']
-        #=> /cms/quick-reader.html
+    self['quick___reader.html']
+    #=> /cms/quick-reader.html
 
-        self['quick___reader.json']
-        #=> nil
+    self['quick___reader.json']
+    #=> nil
 
-        self[:blah]
-        #=> nil
-    end
+    self[:blah]
+    #=> nil
+  end
 end
 
 Index[:read]
@@ -206,12 +196,12 @@ Index[:blah]
 
 ```ruby
 class App < E
-    map '/'
+  map '/'
 
-    def test
-        # on /test?foo=bar  params[:foo] == "bar"
-        # ...
-    end
+  def test
+    # on /test?foo=bar  params[:foo] == "bar"
+    # ...
+  end
 end
 ```
 
@@ -221,31 +211,33 @@ end
 ## Passing Control
 
 
-To pass control to another action or even app, use `pass`
+To pass control to another action or controller, use `pass`.
 
-**Example:** - Pass controll to :archived action if page id is less than 100_000
+**Example:** - Pass control to :archived action if page id is less than 100_000
 
 ```ruby
 class App < E
 
-    def index id
-        id = id.to_i
-        pass :archived if id < 100_000
-        # ...
-    end
+  def index id
+    id = id.to_i
+    pass :archived if id < 100_000
+    #
+    # code here will be executed only when id > 100_000
+    #
+  end
 end
 ```
 
-**Example:** - Pass controll to :json action if browser accepts JSON.
+**Example:** - Pass control to :json action if browser accepts JSON.
 If some params given, they will be passed as arguments to destination action.
 
 ```ruby
 class App < E
 
-    def index
-        pass(:json, params[:type], params[:id]) if accept?(/json/)
-        # ...
-    end
+  def index
+    pass(:json, params[:type], params[:id]) if accept?(/json/)
+    # ...
+  end
 
 end
 ```
@@ -254,7 +246,7 @@ end
 
 ```ruby
 def index
-    pass :some_action, :some_arg, :foo => :bar
+  pass :some_action, :some_arg, :foo => :bar
 end
 ```
 
@@ -265,20 +257,31 @@ If first argument is a valid Espresso controller, the control will be passed to 
 ```ruby
 class News < E
 
-    def index id, page = 1
-        # ...
-    end
+  def index id, page = 1
+    # ...
+  end
 end
 
 class Index < E
-    map '/'
+  map '/'
 
-    def index
-        pass News, :index if params[:type] == 'news'
-        # ...
-    end
+  def index
+    pass News, :index if params[:type] == 'news'
+    # ...
+  end
 end
 ```
+
+By default, a GET request will be issued.
+
+To use another request method, append it to the used method.
+
+**Example:**
+
+```ruby
+pass_via_post :some_action
+```
+
 
 **[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
@@ -290,37 +293,43 @@ Sometimes you need to invoke some action or app and get the returned body.
 
 This is easily done by using `fetch`.
 
-Basically, this same as `pass` except it returns the body instead of halting request processing.
+Basically, this is same as `pass` except it returns the body instead of halting request processing.
 
-`fetch` will execute the given action or block inside current or given app and returning the body.<br>
-If block given, it will be executed instead of given action.<br>
-Please note that the action is required even when block given.
+`fetch` will execute some action inside current or given controller and returning the body.
 
 **Example:**
 
 ```ruby
 class Store < E
 
-    def products
-        @latest_blog_posts = fetch(Blog, :latest)
-        # ...
-    end
+  def products
+    @latest_blog_posts = fetch(Blog, :latest)
+    # ...
+  end
 
-    def featured_products
-        # ...
-    end
+  def featured_products
+    # ...
+  end
 end
 
 class Blog < E
 
-    def index
-        @featured_products = fetch(Store, :featured_products)
-        # ...
-    end
+  def index
+    @featured_products = fetch(Store, :featured_products)
+    # ...
+  end
 end
 ```
 
 If you need status code and/or headers, use `invoke` instead, which will return a Rack response Array.
+
+It is also possible to use a request method other than default GET.
+
+**Example:**
+
+```ruby
+fetch_via_post :some_action
+```
 
 **[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
@@ -328,7 +337,7 @@ If you need status code and/or headers, use `invoke` instead, which will return 
 ## Halt
 
 
-`halt` will interrupt any process and send an arbitrary resopnse to browser.
+`halt` will interrupt any process and send an arbitrary response to browser.
 
 It accepts from 0 to 3 arguments.<br>
 If argument is a hash, it is added to headers.<br>
@@ -341,8 +350,8 @@ If a single argument given and it is an Array, it is treated as a bare Rack resp
 
 ```ruby
 def index
-    halt 'Hit the Road Jack' if SomeHelper.malicious_params?(env)
-    # ...
+  halt 'Hit the Road Jack' if SomeHelper.malicious_params?(env)
+  # ...
 end
 ```
 
@@ -350,11 +359,11 @@ end
 
 ```ruby
 def index
-    begin
-        # some logic
-    rescue => e
-        halt 500, exception_to_human_error(e)
-    end
+  begin
+    # some logic
+  rescue => e
+    halt 500, exception_to_human_error(e)
+  end
 end
 ```
 
@@ -362,9 +371,9 @@ end
 
 ```ruby
 def news
-    if params['return-rss']
-        halt rssify(@items), 'Content-Type' => mime_type('.rss')
-    end
+  if params['return-rss']
+    halt rssify(@items), 'Content-Type' => mime_type('.rss')
+  end
 end
 ```
 
@@ -372,7 +381,7 @@ end
 
 ```ruby
 def download
-    halt [200, {'Content-Disposition' => "attachment; filename=some-file"}, some_IO_instance]
+  halt [200, {'Content-Disposition' => "attachment; filename=some-file"}, some_IO_instance]
 end
 ```
 
@@ -386,13 +395,13 @@ end
 
 To redirect with status code 301 use `permanent_redirect`.
 
-To wait untill request processed use `delayed_redirect` or `deferred_redirect`.
+To wait until request processed, use `delayed_redirect` or `deferred_redirect`.
 
-If an exisitng action passed as first argument, it will use the route of given action for location.
+If an existing action passed as first argument, it will use the route of given action for location.
 
-If first argument is a valid Espresso controller, it will use given app's setup to build path.
+If first argument is a valid Espresso controller, it will used setup to build the path.
 
-**Example:** - Basic redirect with hardcoded location(bad practice way in most cases)
+**Example:** - Basic redirect with hardcoded location(bad practice in most cases)
 
 ```ruby
 redirect '/some/path'
@@ -403,15 +412,15 @@ redirect '/some/path'
 ```ruby
 class Articles < E
 
-    def index
-        redirect route                 # => /articles
-        redirect :read, 100            # => /articles/read/100
-        redirect News                  # => /news
-        redirect News, :read, 100      # => /news/read/100
-    end
+  def index
+    redirect route         # => /articles
+    redirect :read, 100      # => /articles/read/100
+    redirect News          # => /news
+    redirect News, :read, 100    # => /news/read/100
+  end
 
-    def read id
-    end
+  def read id
+  end
 end
 ```
 
@@ -427,8 +436,8 @@ end
 
 ```ruby
 def index
-    # ...
-    reload
+  # ...
+  reload
 end
 ```
 
@@ -436,8 +445,8 @@ end
 
 ```ruby
 def index
-    # ...
-    reload :some => 'param', :some_another => 'param'
+  # ...
+  reload :some => 'param', :some_another => 'param'
 end
 ```
 
@@ -450,28 +459,28 @@ end
 
 Espresso allow to set error handlers that can be used to throw errors with desired status code and body.
 
-When setting error handler, you should provide status code and the proc that will generate the body.<br>
+When setting error handler, you should provide status code and a proc that will generate the body.<br>
 The proc may accept an argument. That will be the error message.
 
 When using handler, the only required argument is status code.<br>
-If error message given as 2nd argument, it will be passed to error handler proc as first argument.
+If error message given as 2nd argument, it will be passed to the error handler proc as first argument.
 
 **Example:** - Setting and using 404 error handler
 
 ```ruby
 class News < E
 
-    error 404 do |message|
-        "Some Error Occurred: #{ message }"
-    end
+  error 404 do |message|
+    "Some Error Occurred: #{ message }"
+  end
 
-    def index id
-      @page = PageModel.first(:id => id)
-      @page || error(404, "Page Not Found, sad...")
-               # will return 404 status code with body
-               # "Some Error Occurred: Page Not Found, sad..."
-      # ...
-    end
+  def index id
+    @page = PageModel.first(:id => id)
+    @page || error(404, "Page Not Found, sad...")
+         # will return 404 status code with body
+         # "Some Error Occurred: Page Not Found, sad..."
+    # ...
+  end
 end
 ```
 
@@ -480,17 +489,17 @@ end
 ```ruby
 class News < E
 
-    error 500 do | exception |
-        "Fatal Error Occurred: #{ exception }"
-    end
-    # now if you actions(or hooks) raise an exception, 
-    # it will be rescued and passed to your error handler.
+  error 500 do |exception|
+    "Fatal Error Occurred: #{ exception }"
+  end
+  # now if yous actions(or hooks) raise an exception,
+  # it will be rescued and passed to your error handler.
 
-    def index id
-        some risky code here
-    end
-    # will return 500 status code with body
-    # "Fatal Error Occurred: undefined local variable or method `here'"
+  def index id
+    some risky code here
+  end
+  # will return 500 status code with body
+  # "Fatal Error Occurred: undefined local variable or method `here'"
 end
 ```
 
@@ -499,14 +508,14 @@ end
 ```ruby
 class App < E
 
-    error 404 do
-        "Ouch... something weird happened or you just hitted a wrong URL..."
-    end
+  error 404 do
+    "Ouch... something weird happened or you just visited a wrong URL..."
+  end
 
-    def page id
-        error(404) unless @page = PageModel.first(:id => id)
-        # ...
-    end
+  def page id
+    error(404) unless @page = PageModel.first(:id => id)
+    # ...
+  end
 end
 ```
 
@@ -522,54 +531,55 @@ end
 ```ruby
 class App < E
 
-    before do
-        @started_at = Time.now.to_f
-    end
+  before do
+    @started_at = Time.now.to_f
+  end
 
-    after do
-        puts " - #{ action } consumed #{ Time.now.to_f - @started_at } milliseconds"
-    end
+  after do
+    puts " - #{ action } consumed #{ Time.now.to_f - @started_at } milliseconds"
+  end
 
-    # ...
+  # ...
 end
 ```
 
-To set callbacks only for specific actions, use `before`/`after` inside `setup`.
+To set callbacks only for specific actions, use actions names as arguments(matchers).
 
 **Example:** - Extract item from db only before :edit, :update and :delete actions
 
 ```ruby
 class App < E
 
-    setup :edit, :update, :delete do
-        before { @item = Model.first(:id => action_params[:id].to_i) }
-    end
+  before :edit, :update, :delete do
+    @item = Model.first(:id => action_params[:id].to_i)
+  end
 
-    def edit id
-        # ...
-    end
+  def edit id
+    # ...
+  end
 
-    def update id
-        # ...
-    end
+  def update id
+    # ...
+  end
 
-    def delete id
-        # ...
-    end
+  def delete id
+    # ...
+  end
 end
 ```
 
-Callbacks will be executed in the order was added.<br>
-To change the calling order, use :priority option.<br>
-The callback with highest priority will run first.
+Also regular expressions can be used as arguments(matchers).
 
- **Example:** - Making sure this will run before any other hooks by setting priority to 1000(with condition there are no hooks with higher priority)
+**Example:** - any action containing "_js_" in its name will respond with "application/javascript" Content-Type
 
 ```ruby
-    before :priority => 1000 do
-        # ...
-    end
+before /_js_/ do
+  content_type '.js'
+end
 ```
+
+**Please Note** that `before` is just an alias for `setup`.
+
 
 **[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
@@ -581,16 +591,14 @@ Types supported:
 *   Basic
 *   Digest
 
-To require authorization only for specific actions, use `auth` inside `setup`.
-
-**Example:** - All actions under Admin controller will require(Basic) authorization
+**Example:** - All actions under Admin controller will require Basic authorization
 
 ```ruby
 class Admin < E
 
-    auth do |user, pass|
-        [user, pass] == ['admin', 'somePasswd']
-    end
+  auth do |user, pass|
+    [user, pass] == ['admin', 'somePasswd']
+  end
 end
 ```
 
@@ -599,15 +607,15 @@ end
 ```ruby
 class MyBlog < E
 
-    setup :my_bikini_photos do
-        auth :my_bikini_photos do |user, pass|
-            user == "admin" && pass == "super-secret-password"
-        end
+  setup :my_bikini_photos do
+    auth :my_bikini_photos do |user, pass|
+      user == "admin" && pass == "super-secret-password"
     end
+  end
 
-    def my_bikini_photos
-        # HTML containing top secret photos
-    end
+  def my_bikini_photos
+    # HTML containing top secret photos
+  end
 end
 ```
 
@@ -615,19 +623,19 @@ end
 
 ```ruby
 module Admin
-    class Products < E
-        # ...
-    end
-    class Orders < E
-        # ...
-    end
+  class Products < E
+    # ...
+  end
+  class Orders < E
+    # ...
+  end
 end
 
 app = Admin.mount do
-    digest_auth do |user|
-        users = { 'admin' => 'password' }
-        users[user]
-    end
+  digest_auth do |user|
+    users = { 'admin' => 'password' }
+    users[user]
+  end
 end
 app.run
 ```
@@ -642,13 +650,13 @@ In order sessions to work they have to be enabled first.
 
 Sessions are enabled at app level and by default can be stored in memory, cookies or memcache.
 
-You can of course use any Rack session adapter, for example rack-session-mongo.
+You can of course use any Rack session adapter, for example `rack-session-mongo`.
 
 **Example:** - Keeping sessions in memory
 
 ```ruby
 class App < E
-    # ...
+  # ...
 end
 app = App.mount
 app.session :memory
@@ -659,7 +667,7 @@ app.run
 
 ```ruby
 class App < E
-    # ...
+  # ...
 end
 app = App.mount
 app.session :cookies
@@ -670,7 +678,7 @@ app.run
 
 ```ruby
 class App < E
-    # ...
+  # ...
 end
 app = App.mount
 app.session :memcache
@@ -687,7 +695,7 @@ $ gem install rack-session-mongo
 
 ```ruby
 class App < E
-    # ...
+  # ...
 end
 
 require 'rack/session/mongo'
@@ -773,17 +781,14 @@ cookies.delete 'cookie-name'
 
 ## Content Type
 
-
-Can be set at class and/or instance level.
-
 **Example:** - Setting RSS content type at class level, for all actions
 
 ```ruby
 class Rss < E
 
-    content_type '.rss'
+  content_type '.rss'
 
-    # ...
+  # ...
 end
 ```
 
@@ -792,24 +797,21 @@ end
 ```ruby
 class Rss < E
 
-    setup :feed, :read do
-        content_type '.rss'
-    end
+  setup :feed, :read do
+    content_type '.rss'
+  end
 end
 ```
 
-To set content type at instance level, you should always use `content_type!`,
-cause `content_type` will only return the content type of current request.
-
-**Example:** Setting content type at instance level
+**Example:** Setting content type inside action
 
 ```ruby
 class App < E
 
-    def users
-        content_type!('.json') if accept?(/json/)
-        # ...
-    end
+  def users
+    content_type('.json') if accept?(/json/)
+    # ...
+  end
 end
 ```
 
@@ -819,22 +821,23 @@ end
 ## Charset
 
 
-Updating Content-Type header by adding specified charset.
+Updating `Content-Type` header by adding specified charset.
 
 Can be set exactly as Content-Type, at class and/or instance level.
 
-**Important:** - `charset` will update only the header, so make sure that returned body is of same charset as header, if that needed at all.
+**Important:** - `charset` will update only the header,
+so make sure that returned body is of same charset as header, if that needed at all.
 
 
 ```ruby
 class App < E
-    charset 'UTF-8'
+  charset 'UTF-8'
 
-    setup /_jp\Z/ do    # setting JIS charset for actions ending in _jp
-        charset 'Shift_JIS-2004'
-    end
+  setup /_jp\Z/ do  # setting JIS charset for actions ending in _jp
+    charset 'Shift_JIS-2004'
+  end
 
-    # ...
+  # ...
 end
 ```
 
@@ -870,9 +873,9 @@ Values:
 
 ```ruby
 class App < E
-    cache_control :private, :max_age => 60
+  cache_control :private, :max_age => 60
 
-    # ...
+  # ...
 end
 ```
 
@@ -881,22 +884,22 @@ end
 ```ruby
 def some_action
 
-    cache_control! :public, :must_revalidate, :max_age => 60
-    # Cache-Control header will be set to "Cache-Control: public, must-revalidate, max-age=60"
+  cache_control :public, :must_revalidate, :max_age => 60
+  # Cache-Control header will be set to
+  # Cache-Control: public, must-revalidate, max-age=60
 
-    # ...
+  # ...
 end
 
 def another_action
 
-    cache_control! :public, :must_revalidate, :proxy_revalidate, :max_age => 500
-    # Cache-Control header will be set to "Cache-Control: public, must-revalidate, proxy-revalidate, max-age=500"
+  cache_control :public, :must_revalidate, :proxy_revalidate, :max_age => 500
+  # Cache-Control header will be set to 
+  # Cache-Control: public, must-revalidate, proxy-revalidate, max-age=500
 
-    # ...
+  # ...
 end
 ```
-
-*Please note* that at instance level bang method should be used.
 
 **[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
@@ -904,7 +907,7 @@ end
 ## Expires
 
 
-Set Expires header and update Cache-Control by adding directives and setting max-age value.
+Set `Expires` header and update `Cache-Control` by adding directives and setting max-age value.
 
 First argument is the value to be added to max-age value.
 
@@ -919,9 +922,9 @@ Can be set at class and/or instance level.
 
 ```ruby
 def some_action
-    expires! 500, :public, :must_revalidate
-    # Cache-Control: public, must-revalidate, max-age=500
-    # Expires: Tue, 17 Jul 2012 11:26:58 GMT
+  expires 500, :public, :must_revalidate
+  # Cache-Control: public, must-revalidate, max-age=500
+  # Expires: Tue, 17 Jul 2012 11:26:58 GMT
 end
 ```
 
@@ -939,13 +942,12 @@ the processing will be halted with an "304 Not Modified" response.
 Also, if the current request includes an "If-Unmodified-Since" header that is less than "Last-Modified",
 the processing will be halted with an "412 Precondition Failed" response.
 
-Can be set only at instance level, only by using bang method.
 
 **Example:**
 
 ```ruby
 def some_action
-    last_modified! Time.now - 600
+  last_modified Time.now - 600
 end
 ```
 
@@ -956,11 +958,11 @@ end
 ## Accepted Content Type
 
 
-Usually the browser inform the app about accepted content type via HTTP_ACCEPT header.
+Usually the browser informs the app about accepted content type via `HTTP_ACCEPT` header.
 
 `accept?` is a helper allowing to disclose what content type are actually accepted/expected by the browser.
 
-It accepts a string or a regular expression as first argument and will compare it to HTTP_ACCEPT header.
+It accepts a string or a regular expression as first argument and will compare it to `HTTP_ACCEPT` header.
 
 If you make a request via XHR, aka Ajax, and request JSON content type,
 `accept?` will return a string containing "application/json".
@@ -972,20 +974,20 @@ Having this, it is easy to determine what content type to send back.
 ```ruby
 class App < E
 
-    def some_action
-        if accept? /json/
-            content_type! '.json'
-        end
+  def some_action
+    if accept? /json/
+      content_type '.json'
     end
+  end
 end
 ```
 
 Other browser expectations:
 
-*    accept_charset?
-*    accept_encoding?
-*    accept_language?
-*    accept_ranges?
+*  accept_charset?
+*  accept_encoding?
+*  accept_language?
+*  accept_ranges?
 
 **Example:**
 
@@ -1003,6 +1005,7 @@ accept_ranges? 'bytes'
 ```
 
 **[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
+
 
 ## Cache Manager
 
@@ -1022,70 +1025,41 @@ To clear only specific blocks, pass their IDs as params.
 ```ruby
 class App < E
 
-    def index
-        @db_items = cache :db_items do
-            # fetching items
-        end
-        @banners = cache :banners do
-            # render banners partial
-        end
-        # ...
+  def index
+    @db_items = cache :db_items do
+      # fetching items
     end
+    @banners = cache :banners do
+      # render banners partial
+    end
+    # ...
+  end
 
-    def products
-        cache do
-            # fetch and render products
-        end
+  def products
+    cache do
+      # fetch and render products
     end
+  end
 
   after do
-      if 'some condition occurred'
-          # clearing cache only for @banners and @db_items
-          clear_cache! :banners, :db_items
-      end
-      if 'some another condition occurred'
-          # clearing all cache
-          clear_cache!
-      end
+    if 'some condition occurred'
+      # clearing cache only for @banners and @db_items
+      clear_cache! :banners, :db_items
+    end
+    if 'some another condition occurred'
+      # clearing all cache
+      clear_cache!
+    end
   end
 end
 ```
 
-By using `clear_cache_like!` is also possible to clear only keys that match a regexp or an array.
 
-```ruby
-def index
-    # ...
-    @procedures = cache [user, :procedures] do
-      # ...
-    end
-    @actions = cache [user, :actions] do
-      # ...
-    end
-    @banners = cache :user_banners do
-      # ...
-    end
-    render
-end
-
-private
-def clear_user_cache
-
-    # clearing [user, :procedures] and [user, :actions] cache
-    clear_cache_like! [user]
-
-    # clearing any cache starting with 'user'
-    clear_cache_like! /\Auser_/
-
-end
-```
-
-
-By default the cache will be kept in memory.<br>
+By default, the cache will be kept in memory.<br>
 If you want to use a different pool, set it by using `cache_pool` at app level.
 
 Just make sure your pool behaves like a Hash,
-Meant it should respond to `[]=`, `[]`, `delete` and `clear`
+Meant it should respond to `[]=`, `[]`, `delete` and `clear`.
 
 
 **[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
@@ -1097,13 +1071,13 @@ Meant it should respond to `[]=`, `[]`, `delete` and `clear`
 
 `send_file` will send file content to browser, inline.
 
-The only required argument is full path to file.
+The only required argument is the full path to file.
 
 **Example:**
 
 ```ruby
 def theme____css
-    send_file File.expand_path '../../public/theme.css', __FILE__
+  send_file File.expand_path('../../public/theme.css', __FILE__)
 end
 ```
 
@@ -1122,7 +1096,7 @@ send_file '/path/to/file', :cache_control => 'max-age=3600, public, must-revalid
 ```
 
 Recommended to use only with small files.<br>
-Or setup your web server to make use of X-Sendfile and use Rack::Sendfile.
+Or setup your web server to make use of X-Sendfile and use `Rack::Sendfile`.
 
 **[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
@@ -1130,8 +1104,7 @@ Or setup your web server to make use of X-Sendfile and use Rack::Sendfile.
 ## Send Files
 
 
-
-`send_files` allow to serve static files from a given directory.
+`send_files` allow to serve all files from a given directory.
 
 **Example:**
 
@@ -1146,7 +1119,7 @@ send_files '/path/to/dir'
 ## Attachment
 
 
-`attachment` works as `send_file` except it will instruct browser to display Save dialog.
+`attachment` works as `send_file` except it will instruct browser to display "Save" dialog.
 
 **Example:**
 
