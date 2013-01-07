@@ -126,34 +126,34 @@ class << E
     reset_routes_data
     public_actions.each do |action|
 
-      route_setup, request_methods = action_to_route(action)
-      route_regexp = route_to_regexp(route_setup[:path])
+      action_route_setup, request_methods = action_to_route(action)
+      route_regexp = route_to_regexp(action_route_setup[:path])
 
-      @route_by_action[action] = route_setup[:path]
+      @route_by_action[action] = action_route_setup[:path]
       formats(action).each do |format|
-        @route_by_action_with_format[action.to_s + format] = route_setup[:path] + format
+        @route_by_action_with_format[action.to_s + format] = action_route_setup[:path] + format
       end
-      
-      @route_setup[action] = route_setup
+
+      @route_setup[action] = action_route_setup
 
       aliases = (@action_aliases || {})[action] || []
       request_methods.each do |rm|
-        (@routes[route_regexp] ||= {})[rm] = route_setup
+        (@routes[route_regexp] ||= {})[rm] = action_route_setup
 
         canonicals.each do |c|
-          c_path = rootify_url(c, route_setup[:path])
+          c_path = rootify_url(c, action_route_setup[:path])
           c_regexp = route_to_regexp(c_path)
-          (@routes[c_regexp] ||= {})[rm] = route_setup.merge(
+          (@routes[c_regexp] ||= {})[rm] = action_route_setup.merge(
             :path => c_path,
-            :canonical => route_setup[:path]
+            :canonical => action_route_setup[:path]
           ).freeze
 
           aliases.each do |a|
             a_path = rootify_url(c, a)
             a_regexp = route_to_regexp(a_path)
-            (@routes[a_regexp] ||= {})[rm] = route_setup.merge(
+            (@routes[a_regexp] ||= {})[rm] = action_route_setup.merge(
               :path => a_path,
-              :canonical => route_setup[:path]
+              :canonical => action_route_setup[:path]
             ).freeze
           end
         end
@@ -161,7 +161,7 @@ class << E
         aliases.each do |a|
           a_path = rootify_url(base_url, a)
           a_regexp = route_to_regexp(a_path)
-          (@routes[a_regexp] ||= {})[rm] = route_setup.merge(:path => a_path).freeze
+          (@routes[a_regexp] ||= {})[rm] = action_route_setup.merge(:path => a_path).freeze
         end
       end
     end
