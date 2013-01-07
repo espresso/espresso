@@ -122,10 +122,6 @@ class << E
     @route_by_action, @route_by_action_with_format = {}, {}
   end
 
-  def action_aliases
-    @action_aliases || {}
-  end
-
   def set_route(path, rm, action_route_setup)
     path_regexp = route_to_regexp(path)
     (@routes[path_regexp] ||= {})[rm] = action_route_setup.merge(
