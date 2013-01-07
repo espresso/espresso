@@ -32,7 +32,7 @@ meant they are not under same namespace.
 Name can be provided as a string, symbol or regex.
 
 ```ruby
-app = EApp.new false
+app = EApp.new
 app.mount 'SomeController'
 app.mount 'SomeAnotherController'
 app.mount :NotAnotherController
@@ -119,62 +119,12 @@ app.run
 **[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
 
-## Inner Apps
-
-As of version 0.3.3 Espresso supports mounting of any Rack app.
-
-Just mount it as a regular Espresso controller.
-
-**Example:** Mounting a Sinatra app:
-
-```ruby
-require 'sinatra/base'
-require 'e'
-
-class Cms < Sinatra::Base
-
-  get('/') { 
-    # ...
-  }
-
-  # ...
-
-end
-
-class App < E
-  map '/'
-
-  def index
-    # ...
-  end
-
-  # ...
-end
-
-app = EApp.new do
-  
-  mount App          # this will mount App into /
-  mount Cms, '/cms'  # this will mount Sinatra app into /cms
-end
-app.run
-```
-
-And of course inner apps supports canonical mounts, just like native controllers does:
-
-```ruby
-app = EApp.new do
-  
-  # ...
-  mount Cms, '/cms', '/pages'  # this will mount Sinatra app into /cms and /pages
-end
-```
-
 ## Run
 
 
-By default Espresso will use `WEBrick` server and default `WEBrick` port.
+By default Espresso will run `WEBrick` server `5252` port.
 
-To use another server, pass `:server` option.
+To run another server/port, use `:server`/`:port` options.
 
 If given server requires some options, pass them next to `:server` option.
 

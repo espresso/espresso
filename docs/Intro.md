@@ -53,7 +53,7 @@ class Pages < E
 end
 ```
 
-That's it, controllers are usual Ruby classes with inheritance from Espresso class.
+That's it, controllers are usual Ruby classes with inheritance from `E` class.
 
 **[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
@@ -65,7 +65,7 @@ A slice is meant to organize and setup controllers.
 
 The basic setup is, again, base URL. It is used by all controllers.
 
-Other setups are controller-specific and ban be set for N or all controllers.
+Other setups are controller-specific and can be set for N or all controllers.
 
 A slice is a usual Ruby module containing Espresso controllers.<br/>
 It can be mounted under any path that will serve as base URL for all controllers inside.
@@ -89,6 +89,9 @@ module Cms
 end
 
 app = Cms.mount '/cms'
+# or just `Cms.mount` to mount the slice into / and serve
+# "/articles", "/news" and "/pages" URLs
+
 app.run
 ```
 
@@ -98,18 +101,19 @@ Let's say we have N controllers that using Haml engine.<br/>
 Then we simply do like this:
 
 ```ruby
-app = Cms.mount '/cms' do
+app = MySlice.mount do
   engine :Haml
 end
 app.run
 ```
 
-When you need to setup only some specific controller,
-use the mount block with a single param that will be set to the controller actually being configured.
+When you need to setup only a specific controller,
+use the mount block with a single param that will be set to the controller 
+actually being configured.
 
 ```ruby
-app = Cms.mount '/cms' do |ctrl|
-  engine :ERB if ctrl == Cms::Articles
+app = MySlice.mount do |ctrl|
+  engine :ERB if ctrl == Articles
 end
 ```
 

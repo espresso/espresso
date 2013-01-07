@@ -1,5 +1,5 @@
-## Base URL
 
+## Base URL
 
 By default, each class will serve the path built from its underscored name.
 
@@ -13,22 +13,9 @@ This can be changed by setting base URL via `map`.
 class Book < E
   map '/books'
 
-  def index
-    # ...
-  end
-
-  def edit
-    # ...
-  end
+  # ...
 end
 ```
-
-<pre>
-Now `Book` will serve:
-    /books         - backed by Book#index
-    /books/index   - backed by Book#index
-    /books/edit    - backed by Book#edit
-</pre>
 
 
 **[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
@@ -95,13 +82,11 @@ class App < E
     # ...
   end
 end
+
+# Now `App` will now serve:
+#  -   /      # backed by `:index` action
+#  -   /edit  # backed by `:edit`  action
 ```
-
-Now `App` will serve:
-*   /
-*   /index
-*   /edit
-
 
 **[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
@@ -117,9 +102,9 @@ To address this, Espresso uses a map to translate action names into HTTP paths.
 The default map looks like this:
 
 <pre>
-"____"  => "."
-"___"   => "-"
 "__"    => "/"
+"___"   => "-"
+"____"  => "."
 </pre>
 
 **Example:**
@@ -331,6 +316,8 @@ Otherwise, HTTP action will return "404 NotFound" error.
 
 `format` allow to manipulate routing by instructing actions to respond to various extensions.
 
+Also it is aimed to automatically set `Content-Type` header based on used extension.
+
 **Example:**
 
 ```ruby
@@ -353,7 +340,9 @@ The second meaning of `format` is to automatically set Content-Type header.
 Content type are extracted from `Rack::Mime::MIME_TYPES` map.<br>
 Ex: `format '.txt'` will return the content type extracted via `Rack::Mime::MIME_TYPES.fetch('.txt')`
 
-To set format(s) only for some action, use `format_for`.
+**Worth to note** that `format` will act on all actions.
+
+To set format(s) only for specific actions, use `format_for`.
 
 **Example:** - only `pages` action will respond to URLs ending in .html and .xml
 
@@ -384,7 +373,7 @@ It is also possible to disable format for specific actions by using `disable_for
 class App < E
   map '/'
 
-  format '.xml' # this will enable .xml format for all action
+  format '.xml' # this will enable .xml format for all actions
   
   disable_format_for :news, :pages # disabling format for :pages and :news actions
 
@@ -392,12 +381,8 @@ class App < E
 end
 ```
 
-
-But wait, actions usually are called with params, and an URL like "/read.html/100" looks really bad!
-
-No problem! Espresso takes care about this, and "/read/100.html" will work exactly as "/read.html/100"
-
-Even more! Espresso will get rid of format passed in last param, so you get clean params without remove format manually.<br>
+**Worth to note** that Espresso will get rid of extension passed with last param,
+so you get clean params without manually remove format.<br>
 Meant that when "/news/100.html" requested, you get "100" param inside `news` action, rather than "100.html"
 
 **Example:**
@@ -409,7 +394,7 @@ class App < E
   def read item = nil
     # on /read             item == nil
     # on /read.xml         item == nil
-    # on /read.xml/book    item == "book"
+    # on /read.xml/book    404 NotFound
     # on /read/book        item == "book"
     # on /read/book.xml    item == "book"
     # on /read/100.xml     item == "100"
@@ -426,25 +411,6 @@ end
 /read/anything-here.xml  will return XML Content-Type either
 /read                    instead will return default Content-Type
 /read/book               will return default Content-Type too
-</pre>
-
-**Worth to Note** - if both action and last param has format, action format will be used.
-
-**Example:**
-
-```ruby
-class App < E
-  format '.xml', '.json'
-
-  def read item = nil
-    # ...
-  end
-end
-```
-
-<pre>
-/read/book.json          will return JSON Content-Type
-/read.xml/book.json      will return XML Content-Type instead
 </pre>
 
 
@@ -497,9 +463,9 @@ which allows to redirect the browser to new address
 as well as pass control to arbitrary app(without redirect)
 or just send a custom response to browser(without redirect as well).
 
-A rewrite rule consist of regular expression and a block that receives matches as params.
+A rewrite rule consist of a regular expression and a block that receives matches as params.
 
-`redirect` and `permanent_redirect` will redirect browser to new address with 302 and 301 codes respectivelly.
+`redirect` and `permanent_redirect` will redirect browser to new address with 302 and 301 codes respectively.
 
 
 **Example:**
@@ -508,14 +474,14 @@ A rewrite rule consist of regular expression and a block that receives matches a
 app = EApp.new do
 
   rewrite /\A\/(.*)\.php\Z/ do |title|
-    redirect route(:index, title)
+    redirect Cms.route(:index, title)
   end
 
   # ...
 end
 ```
 
-`pass` will pass control to an arbitrary action or even app, without redirect.
+`pass` will pass control to an arbitrary controller, without redirect.
 
 **Example:**
 
