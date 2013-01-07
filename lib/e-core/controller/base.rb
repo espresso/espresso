@@ -116,9 +116,14 @@ class << E
     ].map {|v| v.freeze}
   end
 
-  def generate_routes!
+  def reset_routes_data
     @routes, @route_setup = {}, {}
     @route_by_action, @route_by_action_with_format = {}, {}
+  end
+
+
+  def generate_routes!
+    reset_routes_data
     public_actions.each do |action|
 
       route_setup, request_methods = action_to_route(action)
