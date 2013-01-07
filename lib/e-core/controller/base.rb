@@ -134,35 +134,44 @@ class << E
     ).freeze
   end
 
-  def setup_action_route(action)
-    action_route_setup, request_methods = action_to_route(action)
-    route_regexp = route_to_regexp(action_route_setup[:path])
-
-    @route_by_action[action] = action_route_setup[:path]
+  def setup_action_format(action, action_route_setup)
     formats(action).each do |format|
       @route_by_action_with_format[action.to_s + format] = action_route_setup[:path] + format
     end
+  end
 
-    @route_setup[action] = action_route_setup
+  def setup_request_method_for_action(rm, action_route_setup, aliases)
+    route_regexp = route_to_regexp(action_route_setup[:path])
+    (@routes[route_regexp] ||= {})[rm] = action_route_setup
+
+    canonicals.each do |c|
+      c_path = rootify_url(c, action_route_setup[:path])
+      set_route(c_path, rm, action_route_setup)
+      aliases.each do |a|
+        a_path = rootify_url(c, a)
+        set_route(a_path, rm, action_route_setup)
+      end
+    end
+
+    aliases.each do |a|
+      a_path   = rootify_url(base_url, a)
+      a_regexp = route_to_regexp(a_path)
+      (@routes[a_regexp] ||= {})[rm] = action_route_setup.merge(:path => a_path).freeze
+    end
+
+  end
+
+  def setup_action_route(action)
+    action_route_setup, request_methods = action_to_route(action)
+
+    setup_action_format(action, action_route_setup)
+
+    @route_by_action[action] = action_route_setup[:path]
+    @route_setup[action]     = action_route_setup
 
     aliases = action_aliases[action] || []
     request_methods.each do |rm|
-      (@routes[route_regexp] ||= {})[rm] = action_route_setup
-
-      canonicals.each do |c|
-        c_path = rootify_url(c, action_route_setup[:path])
-        set_route(c_path, rm, action_route_setup)
-        aliases.each do |a|
-          a_path = rootify_url(c, a)
-          set_route(a_path, rm, action_route_setup)
-        end
-      end
-
-      aliases.each do |a|
-        a_path   = rootify_url(base_url, a)
-        a_regexp = route_to_regexp(a_path)
-        (@routes[a_regexp] ||= {})[rm] = action_route_setup.merge(:path => a_path).freeze
-      end
+      setup_request_method_for_action(rm, action_route_setup, aliases)
     end
   end
 
