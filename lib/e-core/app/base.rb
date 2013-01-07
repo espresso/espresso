@@ -122,31 +122,35 @@ class EApp
     host = opts.delete(:host) || opts.delete(:bind)
     opts[:Host] = host if host
 
-    Rack::Handler.const_get(server).run self, opts
+    Rack::Handler.const_get(server).run app, opts
   end
 
   def call env
-    unless @app
-      app = proc {|env| call! env}
-      @app = middleware.reverse.inject(app) { |a,e| e[a] }
-    end
-    @app.call(env)
+    app.call env
   end
 
   private
-  def call! env
-    if rewrite_rules.any?
-      status, headers, body = EspressoFrameworkRewriter.new(rewrite_rules).call(env)
-      return [status, headers, body] if status
+  def app
+    @app ||= begin
+      app = lambda {|env| call!(env)}
+      if rewrite_rules.any?
+        app = lambda do |env|
+          status, headers, body = EspressoFrameworkRewriter.new(rewrite_rules).call(env)
+          status ? [status, headers, body] : call!(env)
+        end
+      end
+      middleware.reverse.inject(app) {|a,e| e[a]}
     end
+  end
+
+  def call! env
     @sorted_routes ||= @routes.keys.sort {|a,b| b.source.size <=> a.source.size}
     @sorted_routes.each do |route|
       if (pi = route.match(env[ENV__PATH_INFO].to_s)) && (pi = pi[1])
-        
         if route_setup = @routes[route][env[ENV__REQUEST_METHOD]]
 
           env[ENV__SCRIPT_NAME] = (route_setup[:path]).freeze
-          env[ENV__PATH_INFO]   = (pi.empty? || pi =~ /\A\// ? pi : '/' << pi.to_s).freeze
+          env[ENV__PATH_INFO]   = (path_ok?(pi) ? pi : '/' << pi.to_s).freeze
 
           epi, format = nil
           (fr = route_setup[:format_regexp]) && (epi, format = pi.split(fr))
@@ -161,6 +165,13 @@ class EApp
       end
     end
     [404, {"Content-Type" => "text/plain", "X-Cascade" => "pass"}, ["Not Found: #{env[ENV__PATH_INFO]}"]]
+  end
+
+  def path_ok? path
+    # comparing fixnums are much faster than comparing strings
+    path.hash == (@empty_string_hash  ||= ''.hash ) || # replaces path.empty?
+      path[0..0].hash == (@slash_hash ||= '/'.hash)    # replaces path =~ /\A\//
+      # using path[0..0] instead of just path[0] for compatibility with ruby 1.8
   end
 
   def mount_controller controller, *roots, &setup
