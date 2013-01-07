@@ -104,6 +104,7 @@ class << E
     path == E__INDEX_ROUTE ?  path = '' :
       path_rules.each_pair {|from, to| path = path.gsub(from, to)}
     path = rootify_url(base_url, path).freeze
+    path = '' if path == '/'
 
     action_arguments, required_arguments = action_parameters(action)
 

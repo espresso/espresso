@@ -1,16 +1,3 @@
-# setting up various aspects of the controller.
-# @note:  getters should NOT set instance variables,
-#         cause instance variable are frozen after controller is mounted.
-#
-#         so this will raise an error at runtime:
-#         def canonicals
-#           @canonicals ||= []
-#         end
-#
-#         and this will work:
-#         def canonicals
-#           @canonicals || []
-#         end
 class << E
 
   # setting controller's base URL
@@ -66,16 +53,15 @@ class << E
   #
   def path_rule from, to
     return if mounted?
+    from = %r[#{from}] unless from.is_a?(Regexp)
     (@path_rules ||= Hash[E__PATH_RULES]).update from => to
   end
 
   def path_rules
-    return @sorted_path_rules if @sorted_path_rules
-    rules = (@path_rules || E__PATH_RULES).inject({}) do |f,(from, to)|
-      from = /#{from}/ unless from.is_a?(Regexp)
-      f.merge from => to
+    @sorted_path_rules ||= begin
+      rules = @path_rules || E__PATH_RULES
+      Hash[rules.sort {|a,b| b.first.source.size <=> a.first.source.size}].freeze
     end
-    @sorted_path_rules = Hash[rules.sort {|a,b| b.first.source.size <=> a.first.source.size}]
   end
 
   # allow to set routes directly, without relying on path rules.

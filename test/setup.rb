@@ -1,3 +1,4 @@
+require 'digest'
 require 'rubygems'
 require 'specular'
 require 'sonar'

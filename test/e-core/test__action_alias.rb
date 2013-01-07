@@ -1,6 +1,7 @@
 module ECoreTest__ActionAlias
 
   class AnyRequestMethod < E
+    map '/', '/some-canonical', '/some-another-canonical'
 
     action_alias 'some-url', :endpoint
     action_alias 'some-another/url', :endpoint

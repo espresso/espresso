@@ -1,11 +1,5 @@
 class E
 
-  [:cache, :clear_cache!, :clear_cache_like!].each do |m|
-    define_method m do |*args, &proc|
-      app.send m, *args, &proc
-    end
-  end
-
   # shortcut for Rack::Mime::MIME_TYPES.fetch
   def mime_type type, fallback = nil
     Rack::Mime::MIME_TYPES.fetch type, fallback

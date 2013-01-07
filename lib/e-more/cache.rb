@@ -1,3 +1,9 @@
+class E
+  def cache(*a, &b); app.cache(*a, &b); end
+  def clear_cache!(*a); app.clear_cache!(*a); end
+  def cache_pool; app.cache_pool; end
+end
+
 class EApp
 
   # very basic cache implementation.

@@ -6,9 +6,9 @@ module EspressoFrameworkConstants
   HTTP__REQUEST_METHODS = %w[GET POST PUT HEAD DELETE OPTIONS PATCH].freeze
 
   E__PATH_RULES = {
-    '____' => '.'.freeze,
-    '___'  => '-'.freeze,
-    '__'   => '/'.freeze,
+    %r[____] => '.'.freeze,
+    %r[___]  => '-'.freeze,
+    %r[__]   => '/'.freeze,
   }.freeze
 
   E__INDEX_ROUTE = 'index'.freeze

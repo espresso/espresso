@@ -71,7 +71,7 @@ module EMoreTest__Cache
     expect(a) == b
 
     Should 'clear ALL cache' do
-      get :index, :__clear_cache__ => '*'
+      get :__clear_cache__ => '*'
 
       get :heavy_io
       refute(last_response.body) == io.body

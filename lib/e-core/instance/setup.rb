@@ -73,8 +73,7 @@ class E
     # @example digest auth - hashed passwords:
     #    # hash the password somewhere in irb:
     #    # ::Digest::MD5.hexdigest 'admin:AccessRestricted:somePassword'
-    #    #                            ^           ^             ^
-    #    #                         username     realm        password
+    #    #                   username ^      realm ^       password ^
     #
     #    #=> 9d77d54decc22cdcfb670b7b79ee0ef0
     #
