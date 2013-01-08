@@ -200,15 +200,15 @@ etc.
 
 The app speed are calculated as follow:
 
-  1000 / (time taken by action + time taken by framework)
+    1000 / (time taken by action + time taken by framework)
 
 So, if your actions takes about 1ms and you use a framework with overhead of 0.18ms, the app speed will be:
 
-  1000 / ( 1 + 0.18 ) = 847 requests per second
+    1000 / ( 1 + 0.18 ) = 847 requests per second
 
 However, if framework's overhead is of **1ms** or more, the app speed will decrease dramatically:
 
-  1000 / ( 1 + 1.26 ) = 442 requests per second
+    1000 / ( 1 + 1.26 ) = 442 requests per second
 
 
 **Conclusions?**
