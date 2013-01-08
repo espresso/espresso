@@ -132,21 +132,22 @@ class EApp
   end
 
   def call! env
-    sorted_routes.each_pair do |regexp, route|
-      if matches = regexp.match(env[ENV__PATH_INFO].to_s)
+    sorted_routes.each do |route|
+      if matches = route.match(env[ENV__PATH_INFO].to_s)
 
-        if route_setup = route[env[ENV__REQUEST_METHOD]]
+        if route_setup = @routes[route][env[ENV__REQUEST_METHOD]]
 
           if route_setup[:rewriter]
             rewriter = EspressoFrameworkRewriter.new(*matches.captures, &route_setup[:rewriter])
             return rewriter.call(env)
-          elsif pi = matches[1]
+          else
+            path_info = matches[1].to_s
 
             env[ENV__SCRIPT_NAME] = (route_setup[:path]).freeze
-            env[ENV__PATH_INFO]   = (path_ok?(pi) ? pi : '/' << pi).freeze
+            env[ENV__PATH_INFO]   = (path_ok?(path_info) ? path_info : '/' << path_info).freeze
 
             epi, format = nil
-            (fr = route_setup[:format_regexp]) && (epi, format = pi.split(fr))
+            (fr = route_setup[:format_regexp]) && (epi, format = path_info.split(fr))
             env[ENV__ESPRESSO_PATH_INFO] = epi
             env[ENV__ESPRESSO_FORMAT]    = format
 
@@ -159,7 +160,7 @@ class EApp
           return [
             STATUS__NOT_IMPLEMENTED,
             {"Content-Type" => "text/plain"},
-            ["Resource found but it can be accessed only through %s" % route.keys.join(", ")]
+            ["Resource found but it can be accessed only through %s" % @routes[route].keys.join(", ")]
           ]
         end
       end
@@ -172,7 +173,7 @@ class EApp
   end
 
   def sorted_routes
-    @sorted_routes ||= Hash[@routes.sort {|a,b| b.first.source.size <=> a.first.source.size}]
+    @sorted_routes ||= @routes.keys.sort {|a,b| b.source.size <=> a.source.size}
   end
 
   def path_ok? path
