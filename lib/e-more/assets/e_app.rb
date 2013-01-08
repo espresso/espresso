@@ -72,11 +72,17 @@ class EApp
   # end
   # app.run
   #
-  def assets_url url = nil, serve = nil
+  def assets_url url = nil, server = nil
     if (url = url.to_s.strip).length > 0
       assets_url     = url =~ /\A[\w|\d]+\:\/\// ? url : rootify_url(url)
       @assets_url    = (assets_url =~ /\/\Z/ ? assets_url : '' << assets_url << '/').freeze
-      @assets_server = serve
+      if server == true || server == :espresso
+        @routes[route_to_regexp(@assets_url)] = {
+          'GET' => {
+            :app => lambda { |env| Rack::Directory.new(assets_fullpath || assets_path).call(env) }
+          }
+        }
+      end
     end
     @assets_url ||= ''
   end

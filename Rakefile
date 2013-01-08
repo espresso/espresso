@@ -64,7 +64,7 @@ namespace :test do
   end
 end
 
-task :test => ['test:core', 'test:view', 'test:crud', 'test:cache']
+task :test => ['test:core', 'test:view', 'test:crud', 'test:cache', 'test:assets']
 task :overhead do
   require './test/overhead/run'
 end

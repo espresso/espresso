@@ -178,10 +178,6 @@ class << E
     end
   end
 
-  def route_to_regexp route
-    /\A#{Regexp.escape(route).gsub('/', '/+')}(.*)/n
-  end
-
   # avoid regexp operations at runtime
   # by turning Regexp and * matchers into real action names at loadtime.
   # also this will match setups by formats.

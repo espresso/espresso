@@ -66,6 +66,11 @@ module EspressoFrameworkUtils
   end
   module_function :is_app?
 
+  def route_to_regexp route
+    /\A#{Regexp.escape(route).gsub('/', '/+')}(.*)/n
+  end
+  module_function :route_to_regexp
+
   # Enable string or symbol key access to the nested params hash.
   def indifferent_params(object)
     case object

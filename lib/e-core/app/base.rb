@@ -138,8 +138,11 @@ class EApp
         if route_setup = @routes[route][env[ENV__REQUEST_METHOD]]
 
           if route_setup[:rewriter]
-            rewriter = EspressoFrameworkRewriter.new(*matches.captures, &route_setup[:rewriter])
-            return rewriter.call(env)
+            app = EspressoFrameworkRewriter.new(*matches.captures, &route_setup[:rewriter])
+            return app.call(env)
+          elsif route_setup[:app]
+            env[ENV__PATH_INFO] = matches[1].to_s
+            return route_setup[:app].call(env)
           else
             path_info = matches[1].to_s
 

@@ -371,7 +371,7 @@ module EMoreTest__Assets
   Spec.new self do
     eapp = EApp.new do
       assets_url :assets, true
-      assets_fullpath ::File.expand_path('../assets', __FILE__)
+      assets_fullpath File.expand_path('../assets', __FILE__)
       mount App
     end
     app eapp
