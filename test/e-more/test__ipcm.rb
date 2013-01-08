@@ -1,4 +1,4 @@
-module EMoreTest__IPCM
+module EIPCMTest
 
   Spec.new self do
 
