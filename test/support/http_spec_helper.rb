@@ -1,6 +1,6 @@
 module HttpSpecHelper
   def ok? response
-    response.status == 200
+    check(response.status) == 200
   end
 
   def ok_body?(val)
@@ -9,11 +9,11 @@ module HttpSpecHelper
   end
 
   def not_found? response
-    response.status == 404
+    check(response.status) == 404
   end
 
   def not_implemented? response
-    response.status == 501
+    check(response.status) == 501
   end
 
   def current_status?(status)

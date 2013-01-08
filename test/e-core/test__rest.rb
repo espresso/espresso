@@ -23,7 +23,8 @@ module ECoreTest__REST
   end
 
   Spec.new RestApp do
-    It "index should respond to any Request Method" do
+
+    Ensure "index respond to any Request Method" do
       EspressoFrameworkConstants::HTTP__REQUEST_METHODS.each do |m|
         self.send m.to_s.downcase
         is(last_response).ok?
@@ -32,25 +33,25 @@ module ECoreTest__REST
 
     Testing 'defined actions responds only to given request method' do
       get :edit
-      is(last_response).not_found?
+      is(last_response).not_implemented?
 
       post :edit
       is(last_response).ok?
 
       get :create
-      is(last_response).not_found?
+      is(last_response).not_implemented?
 
       put :create
       is(last_response).ok?
 
       post :details
-      is(last_response).not_found?
+      is(last_response).not_implemented?
 
       head :details
       is(last_response).ok?
 
       head :edit
-      is(last_response).not_found?
+      is(last_response).not_implemented?
     end
 
     It 'uses only first verb as request method' do

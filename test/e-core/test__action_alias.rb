@@ -88,7 +88,7 @@ module ECoreTest__ActionAlias
       is(last_response).ok?
 
       post url
-      is(last_response).not_found?
+      is(last_response).not_implemented?
     end
 
     Testing :canonicals do
@@ -97,7 +97,7 @@ module ECoreTest__ActionAlias
         is(last_response).ok?
 
         post url
-        is(last_response).not_found?
+        is(last_response).not_implemented?
       end
     end
 
