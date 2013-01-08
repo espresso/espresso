@@ -39,7 +39,11 @@ namespace :test do
   end
 
   task :crud do
-    run_test(/EMoreTest__CRUD/, "Testing Crud", default_session)
+    run_test(/EMoreTest__CRUD/, "Testing CRUD", default_session)
+  end
+
+  task :assets do
+    run_test(/EMoreTest__Assets/, "Testing Assets", default_session)
   end
 
   task :ipcm do

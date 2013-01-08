@@ -1,27 +1,23 @@
 class EspressoFrameworkRewriter
+
   attr_reader :env, :request
 
-  def initialize rules
-    @rules = rules
+  def initialize *matches, &proc
+    @matches, @proc = matches, proc
   end
 
   def call env
-    @env, @request = env, Rack::Request.new(env)
-    matched? ? [@status, @headers, @body] : nil
-  end
-
-  def matched?
-    path = request.path
-    @status, @headers, @body = nil, {}, []
+    @env, @request = env, EspressoFrameworkRequest.new(env)
+    @status, @headers, @body =
+      STATUS__BAD_REQUEST,
+      {"Content-Type" => "text/plain"},
+      ["Bad Request: #{env[ENV__PATH_INFO]}"]
 
     catch :__e__rewriter__halt_symbol__ do
-      @rules.each do |rule|
-        next unless (matches = path.match(rule.first))
-        self.instance_exec *matches.captures, &rule.last
-        break
-      end
+      self.instance_exec *@matches, &@proc
     end
-    @status
+
+    [@status, @headers, @body]
   end
 
   def redirect location

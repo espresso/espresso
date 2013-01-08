@@ -268,10 +268,10 @@ end
 ```
 
 That's a regular **Ruby method** and it's regular **Espresso action**.<br>
-That's also an Espresso route. Yes, the app will respond to "/book/100"<br>
+That's also an Espresso route. Yes, the app will respond to **"/book/100"**<br>
 And of course action params are used naturally, through method arguments(`id` rather than `params[:id]`).
 
-And all this offered by Ruby for free! Why to reinvent the wheel?
+All this offered by Ruby for free! Why to reinvent the wheel?
 
 Expressive Setup
 ---

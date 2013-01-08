@@ -128,39 +128,45 @@ class EApp
 
   private
   def app
-    @app ||= begin
-      app = lambda {|env| call!(env)}
-      if rewrite_rules.any?
-        app = lambda do |env|
-          status, headers, body = EspressoFrameworkRewriter.new(rewrite_rules).call(env)
-          status ? [status, headers, body] : call!(env)
-        end
-      end
-      middleware.reverse.inject(app) {|a,e| e[a]}
-    end
+    @app ||= middleware.reverse.inject(lambda {|env| call!(env)}) {|a,e| e[a]}
   end
 
   def call! env
     sorted_routes.each do |route|
-      if (pi = route.match(env[ENV__PATH_INFO].to_s)) && (pi = pi[1])
+      if matches = route.match(env[ENV__PATH_INFO].to_s)
         if route_setup = @routes[route][env[ENV__REQUEST_METHOD]]
+          if route_setup[:rewriter]
+            rewriter = EspressoFrameworkRewriter.new(*matches.captures, &route_setup[:rewriter])
+            return rewriter.call(env)
+          elsif pi = matches[1]
 
-          env[ENV__SCRIPT_NAME] = (route_setup[:path]).freeze
-          env[ENV__PATH_INFO]   = (path_ok?(pi) ? pi : '/' << pi.to_s).freeze
+            env[ENV__SCRIPT_NAME] = (route_setup[:path]).freeze
+            env[ENV__PATH_INFO]   = (path_ok?(pi) ? pi : '/' << pi).freeze
 
-          epi, format = nil
-          (fr = route_setup[:format_regexp]) && (epi, format = pi.split(fr))
-          env[ENV__ESPRESSO_PATH_INFO] = epi
-          env[ENV__ESPRESSO_FORMAT]    = format
+            epi, format = nil
+            (fr = route_setup[:format_regexp]) && (epi, format = pi.split(fr))
+            env[ENV__ESPRESSO_PATH_INFO] = epi
+            env[ENV__ESPRESSO_FORMAT]    = format
 
-          app = Rack::Builder.new
-          app.run route_setup[:ctrl].new(route_setup[:action])
-          route_setup[:ctrl].middleware.each {|w,a,p| app.use w, *a, &p}
-          return app.call(env)
+            app = Rack::Builder.new
+            app.run route_setup[:ctrl].new(route_setup[:action])
+            route_setup[:ctrl].middleware.each {|w,a,p| app.use w, *a, &p}
+            return app.call(env)
+          end
+        else
+          [
+            STATUS__NOT_IMPLEMENTED,
+            {"Content-Type" => "text/plain"},
+            ["Resource found but it can be accessed only through %s" % @routes[route].keys.join(", ")]
+          ]
         end
       end
     end
-    [404, {"Content-Type" => "text/plain", "X-Cascade" => "pass"}, ["Not Found: #{env[ENV__PATH_INFO]}"]]
+    [
+      STATUS__NOT_FOUND,
+      {"Content-Type" => "text/plain", "X-Cascade" => "pass"},
+      ["Not Found: #{env[ENV__PATH_INFO]}"]
+    ]
   end
 
   def sorted_routes

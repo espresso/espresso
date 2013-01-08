@@ -206,13 +206,10 @@ class EApp
   #
   #    app.run
   #
-  def rewrite rule = nil, &proc
-    rewrite_rules << [rule, proc] if proc
+  def rewrite rule, &proc
+    proc || raise(ArgumentError, "Rewrite rules requires a block to run")
+    @routes[rule] = {'GET' => {:rewriter => proc}}
   end
   alias rewrite_rule rewrite
-
-  def rewrite_rules
-    @rewrite_rules ||= []
-  end
 
 end
