@@ -39,6 +39,7 @@ module EspressoFrameworkConstants
   ENV__HTTP_IF_NONE_MATCH       = 'HTTP_IF_NONE_MATCH'.freeze
   ENV__HTTP_IF_MODIFIED_SINCE   = 'HTTP_IF_MODIFIED_SINCE'.freeze
   ENV__HTTP_IF_UNMODIFIED_SINCE = 'HTTP_IF_UNMODIFIED_SINCE'.freeze
+  ENV__HTTP_X_REQUESTED_WITH    = 'HTTP_X_REQUESTED_WITH'.freeze
 
   ENV__ESPRESSO_PATH_INFO = 'espresso.path_info'.freeze
   ENV__ESPRESSO_FORMAT    = 'espresso.format'.freeze
