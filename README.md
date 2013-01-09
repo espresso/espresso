@@ -122,11 +122,9 @@ Note: Streaming in Espresso is working only with [Reel](https://github.com/cellu
 
 ### Assets
 
-[Intro](https://github.com/espresso/espresso/blob/master/docs/Assets.md#intro) |
-[Mapper](https://github.com/espresso/espresso/blob/master/docs/Assets.md#mapper) |
-[Server](https://github.com/espresso/espresso/blob/master/docs/Assets.md#server) |
-[Helpers](https://github.com/espresso/espresso/blob/master/docs/Assets.md#helpers) |
-[Loader](https://github.com/espresso/espresso/blob/master/docs/Assets.md#loader)
+[Intro](https://github.com/espresso/espresso/blob/master/docs/Assets.md) |
+[Helpers](https://github.com/espresso/espresso/blob/master/docs/Assets.md#tag-helpers) |
+[Mapper](https://github.com/espresso/espresso/blob/master/docs/Assets.md#assets-mapper)
 
 
 ### CRUD

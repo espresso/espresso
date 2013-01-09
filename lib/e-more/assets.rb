@@ -136,7 +136,6 @@ class EspressoFrameworkAssetsMapper
     @wd = (wd + path << '').
       compact. # `compact` is faster than `nil.to_s`
       join('/').freeze
-    self
   end
   alias :cd :chdir
 

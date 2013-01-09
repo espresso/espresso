@@ -140,6 +140,44 @@ being bothered with Sprockets installation/configuration.
 
 **[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
+Assets Mapper
+---
+
+Sprockets is doing a great job at loading requirements.
+
+But sometimes you need to load assets from templates rather from Sprockets.
+
+`assets_mapper` allow to avoid repetitive path using when loading assets.
+
+**Example:** - long way:
+
+```ruby
+js_tag  'vendor/jquery'
+
+js_tag  'vendor/bootstrap/js/bootstrap'
+css_tag 'vendor/bootstrap/css/bootstrap'
+
+js_tag  'vendor/select2/select2.min'
+css_tag 'vendor/select2/select2'
+```
+
+**Example:** - using `assets_mapper`
+
+```ruby
+assets_mapper :vendor do
+  js_tag  'jquery'
+  
+  cd 'bootstrap'
+  js_tag  'js/bootstrap'
+  css_tag 'css/bootstrap'
+  
+  cd '../select2'
+  js_tag  'select2.min'
+  css_tag 'select2'
+```
+
+**[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
+
 
 
 
