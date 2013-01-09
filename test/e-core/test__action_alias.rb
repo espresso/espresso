@@ -28,16 +28,16 @@ module ECoreTest__ActionAlias
 
   class PrivateZone < E
 
-    action_alias 'some-url', :private_method
-    action_alias 'some-another/url', :private_method
+    action_alias 'protected_alias', :protected_method
+    action_alias 'private_alias',   :private_method
 
     def index
     end
 
     protected
     def protected_method
-
     end
+
     private
     def private_method
     end
@@ -107,17 +107,16 @@ module ECoreTest__ActionAlias
 
   Spec.new PrivateZone do
 
-    ['some-url', 'some-another/url'].each do |url|
+    ['protected_alias', 'private_alias'].each do |url|
       get url
-      is(last_response).ok?
-
-      post
       is(last_response).ok?
     end
 
-    %w(private_method protected_method blah).each do |m|
-      get "/#{m}"
-      is(last_response).not_found?
+    Ensure 'protected and private methods becomes public' do
+      %w[protected_method private_method].each do |url|
+        get url
+        is(last_response).ok?
+      end
     end
   end
 

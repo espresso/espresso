@@ -179,24 +179,21 @@ action_alias 'some/url', :bar
 action_alias 'some/another/url', :bar
 ```
 
-**Example:** make `foo` method to serve only `/some/url`
+**Example:** make `foo` method to serve `/foo` and `/some/url` via any request method
 
 ```ruby
-action_alias 'some/url', :foo
-
-private
 def foo
   # ...
 end
+action_alias 'some/url', :foo
 ```
 
-**Example:** `get_foo` method will serve only `GET /foo` and `GET /some/url`
+**Example:** `get_foo` method will serve `/foo` and `/some/url` only via `GET` request method 
 
 ```ruby
 def get_foo
   # ...
 end
-
 action_alias 'some/url', :get_foo
 ```
 
@@ -205,14 +202,13 @@ Also standard Ruby `alias` can be used:
 
 ```ruby
 class App < E
-    map '/'
+  map '/'
 
-    def news
-        # ...
-    end
-    alias news____html news
-    alias headlines__recent____html news
-
+  def news
+      # ...
+  end
+  alias news____html news
+  alias headlines__recent____html news
 end
 ```
 
@@ -222,6 +218,10 @@ Now `news` action will serve any of:
 *   /news.html
 *   /headlines/recent.html
 
+**NOTE:** Private and protected methods usually are not publicly available via HTTP.<br>
+However, if you add an action alias to such a method, **it becomes public**.<br>
+To alias a private/protected method and keep it private,<br>
+use  a  standard ruby alias rather than an action alias.
 
 **[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 

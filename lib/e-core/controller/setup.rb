@@ -73,14 +73,11 @@ class << E
   #   action_alias 'some/url', :bar
   #   action_alias 'some/another/url', :bar
   #
-  # @example make private method :foo to serve /some/url
+  # @note private and protected methods usually are not publicly available via HTTP.
+  #       however, if you add an action alias to such a method, it becomes public.
+  #       to alias a private/protected method and keep it private,
+  #       use  a  standard ruby alias rather than an action alias.
   #
-  #   action_alias 'some/url', :foo
-  #
-  #   private
-  #   def foo
-  #     # ...
-  #   end
   def action_alias url, action
     return if mounted?
     ((@action_aliases ||= {})[action]||=[]) << url
