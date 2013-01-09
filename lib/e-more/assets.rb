@@ -1,9 +1,4 @@
-class E
-
-  def assets *args, &proc
-    app.assets *args, &proc
-  end
-
+module EspressoFrameworkAssetsMixin
   # building HTML script tag from given URL and/or opts.
   # if passing URL as first argument, 
   # it will be appended to the assets base URL, set via `assets_url` at app level.
@@ -81,16 +76,93 @@ class E
   end
 
   private
-  def assets_url path = nil
-    path ?
-      (app.assets_url ? app.assets_url + path.to_s : path.to_s) :
-      (app.assets_url ? app.assets_url : '')
-  end
-
   def __e__assets__opts_to_s opts
     (@__e__assets__opts_to_s ||= {})[opts.hash] = opts.keys.inject([]) do |f, k|
       f << '%s="%s"' % [k, ::CGI.escapeHTML(opts[k])]
     end.join(' ')
+  end
+end
+
+class EspressoFrameworkAssetsMapper
+  include EspressoFrameworkAssetsMixin
+
+  attr_reader :baseurl, :wd
+
+  # @example
+  # 
+  #   assets_mapper :vendor do
+  #     
+  #     js_tag :jquery
+  # 
+  #     chdir 'jquery-ui'
+  #     js_tag 'js/jquery-ui.min'
+  #     css_tag 'css/jquery-ui.min'
+  # 
+  #     cd '../bootstrap'
+  #     js_tag 'js/bootstrap.min'
+  #     css_tag 'css/bootstrap'
+  #   end
+  #
+  #   #=> <script src="/vendor/jquery.js" ...
+  #   #=> <script src="/vendor/jquery-ui/js/jquery-ui.min.js" ...
+  #   #=> <link href="/vendor/jquery-ui/css/jquery-ui.min.css" ...
+  #   #=> <script src="/vendor/bootstrap/js/bootstrap.min.js" ...
+  #   #=> <link href="/vendor/bootstrap/css/bootstrap.css" ...
+  #
+  def initialize baseurl, &proc
+    @tags, @to_s = [], ''
+    baseurl = baseurl.to_s.strip
+    if baseurl.size > 0
+      baseurl << '/' unless baseurl =~ /\/\Z/
+    end
+    @baseurl, @wd = baseurl.freeze, nil
+    proc && self.instance_exec(&proc)
+  end
+
+  def chdir path = nil
+    return @wd = nil unless path
+    
+    wd = []
+    if (path = path.to_s) =~ /\A\//
+      path = path.sub(/\A\/+/, '')
+      path = path.empty? ? [] : [path]
+    else
+      dirs_back, path = path.split(/\/+/).partition { |c| c == '..' }
+      if @wd
+        wd_chunks = @wd.split(/\/+/)
+        wd = wd_chunks[0, wd_chunks.size - dirs_back.size] || []
+      end
+    end
+    @wd = (wd + path << '').
+      compact. # `compact` is faster than `nil.to_s`
+      join('/').freeze
+    self
+  end
+  alias :cd :chdir
+
+  private
+  def assets_url path = nil
+    baseurl + wd.to_s + path.to_s
+  end
+
+end
+
+class E
+  include EspressoFrameworkAssetsMixin
+
+  def assets *args, &proc
+    app.assets *args, &proc
+  end
+
+  def assets_mapper *args, &proc
+    EspressoFrameworkAssetsMapper.new *args, &proc
+  end
+
+  private
+  def assets_url path = nil
+    path ?
+      (app.assets_url ? app.assets_url + path.to_s : path.to_s) :
+      (app.assets_url ? app.assets_url : '')
   end
 
 end

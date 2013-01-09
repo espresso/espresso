@@ -201,4 +201,196 @@ module EMoreTest__Assets
     end
   end
 
+  class AssetsMapper < E
+
+    def get_assets_mapper type
+      html = ''
+      loader = assets_mapper params[:baseurl]
+      if src = params[:src]
+        html << loader.send(type, :src => src)
+      else
+        html << loader.send(type, params[:url])
+      end
+      html
+    end
+
+    def assets_mapper_chdir type
+      html = ''
+      loader = assets_mapper params[:baseurl]
+      params[:scenario].each do |scenario|
+        path, file = scenario.split
+        if file.nil?
+          file = path
+          path = nil
+        end
+        loader.cd path
+        html << loader.send(type, file)
+      end
+      html
+    end
+
+    def assets_mapper_with_block type
+      html, url = '', params[:url]
+      assets_mapper params[:baseurl] do
+        html << send(type, url)
+      end
+      html
+    end
+  end
+
+  Spec.new AssetsMapper do
+
+    def match? response, str
+      check(response.respond_to?(:body) ? response.body : response) =~
+        (str.is_a?(Regexp) ? str : Regexp.new(Regexp.escape str))
+    end
+
+    Testing :js do
+      get :assets_mapper, :js_tag, :baseurl => './', :url => 'master'
+      does(last_response).match? 'src="./master.js"'
+      
+      get :assets_mapper, :js_tag, :baseurl => '/', :url => 'master'
+      does(last_response).match? 'src="/master.js"'
+
+      get :assets_mapper, :js_tag, :baseurl => 'http://some.cdn', :url => 'master'
+      does(last_response).match? 'src="http://some.cdn/master.js"'
+
+      Should 'skip baseurl' do
+        get :assets_mapper, :js_tag, :src => 'master', :baseurl => 'skipit'
+        does(last_response).match? 'src="master.js"'
+      end
+    end
+
+    Testing :css do
+      get :assets_mapper, :css_tag, :baseurl => './', :url => 'master'
+      does(last_response).match? 'href="./master.css"'
+      
+      get :assets_mapper, :css_tag, :baseurl => '/', :url => 'master'
+      does(last_response).match? 'href="/master.css"'
+
+      get :assets_mapper, :css_tag, :baseurl => 'http://some.cdn', :url => 'master'
+      does(last_response).match? 'href="http://some.cdn/master.css"'
+
+      Should 'skip baseurl' do
+        get :assets_mapper, :css_tag, :src => 'master', :baseurl => 'skipit'
+        does(last_response).match? 'href="master.css"'
+      end
+    end
+
+    Testing :png do
+      get :assets_mapper, :png_tag, :baseurl => './', :url => 'master'
+      does(last_response).match? 'src="./master.png"'
+      
+      get :assets_mapper, :png_tag, :baseurl => '/', :url => 'master'
+      does(last_response).match? 'src="/master.png"'
+
+      get :assets_mapper, :png_tag, :baseurl => 'http://some.cdn', :url => 'master'
+      does(last_response).match? 'src="http://some.cdn/master.png"'
+
+      Should 'skip baseurl' do
+        get :assets_mapper, :png_tag, :src => 'master', :baseurl => 'skipit'
+        does(last_response).match? 'src="master.png"'
+      end
+    end
+    
+
+    Testing :AssetsLoaderWithBlock do
+      get :assets_mapper_with_block, :js_tag, :url => 'master'
+      does(last_response).match? 'src="master.js"'
+      
+      get :assets_mapper_with_block, :css_tag, :url => 'master', :baseurl => '/'
+      does(last_response).match? 'href="/master.css"'
+
+      get :assets_mapper_with_block, :css_tag, :url => 'master', :baseurl => './'
+      does(last_response).match? 'href="./master.css"'
+
+      get :assets_mapper_with_block, :png_tag, :url => 'master', :baseurl => 'http://some.cdn'
+      does(last_response).match? 'src="http://some.cdn/master.png"'
+    end
+
+    Testing :AssetsLoaderChdir do
+      Should 'avoid redundant path traversal' do
+        get :assets_mapper_chdir, :js_tag, :scenario => [ '../../etc/passwd jquery' ]
+        does(last_response).match? 'src="etc/passwd/jquery.js"'
+
+        get :assets_mapper_chdir, :js_tag, :scenario => [ '../etc/passwd jquery' ]
+        does(last_response).match? 'src="etc/passwd/jquery.js"'
+
+        get :assets_mapper_chdir, :js_tag, :scenario => ['vendor/jquery jquery', '../../../../ master']
+        does(last_response).match? 'src="master.js"'
+      end
+
+      Should 'cd to vendor/jquery and load jquery.js' do
+        get :assets_mapper_chdir, :js_tag, :baseurl => '/assets', :scenario => ['vendor/jquery jquery', '.. master', '/ master']
+        does(last_response).match? 'src="/assets/vendor/jquery/jquery.js"'
+        
+        Then 'cd to .. and load vendor/master.js' do
+          does(last_response).match? 'src="/assets/vendor/master.js"'
+        end
+        
+        Then 'cd to / and load master.js' do
+          does(last_response).match? 'src="/assets/master.js"'
+        end
+      end
+
+      Should 'cd to vendor/jquery and load vendor/jquery/jquery.js' do
+        get :assets_mapper_chdir, :js_tag, :baseurl => '/assets', :scenario => ['vendor/jquery jquery', '../.. master', '/scripts master']
+        does(last_response).match? 'src="/assets/vendor/jquery/jquery.js"'
+        
+        Then 'cd to ../.. and load master.js' do
+          does(last_response).match? 'src="/assets/master.js"'
+        end
+        
+        Then 'cd to /scripts and load master.js' do
+          does(last_response).match? 'src="/assets/scripts/master.js"'
+        end
+      end
+
+      Should 'cd to css/themes and load css/themes/black.css' do
+        
+        get :assets_mapper_chdir, :css_tag, :baseurl => '/assets', :scenario => ['css/themes black', ' master', '/css master']
+        does(last_response).match? 'href="/assets/css/themes/black.css"'
+        
+        Then 'cd to root and load master.css' do
+          does(last_response).match? 'href="/assets/master.css"'
+        end
+        
+        Then 'cd to /css and load master.css' do
+          does(last_response).match? 'href="/assets/css/master.css"'
+        end
+      end
+
+      Should 'behave well with rooted baseurls' do
+        Should 'cd to vendor/icons/16x16 and load vendor/icons/16x16/file.png' do
+
+          get :assets_mapper_chdir, :png_tag, :baseurl => '/public', :scenario => ['vendor/icons/16x16 file', '../.. sprite', '/icons folder']
+          does(last_response).match? 'src="/public/vendor/icons/16x16/file.png"'
+
+          Then 'cd to ../.. and load vendor/sprite.png' do
+            does(last_response).match? 'src="/public/vendor/sprite.png"'
+          end
+
+          Then 'cd to /icons and load folder.png' do
+            does(last_response).match? 'src="/public/icons/folder.png"'
+          end
+        end
+      end
+
+      Should 'behave well with protocoled baseurls' do
+        Should 'cd to icons/16x16 and load icons/16x16/file.png' do
+          
+          get :assets_mapper_chdir, :png_tag, :baseurl => 'http://some.cdn', :scenario => ['icons/16x16 file', '.. sprite', '/imgs img']
+          does(last_response).match? 'src="http://some.cdn/icons/16x16/file.png"'
+          
+          Then 'cd to .. and load sprite.png' do
+            does(last_response).match? 'src="http://some.cdn/icons/sprite.png"'
+          end
+          
+          Then 'cd to /imgs and load img.png' do
+            does(last_response).match? 'src="http://some.cdn/imgs/img.png"'
+          end
+        end
+      end
+    end
+  end
 end
