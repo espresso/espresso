@@ -7,6 +7,7 @@ require 'e-core/constants'
 require 'e-core/utils'
 require 'e-core/init'
 require 'e-core/rewriter'
+require 'e-core/module_extension'
 
 require 'e-core/controller/setup'
 require 'e-core/controller/base'

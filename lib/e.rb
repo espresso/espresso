@@ -1,2 +1,2 @@
-require 'e-core'
-require 'e-more'
+require 'e/clean'
+require 'e-ext'
