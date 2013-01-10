@@ -47,8 +47,8 @@ class << E
     resource_method = {
       :get    => opts.fetch(:get,    orm_map[:get] || :get),
       :post   => opts.fetch(:post,   :create),
-      :put    => opts.fetch(:put,    orm_map[:put] || :update),
-      :patch  => opts.fetch(:patch,  orm_map[:put] || :update),
+      :put    => opts.fetch(:put,    orm_map[:put]   || :update),
+      :patch  => opts.fetch(:patch,  orm_map[:patch] || :update),
       :delete => opts.fetch(:delete, :delete),
     }
     
