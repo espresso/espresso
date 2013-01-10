@@ -7,23 +7,23 @@ module EMoreTest__CRUD
     end
 
     def get id
-      @objects[id]
+      @objects[id.to_i]
     end
 
     def create object
       if obj_id = object.delete('id')
-        object[:id] = obj_id
+        object[:id] = obj_id.to_i
       end
-      id = (@objects.size + 1).to_s
+      id = @objects.size + 1
       @objects[id] = object.update('__id__' => id)
     end
 
     def delete id
-      @objects.delete id
+      @objects.delete id.to_i
     end
 
     def [] key
-      @objects[key]
+      @objects[key.to_i]
     end
 
     def keys

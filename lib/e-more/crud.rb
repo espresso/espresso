@@ -129,7 +129,7 @@ class << E
         id = id.to_i if id =~ /\A\d+\Z/
         obj = resource.send(resource_method[:get], id) ||
           controller_instance.halt(404, 'object with ID %s not found' % controller_instance.escape_html(id))
-        obj = obj.first if obj.respond_to?(:first)
+        obj = obj.first if obj.kind_of?(Array)
       rescue => e
         err = e.message
       end
