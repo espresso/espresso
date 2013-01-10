@@ -39,11 +39,16 @@ class << E
     end
     path = path_or_opts.first
     action = '%s_' << (path || :index).to_s
+    orm = :ar if resource.respond_to?(:arel_table)
+    orm = :dm if resource.respond_to?(:storage_name)
+    orm_map = {
+      :ar => {:get => :first, :put => :update_attributes, :patch => :update_attributes},
+    }[orm] || {}
     resource_method = {
-      :get    => opts.fetch(:get,    :get   ),
+      :get    => opts.fetch(:get,    orm_map[:get] || :get),
       :post   => opts.fetch(:post,   :create),
-      :put    => opts.fetch(:put,    :update),
-      :patch  => opts.fetch(:patch,  :update),
+      :put    => opts.fetch(:put,    orm_map[:put] || :update),
+      :patch  => opts.fetch(:patch,  orm_map[:put] || :update),
       :delete => opts.fetch(:delete, :delete),
     }
     
@@ -121,8 +126,10 @@ class << E
     fetch_object = lambda do |controller_instance, id|
       obj, err = nil
       begin
+        id = id.to_i if id =~ /\A\d+\Z/
         obj = resource.send(resource_method[:get], id) ||
           controller_instance.halt(404, 'object with ID %s not found' % controller_instance.escape_html(id))
+        obj = obj.first if obj.respond_to?(:first)
       rescue => e
         err = e.message
       end
