@@ -50,8 +50,16 @@ module ECoreTest__Pass
         xhr_fetch action
       end
 
+      def get_xhr_fetch_via_post action
+        xhr_fetch_via_post action
+      end
+
       def xhr_destination
         rq.xhr?.inspect
+      end
+
+      def xhr_post_destination
+        [rq.xhr?, rq.post?].inspect
       end
     end
 
@@ -122,6 +130,12 @@ module ECoreTest__Pass
       get :xhr_fetch, :xhr_destination
       is(last_response).ok?
       is('true').current_body?
+    end
+
+    Should 'fetch via XHR using POST request method' do
+      get :xhr_fetch_via_post, :xhr_post_destination
+      is(last_response).ok?
+      is('[true, true]').current_body?
     end
 
   end

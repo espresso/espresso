@@ -97,6 +97,15 @@ class E
       define_method '%s_via_%s' % [meth, rm.downcase] do |*args|
         self.send(meth, *args) { |env| env.update ENV__REQUEST_METHOD => rm }
       end
+
+      # defining methods like
+      # #xhr_pass_via_post, #xhr_fetch_via_get etc
+      define_method 'xhr_%s_via_%s' % [meth, rm.downcase] do |*args|
+        self.send(meth, *args) do |env|
+          env.update ENV__REQUEST_METHOD => rm, ENV__HTTP_X_REQUESTED_WITH => 'XMLHttpRequest'
+        end
+      end
+
     end
   end
 
