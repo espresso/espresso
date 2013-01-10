@@ -341,6 +341,9 @@ Even more, when mounting you can easily setup all controllers(or some) at once.
 And of course when mounting, you can give a mount point.
 
 ```ruby
+require 'e'
+require 'e-ext' # needed for `Cms.run` and `Cms.mount` to work
+
 module Cms
 
   class Articles < E
