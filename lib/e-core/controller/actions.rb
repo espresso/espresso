@@ -91,7 +91,7 @@ class << E
   end
 
   def action_to_route action
-    path, request_methods = deverbify_action(action)
+    path, request_methods = deRESTify_action(action)
     request_methods ||= HTTP__REQUEST_METHODS
     
     path == E__INDEX_ROUTE ?  path = '' :
@@ -114,7 +114,7 @@ class << E
       }.freeze, request_methods.freeze]
   end
 
-  def deverbify_action action
+  def deRESTify_action action
     path, request_methods = action.to_s, nil
     HTTP__REQUEST_METHODS.each do |m|
       regex = /\A#{m}_/i
