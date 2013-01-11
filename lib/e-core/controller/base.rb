@@ -157,9 +157,10 @@ class << E
       @route_by_action_with_format[action.to_s + format] = action_route_setup[:path] + format
     end
 
-    @route_by_action[action] = 
-      @route_by_action[deRESTify_action(action).first.to_sym] = action_route_setup[:path]
-    @route_setup[action]     = action_route_setup
+    [action, deRESTify_action(action).first.to_sym].each do |matcher|
+      @route_by_action[matcher] = action_route_setup[:path]
+      @route_setup[matcher]     = action_route_setup
+    end
 
     aliases = action_aliases[action] || []
     request_methods.each do |rm|
