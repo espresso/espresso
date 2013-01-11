@@ -14,6 +14,25 @@ end
 
 It is really straightforward to define actions in Espresso cause they are usual Ruby methods.
 
+**Worth to note** that actions can be shared between controllers by using modules:
+
+```ruby
+module SharedActions
+
+  def foo
+    # ...
+  end
+end
+
+class App < E
+  include SharedActions
+
+  def bar
+    # ...
+  end
+end
+```
+
 
 **[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 

@@ -21,6 +21,11 @@ class EspressoFrameworkRewriter
 end
 
 class << E
+  def include mdl
+    super
+    (@included_actions ||= []).concat mdl.public_instance_methods(false)
+  end
+
   # creates a generic setup method for various
   def define_setup_method meth
     (class << self; self end).class_exec do

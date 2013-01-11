@@ -17,4 +17,5 @@
   - Added `render_file` method
   - Fixed Crudifier to work well with ActiveRecord models
   - `route` are now RESTful friendly
+  - Allow to include actions from modules
   - Considerable code cleanup and refactoring. Special thanks to @mindreframer.
