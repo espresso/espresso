@@ -28,11 +28,15 @@ module ECoreTest__Router
       [arg1, *a]
     end
 
+    def rest_test action
+      route action.to_sym
+    end
+
   end
 
   Spec.new App do
 
-    Describe 'zero args' do
+    Testing 'with zero args' do
       It do
         r = get
         is('index').ok_body?
@@ -51,7 +55,7 @@ module ECoreTest__Router
       end
     end
 
-    Describe 'one arg' do
+    Testing 'with one arg' do
       It do
         get :exact, :arg
         is('arg').ok_body?
@@ -80,7 +84,7 @@ module ECoreTest__Router
     end
 
 
-    Describe 'one or two args' do
+    Testing 'with one or two args' do
       It do
         r = get :one_or_two, :a1
         is(['a1', nil].to_s).ok_body?
@@ -111,7 +115,7 @@ module ECoreTest__Router
       end
     end
 
-    Describe 'one or more' do
+    Testing 'with one or more args' do
       It do
         r = get :one_or_more, :a1
         is(['a1'].to_s).ok_body?
@@ -127,7 +131,7 @@ module ECoreTest__Router
       end
     end
 
-    Describe 'any number of args' do
+    Testing 'with any number of args' do
       r = get :any
       is([].to_s).ok_body?
 
@@ -141,7 +145,7 @@ module ECoreTest__Router
       end
     end
 
-    Describe '`[]` and `route` works properly' do
+    Ensure '`[]` and `route` works properly' do
       @map = {
         :index      => '',
         :exact      => '/exact',
@@ -184,5 +188,14 @@ module ECoreTest__Router
         end
       end
     end
+
+    Ensure 'route works correctly with deverbified actions' do
+      get :rest_test, :post_exact
+      is(App.base_url + '/exact').current_body?
+
+      get :rest_test, :exact
+      is(App.base_url + '/exact').current_body?
+    end
+
   end
 end

@@ -3,22 +3,22 @@ module ECoreTest__REST
   class RestApp < E
 
     def index
-
     end
 
     def post_edit
-
     end
 
     def put_create
-
     end
 
     def head_details
-
     end
 
     def post_get_verb
+    end
+
+    def router_test action
+      route action.to_sym
     end
   end
 
@@ -60,6 +60,20 @@ module ECoreTest__REST
 
       get :verb
       is(last_response).not_found?
+    end
+
+    Ensure 'route works correctly with deverbified actions' do
+      get :router_test, :post_edit
+      is(RestApp.base_url + '/edit').current_body?
+
+      get :router_test, :edit
+      is(RestApp.base_url + '/edit').current_body?
+      
+      get :router_test, :put_create
+      is(RestApp.base_url + '/create').current_body?
+
+      get :router_test, :create
+      is(RestApp.base_url + '/create').current_body?
     end
 
   end

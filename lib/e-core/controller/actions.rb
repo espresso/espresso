@@ -91,15 +91,8 @@ class << E
   end
 
   def action_to_route action
-    path, request_methods = action.to_s, Array.new(HTTP__REQUEST_METHODS)
-    HTTP__REQUEST_METHODS.each do |m|
-      regex = /\A#{m}_/i
-      if action.to_s =~ regex
-        request_methods = [m]
-        path = path.sub(regex, '')
-        break
-      end
-    end
+    path, request_methods = deverbify_action(action)
+    request_methods ||= HTTP__REQUEST_METHODS
     
     path == E__INDEX_ROUTE ?  path = '' :
       path_rules.each_pair {|from, to| path = path.gsub(from, to)}
@@ -119,6 +112,19 @@ class << E
         :path                => path,
         :format_regexp       => format_regexp,
       }.freeze, request_methods.freeze]
+  end
+
+  def deverbify_action action
+    path, request_methods = action.to_s, nil
+    HTTP__REQUEST_METHODS.each do |m|
+      regex = /\A#{m}_/i
+      if action.to_s =~ regex
+        request_methods = [m]
+        path = path.sub(regex, '')
+        break
+      end
+    end
+    [path, request_methods]
   end
 
   if RESPOND_TO__PARAMETERS # ruby 1.9

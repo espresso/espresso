@@ -163,6 +163,7 @@ class << E
     setup_action_format(action, action_route_setup)
 
     @route_by_action[action] = action_route_setup[:path]
+    @route_by_action[deverbify_action(action).first.to_sym] = action_route_setup[:path]
     @route_setup[action]     = action_route_setup
 
     aliases = action_aliases[action] || []

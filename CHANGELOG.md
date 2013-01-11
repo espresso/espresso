@@ -16,4 +16,5 @@
   - Dropped support for inter-controller rendering
   - Added `render_file` method
   - Fixed Crudifier to work well with ActiveRecord models
+  - `route` are now RESTful friendly
   - Considerable code cleanup and refactoring. Special thanks to @mindreframer.
