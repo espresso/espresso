@@ -123,7 +123,7 @@ end
 
 Applications are meant to bundle, setup and run controllers and slices.
 
-To create a Espresso application use `EApp` class:
+To create a new Espresso application use `EApp` class:
 
 ```ruby
 class MyController < E

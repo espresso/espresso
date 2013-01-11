@@ -50,6 +50,8 @@ app.run
 It is possible to wrap the app into a slice(module) and run it:
 
 ```ruby
+require 'e-ext' # needed for SliceName.run and SliceName.mount to work
+
 module Forum
   class Users < E
     # ...

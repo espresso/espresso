@@ -460,7 +460,7 @@ end
 
 Espresso uses a really flexible rewrite engine,
 which allows to redirect the browser to new address
-as well as pass control to arbitrary app(without redirect)
+as well as pass control to arbitrary controller(without redirect)
 or just send a custom response to browser(without redirect as well).
 
 A rewrite rule consist of a regular expression and a block that receives matches as params.
