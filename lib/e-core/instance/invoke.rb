@@ -28,8 +28,8 @@ class E
   # @param [Array] *args
   #
   def pass *args, &proc
-    params = params() unless args.any? {|a| a.is_a?(Hash)}
-    halt invoke(*args, params, &proc)
+    args << params() unless args.any? {|a| a.is_a?(Hash)}
+    halt invoke(*args, &proc)
   end
 
   # invoke some action via HTTP.
