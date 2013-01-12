@@ -88,7 +88,7 @@ module ECoreTest__Pass
     Testing :get_pass do
       get args, params
       refute(last_response.body) =~ /index/
-      is([ARGS, PARAMS].inspect).current_body?
+      is([ARGS, {}].inspect).current_body?
     end
 
     Testing :post_pass do
@@ -103,21 +103,21 @@ module ECoreTest__Pass
 
     Testing :inner_app do
       get :inner_app, :catcher, args, params
-      is("k=v/var=val").current_body?
+      is("k=v/").current_body?
     end
 
     Testing :invoke do
       get :invoke, :catcher, args, params
-      is("200/k=v/var=val").current_body?
+      is("200/k=v/").current_body?
     end
 
     Testing :fetch do
       get :fetch, :catcher, args, params
-      is([ARGS, PARAMS].inspect).current_body?
+      is([ARGS, {}].inspect).current_body?
     end
     Testing :fetch_inner do
       get :fetch_inner, :catcher, args, params
-      is("k=v/var=val").current_body?
+      is("k=v/").current_body?
     end
 
     Should 'pass via XHR' do

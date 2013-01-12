@@ -62,8 +62,10 @@ class E
     if block_given?
       yield env
     end
-    env[ENV__SCRIPT_NAME] = route
-    env[ENV__REQUEST_URI] = env[ENV__PATH_INFO] = ''
+    env[ENV__SCRIPT_NAME]  = route
+    env[ENV__PATH_INFO]    = ''
+    env[ENV__QUERY_STRING] = ''
+    env[ENV__REQUEST_URI]  = ''
     env[ENV__ESPRESSO_PATH_INFO] = nil
 
     if args.size > 0

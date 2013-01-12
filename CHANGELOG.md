@@ -18,4 +18,5 @@
   - Fixed Crudifier to work well with ActiveRecord models
   - `route` are now RESTful friendly
   - Allow to include actions from modules
+  - `pass`, `invoke` and `fetch` will now pass empty QUERY_STRING
   - Considerable code cleanup and refactoring. Special thanks to @mindreframer.
