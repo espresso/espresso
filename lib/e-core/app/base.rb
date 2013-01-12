@@ -132,8 +132,11 @@ class EApp
   end
 
   def call! env
+    path = env[ENV__PATH_INFO]
+    script_name = env[ENV__SCRIPT_NAME]
+
     sorted_routes.each do |route|
-      if matches = route.match(env[ENV__PATH_INFO].to_s)
+      if matches = route.match(path.to_s)
 
         if route_setup = @routes[route][env[ENV__REQUEST_METHOD]]
 
@@ -173,6 +176,9 @@ class EApp
       {"Content-Type" => "text/plain", "X-Cascade" => "pass"},
       ["Not Found: #{env[ENV__PATH_INFO]}"]
     ]
+  ensure
+    env[ENV__PATH_INFO] = path
+    env[ENV__SCRIPT_NAME] = script_name
   end
 
   def sorted_routes
