@@ -1,6 +1,6 @@
 class E
 
-  # simply pass control to another action or controller.
+  # simply pass control and data to another action or controller.
   #
   # by default, it will pass control to an action on current controller.
   # however, if first argument is a controller, control will be passed to it.
@@ -28,17 +28,23 @@ class E
   # @param [Array] *args
   #
   def pass *args, &proc
-    halt invoke(*args, &proc)
+    params = params() unless args.any? {|a| a.is_a?(Hash)}
+    halt invoke(*args, params, &proc)
   end
 
-  # same as `pass` except it returns the result instead of halting
-  #
+  # invoke some action via HTTP.
+  # to invoke an action on inner controller,
+  # pass controller as first argument and the action as second.
+  # 
+  # @note unlike `pass`, `invoke` will not pass any data!
+  # 
   # @note it will use current REQUEST_METHOD to issue a request.
   #       to use another request method use #[pass|invoke|fetch]_via_[verb]
   #       ex: #pass_via_get, #fetch_via_post etc
   #
   # @note to update passed env, use a block.
-  #       the block will receive the env and therefore you can update it as needed.
+  #       the block will receive the env as first argument
+  #       and therefore you can update it as needed.
   #
   # @param [Class] *args
   def invoke *args
@@ -69,9 +75,9 @@ class E
     env[ENV__ESPRESSO_PATH_INFO] = nil
 
     if args.size > 0
-      path, params = '/', {}
-      args.each { |a| a.is_a?(Hash) ? params.update(a) : path << a.to_s << '/' }
-      env[ENV__PATH_INFO] = env[ENV__REQUEST_URI] = path
+      path, params = [''], {}
+      args.each { |a| a.is_a?(Hash) ? params.update(a) : path << a }
+      env[ENV__PATH_INFO] = env[ENV__REQUEST_URI] = path.join('/')
       
       params.any? &&
         env.update(ENV__QUERY_STRING => build_nested_query(params))

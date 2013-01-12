@@ -239,6 +239,8 @@ end
 
 To pass control to another action or controller, use `pass`.
 
+**Important:** If no params given, actual params will be passed.
+
 **Example:** - Pass control to :archived action if page id is less than 100_000
 
 ```ruby
@@ -315,13 +317,15 @@ pass_via_post :some_action
 ## Fetching Body
 
 
-Sometimes you need to invoke some action or app and get the returned body.
+Sometimes you need to invoke some action(on same or inner controller) and get the returned body.
 
 This is easily done by using `fetch`.
 
+`fetch` will invoke some action(via HTTP) inside current or given controller and returning the body.
+
 Basically, this is same as `pass` except it returns the body instead of halting request processing.
 
-`fetch` will execute some action inside current or given controller and returning the body.
+Another **important** difference is that `fetch` will not pass actual HTTP params.
 
 **Example:**
 
@@ -355,7 +359,29 @@ It is also possible to use a request method other than default GET.
 
 ```ruby
 fetch_via_post :some_action
+
+invoke_via_put :some_action
+# etc.
 ```
+
+Also an XHR request can be mimed:
+
+```ruby
+xhr_fetch :some_action
+
+xhr_invoke :some_action
+# etc.
+```
+
+And of course XHR requests can be issued via any request method:
+
+```ruby
+xhr_fetch_via_post :some_action
+
+xhr_invoke_via_delete :some_action
+# etc.
+```
+
 
 **[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
