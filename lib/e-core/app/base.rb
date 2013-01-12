@@ -136,7 +136,7 @@ class EApp
     script_name = env[ENV__SCRIPT_NAME]
 
     sorted_routes.each do |route|
-      if matches = route.match(path.to_s)
+      if matches = route.match(path)
 
         if route_setup = @routes[route][env[ENV__REQUEST_METHOD]]
 
