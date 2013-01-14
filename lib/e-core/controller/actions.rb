@@ -77,9 +77,11 @@ class << E
   def public_actions
     return @public_actions if @public_actions
 
-    actions = ((self.public_instance_methods(false) +
-      (@action_aliases   || {}).keys).map { |a| a.to_sym } +
-      (@included_actions || [])).uniq
+    actions = (
+      (self.public_instance_methods(false)) +
+      (@action_aliases   || {}).keys +
+      (@included_actions || [])
+    ).uniq.map {|a| a.to_sym} # to_sym needed for 1.8
     
     if actions.empty?
       define_method :index do |*|

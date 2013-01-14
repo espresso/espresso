@@ -18,5 +18,6 @@
   - Fixed Crudifier to work well with ActiveRecord models
   - `route` are now RESTful friendly
   - Allow to include actions from modules
+  - Accept multiple controllers at mount
   - `invoke` and `fetch` will NOT pass actual params. Only `pass` will do.
   - Considerable code cleanup and refactoring. Special thanks to @mindreframer.

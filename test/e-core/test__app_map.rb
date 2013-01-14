@@ -26,12 +26,17 @@ module ECoreTest__AppMap
 
     get '/some/path/app'
     is(last_response).ok?
+  end
+
+  Spec.new self do
 
     app EApp.new { map '/some/another/path'; mount Cms }
 
     get '/some/another/path/pages'
     is(last_response).ok?
+  end
 
+  Spec.new self do
     app EApp.new { map '/yet/another/path'; mount Foo, '/blah' }
 
     get '/yet/another/path/blah/bar'

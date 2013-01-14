@@ -30,11 +30,28 @@ class EApp
     proc && self.instance_exec(&proc)
   end
 
-  # mount a controller or a namespace(a module, a class or a regexp) containing controllers.
-  # proc given here will be executed inside given controller/namespace,
-  # as well as any global setup defined before this method will be called.
-  def mount namespace_or_app, *roots, &setup
-    extract_controllers(namespace_or_app).each {|c| mount_controller c, *roots, &setup}
+  # mount given/discovered controllers into current app.
+  # any number of arguments accepted.
+  # String arguments are treated as roots/canonicals.
+  # any other arguments are used to discover controllers.
+  # controllers can be passed directly
+  # or as a Module that contain controllers
+  # or as a Regexp matching controller's name.
+  # 
+  # proc given here will be executed inside given/discovered controllers.
+  #
+  def mount *args, &setup
+    controllers, roots = [], []
+    args.flatten.each do |a|
+      if a.is_a?(String)
+        roots << rootify_url(a)
+      elsif is_app?(a)
+        controllers << a
+      else
+        controllers.concat extract_controllers(a)
+      end
+    end
+    controllers.each {|c| mount_controller c, *roots, &setup}
     self
   end
 
@@ -204,27 +221,24 @@ class EApp
     @global_setup && controller.class_exec(&@global_setup)
     controller.mount! self
     @routes.update controller.routes
-    controller.rewrite_rules.each do |(rule,proc)|
-      @routes[rule] = {'GET' => {:rewriter => proc}}
-    end
+    controller.rewrite_rules.each {|(rule,proc)| rewrite_rule rule, &proc}
 
     @mounted_controllers << controller
   end
 
   def discover_controllers namespace = nil
-    controllers = ::ObjectSpace.each_object(::Class).
+    controllers = ObjectSpace.each_object(Class).
       select { |c| is_app?(c) }.reject { |c| [E].include? c }
     return controllers unless namespace
 
     namespace.is_a?(Regexp) ?
-      controllers.select { |c| c.name =~ namespace } :
-      controllers.select { |c| [c.name, c.name.split('::').last].include? namespace.to_s }
+      controllers.select { |c| c.name =~ namespace } : controllers
   end
 
   def extract_controllers namespace
-    return ([namespace] + namespace.constants.map { |c| namespace.const_get(c) }).
-      select { |c| is_app? c } if [Class, Module].include?(namespace.class)
-
+    if [Class, Module].include?(namespace.class)
+      return discover_controllers.select {|c| c.name =~ /\A#{namespace}/}
+    end
     discover_controllers namespace
   end
 end

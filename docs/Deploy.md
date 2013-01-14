@@ -24,19 +24,11 @@ end
 app.run
 ```
 
-Controllers can be also mounted by given name rather than by class.
-
-This turn to be useful when you do not want or can't wrap controllers into slices,
-meant they are not under same namespace.
-
-Name can be provided as a string, symbol or regex.
+Controllers can be also mounted by using Regexps:
 
 ```ruby
 app = EApp.new
-app.mount 'SomeController'
-app.mount 'SomeAnotherController'
-app.mount :NotAnotherController
-app.mount /Controller/
+app.mount /SomeController/
 # etc.
 app.run
 ```
@@ -46,11 +38,16 @@ app.run
 
 ## Slices
 
+Slices are used to bundle, setup and run a set of controllers.
 
-It is possible to wrap the app into a slice(module) and run it:
+A Espresso Slice is nothing more than a Ruby Module.
+
+That's it, to create a slice simply wrap your controllers into a module:
+
 
 ```ruby
-require 'e-ext' # needed for SliceName.run and SliceName.mount to work
+require 'e'
+require 'e-ext' # needed for Forum.run and Forum.mount to work
 
 module Forum
   class Users < E
@@ -61,15 +58,15 @@ module Forum
   end
 end
 
-Forum.run
+Forum.run  # running Forum Slice directly
 
-# or
-app = Forum.mount do
+# creating a new app from Forum Slice
+app = Forum.mount do 
   # some setup
 end
 app.run
 
-# or create an app and mount the slice
+# or create a new app and mount the slice
 app = EApp.new
 app.mount Forum do
   # some setup
@@ -84,7 +81,7 @@ app.run
 ## Roots
 
 
-To mount a controller/slice into a specific root, pass it as first argument:
+To mount a controller/slice into a specific root, pass it as argument:
 
 
 ```ruby
@@ -124,13 +121,13 @@ app.run
 ## Run
 
 
-By default Espresso will run `WEBrick` server `5252` port.
+By default Espresso will run `WEBrick` server on `5252` port.
 
 To run another server/port, use `:server`/`:port` options.
 
 If given server requires some options, pass them next to `:server` option.
 
-**Example:** Use Thin server and its default port
+**Example:** Use Thin server on its default port
 
 ```ruby
 app.run :server => :Thin
@@ -171,7 +168,7 @@ require 'your-app-file(s)'
 
 app = App.mount
 # or
-app = EApp.new :automount
+app = EApp.new :automount  # will auto-discover all available controllers
 # etc .
 
 run app
