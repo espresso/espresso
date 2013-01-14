@@ -226,8 +226,6 @@ class << E
   end
   private :add_setup
 
-
-
   def setups position, action, format
     return [] unless (s = @expanded_setups) && (s = s[position]) && (s = s[action])
     s[format] || []
@@ -271,5 +269,11 @@ class << E
   def error_handler error_code
     ((@error_handlers || {}).find {|k,v| error_code == k} || []).last
   end
+
+  def rewrite rule, &proc
+    proc || raise(ArgumentError, "Rewrite rules requires a block to run")
+    (@rewrite_rules ||= []) << [rule, proc]
+  end
+  alias rewrite_rule rewrite
 
 end

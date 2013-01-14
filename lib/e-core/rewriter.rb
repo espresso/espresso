@@ -9,9 +9,7 @@ class EspressoFrameworkRewriter
   def call env
     @env, @request = env, EspressoFrameworkRequest.new(env)
     @status, @headers, @body =
-      STATUS__BAD_REQUEST,
-      {"Content-Type" => "text/plain"},
-      ["Bad Request: #{env[ENV__PATH_INFO]}"]
+      STATUS__BAD_REQUEST, {"Content-Type" => "text/plain"}, []
 
     catch :__e__rewriter__halt_symbol__ do
       self.instance_exec *@matches, &@proc

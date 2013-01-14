@@ -3,6 +3,18 @@ module ECoreTest__Rewriter
   class Cms < E
     map '/'
 
+    rewrite /controller\-redirect/ do
+      redirect Cms[:news]
+    end
+    
+    rewrite /controller\-pass\/(.*)/ do |m|
+      pass Cms, m.to_sym
+    end
+
+    rewrite /controller\-halt\/(\d+)\/(.*)/ do |code,msg|
+      halt code.to_i, msg
+    end
+
     def articles *args
       raise 'this action should never be executed'
     end
@@ -151,19 +163,18 @@ module ECoreTest__Rewriter
     end
 
     Testing :halt do
-      def check_result(code, body)
-        is(code).current_status?
-        is(body).current_body?
-        expect(last_response.headers['TEST']) == '%s|%s' % [body, code]
-      end
 
       body, code = rand(100000).to_s, 500
       response = get '/halt_test_I/%s/%s' % [body, code]
-      check_result(code, body)
+      is(code).current_status?
+      is(body).current_body?
+      expect(last_response.headers['TEST']) == '%s|%s' % [body, code]
 
       body, code = rand(100000).to_s, 500
       response = get '/halt_test_II/%s/%s' % [body, code]
-      check_result(code, body)
+      is(code).current_status?
+      is(body).current_body?
+      expect(last_response.headers['TEST']) == '%s|%s' % [body, code]
     end
 
     Testing :context do
@@ -179,5 +190,19 @@ module ECoreTest__Rewriter
       follow_redirect!
       is([name, {}].inspect).ok_body?
     end
+
+    Testing 'rules defined inside controller' do
+      get 'controller-redirect'
+      check_redir_location '/news'
+
+      get 'controller-pass/page', :foo => :bar
+      is(200).current_status?
+      is({'foo' => 'bar'}.inspect).current_body?
+
+      get 'controller-halt/201/blah'
+      is(201).current_status?
+      is('blah').current_body?
+    end
   end
+
 end

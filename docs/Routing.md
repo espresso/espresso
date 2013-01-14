@@ -458,12 +458,12 @@ end
 ## Rewriter
 
 
-Espresso uses a really flexible rewrite engine,
-which allows to redirect the browser to new address
+Espresso uses a really flexible rewrite engine
+that allow to redirect the browser to new address
 as well as pass control to arbitrary controller(without redirect)
 or just send a custom response to browser(without redirect as well).
 
-A rewrite rule consist of a regular expression and a block that receives matches as params.
+A rewrite rule consist of a regular expression and a block that receives matches via arguments.
 
 `redirect` and `permanent_redirect` will redirect browser to new address with 302 and 301 codes respectively.
 

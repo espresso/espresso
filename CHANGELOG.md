@@ -3,7 +3,7 @@
   
   - Removing Appetite dependency
   - Writing a new router crafted for specific Espresso needs. Also it tends to be faster than Rack::URLMap
-  - Rewriter is now tightly integrated into router
+  - Rewrite rules can now be defined inside controllers
   - Splitting codebase into `e-core` and `e-more`
   - Moved monkey-patches to e-ext
   - `format` now accepts only formats, not action names.

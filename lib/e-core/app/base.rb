@@ -204,6 +204,9 @@ class EApp
     @global_setup && controller.class_exec(&@global_setup)
     controller.mount! self
     @routes.update controller.routes
+    controller.rewrite_rules.each do |(rule,proc)|
+      @routes[rule] = {'GET' => {:rewriter => proc}}
+    end
 
     @mounted_controllers << controller
   end

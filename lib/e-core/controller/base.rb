@@ -100,6 +100,10 @@ class << E
     map! new_base_url, *new_canonicals.uniq
   end
 
+  def rewrite_rules
+    @rewrite_rules || []
+  end
+
   private
 
   def map! *paths
