@@ -3,10 +3,12 @@ class E
   EspressoFrameworkConstants::HTTP__REQUEST_METHODS.each do |rm|
     define_method '%s?' % rm.downcase do
       # Hash lookup is much faster than String comparison
-      (@__e__request_methods ||= EspressoFrameworkConstants::HTTP__REQUEST_METHODS.inject({}) do |f,c|
-        f.merge(c => c == request.request_method)
-      end)[rm]
+      (@__e__request_methods ||= {})[rm] ||= rm == request.request_method
     end
+  end
+
+  def xhr?
+    @__e__is_xhr ||= request.xhr?
   end
 
   # shortcut for Rack::Mime::MIME_TYPES.fetch
