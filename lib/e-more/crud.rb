@@ -1,16 +1,15 @@
 class << E
 
-  E__TOOLKIT__AUTH_TEST_PAYLOAD_KEY = 
-    "E__TOOLKIT__AUTH_TEST_PAYLOAD_#{rand(2**64)}".freeze
+  E__CRUD__AUTH_TEST_PAYLOAD_KEY = "E__CRUD__AUTH_TEST_PAYLOAD_#{rand(2**64)}".freeze
 
   # automatically creates POST/PUT/DELETE actions
   # and map them to corresponding methods of given resource,
   # so sending a POST request to the controller
   # resulting in creating new object of given resource.
-  #
   # PUT/PATCH requests will update objects by given id.
   # DELETE requests will delete objects by given id.
   #
+  # @params [Class] resource
   # @params [Array] path_or_opts
   # @option path_or_opts [String || Array] :exclude
   #   sometimes forms sending extra params. exclude them using :exclude option
@@ -49,7 +48,7 @@ class << E
       :post   => opts.fetch(:post,   :create),
       :put    => opts.fetch(:put,    orm_map[:put]   || :update),
       :patch  => opts.fetch(:patch,  orm_map[:patch] || :update),
-      :delete => opts.fetch(:delete, :delete),
+      :delete => opts.fetch(:delete, :destroy),
     }
     
     proc_accept_object, proc_accept_errors = nil
@@ -140,7 +139,7 @@ class << E
       obj, err = nil
       begin
         data = controller_instance.params.reject { |k,v| opts[:exclude].include?(k) }
-        unless data.has_key?(E__TOOLKIT__AUTH_TEST_PAYLOAD_KEY)
+        unless data.has_key?(E__CRUD__AUTH_TEST_PAYLOAD_KEY)
           obj = resource.send(resource_method[:post], data)
         end
       rescue => e
@@ -163,33 +162,20 @@ class << E
       [obj, err]
     end
 
-    # if resource respond to #delete(or whatever set in options for delete),
-    # sending #delete to resource, with given id as 1st param.
-    # otherwise, fetching object by given id and sending #delete on it.
+    # fetching object by given id
+    # and calling #destroy(or whatever in options for delete) on it
     #
     # @return [String] empty string
     delete_object = lambda do |id|
       err = nil
       begin
-        meth = resource_method[:delete]
-        if resource.respond_to?(meth)
-          resource.send(meth, id)
-        else
-          obj, err = fetch_object.call(self, id)
-          unless err
-            if obj.respond_to?(meth)
-              obj.send meth
-            elsif obj.respond_to?(:delete!)
-              obj.send :delete!
-            elsif obj.respond_to?(:destroy)
-              obj.send :destroy
-            elsif obj.respond_to?(:destroy!)
-              obj.send :destroy!
-            else
-              err = 'Given object does not respond to any of #%s' % [
-                escape_html(meth), :delete!, :destroy, :destroy!
-              ].uniq.join(" #")
-            end
+        obj, err = fetch_object.call(self, id)
+        unless err
+          meth = resource_method[:delete]
+          if obj.respond_to?(meth)
+             obj.send(meth)
+          else
+            err = '%s does not respond to %s' % [obj.inspect, escape_html(meth)]
           end
         end
       rescue => e
@@ -202,8 +188,8 @@ class << E
       EspressoFrameworkConstants::HTTP__REQUEST_METHODS.reject do |rm|
         next if rm == 'OPTIONS'
         args  = rm == 'POST' ? 
-          [{E__TOOLKIT__AUTH_TEST_PAYLOAD_KEY => 'true'}] : 
-          [E__TOOLKIT__AUTH_TEST_PAYLOAD_KEY]
+          [{E__CRUD__AUTH_TEST_PAYLOAD_KEY => 'true'}] : 
+          [E__CRUD__AUTH_TEST_PAYLOAD_KEY]
         s,h,b = controller_instance.invoke(action % rm.downcase, *args) do |env|
           env.update ENV__REQUEST_METHOD => rm
         end

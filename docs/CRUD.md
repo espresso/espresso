@@ -1,18 +1,25 @@
 
 ## Intro
 
-
 `crudify` method will automatically create CRUD actions that will map HTTP requests to corresponding methods on given Resource.
 
 <pre>
-<b>Request                        Resource</b>
-GET     /id                    #get(id)
-POST    /   with POST data     #create(params)
-PUT     /id with POST data     #get(id).update(params)
-PATCH   /id with POST data     #get(id).update(params)
-DELETE  /id                    #get(id).delete OR #delete(id)
-HEAD    /id                    #get(id)
-OPTIONS /                      returns actions available to client
+<b>Request           Resource</b>
+GET   /id          get(id)
+
+POST  /   with POST data   create(params)
+
+PUT   /id with POST data   get(id).update(params) for DataMapper
+                 get(id).update_attributes(params) for ActiveRecord
+
+PATCH   /id with POST data   get(id).update(params) for DataMapper
+                 get(id).update_attributes(params) for ActiveRecord
+
+DELETE  /id          get(id).destroy
+
+HEAD  /id          get(id)
+
+OPTIONS /            returns actions available to client
 </pre>
 
 **[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
@@ -21,25 +28,19 @@ OPTIONS /                      returns actions available to client
 ## Resource
 
 
-First argument is required and should provide the CRUDified resource.<br/>
-Resource should respond to `get` and `create` methods.<br/>
-Objects that will be created/returned by resource should respond to `update` and `delete` methods.
+First argument is required and should provide the CRUDified resource.<br>
+Resource should respond to `get` and `create` methods.<br>
+Objects created/returned by resource should respond to `update`/`update_attributes` and `destroy` methods.
 
-Additionally, your resource may respond to `delete` method.<br/>
-If it does, `delete` action will rely on it when deleting objects.<br/>
-Otherwise, it will fetch the object by given ID and call `delete` on it.
+If your resource/objects behaves differently, you can map its methods by passing them as options.<br>
 
-If your resource/objects behaves differently, you can map its methods by passing them as options.<br/>
-Let's suppose you are CRUDifying a DataMapper model.<br/>
-To delete an DataMapper object you should call `destroy` on it,
-so we simply mapping `delete` action to `destroy` method:
+**Example:** - Force destroying objects
 
 ```ruby
-crudify ModelName, :delete => :destroy
+crudify ModelName, :delete => :destroy!
 ```
 
-If your resource creating records by `new` instead of `create`,
-simply map `post` action to `new` method:
+**Example:** - Using a resource that creating records by `new` instead of `create`
 
 ```ruby
 crudify ModelName, :post => :new
@@ -47,13 +48,14 @@ crudify ModelName, :post => :new
 
 **[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
+
 ## Excluded Params
 
 By default all params will be sent to resource.
 
-Good enough, however sometimes you need to exclude some params.
+Good enough, however sometimes you need to exclude some of them.
 
-This is easily accomplished by using :exclude option.
+This is easily accomplished by using `:exclude` option.
 
 To exclude a single param, pass it as a string.
 
@@ -77,9 +79,9 @@ By default, `crudify` will create actions that respond to controllers root path.
 
 ```ruby
 class App < E
-    map '/'
+  map '/'
 
-    crudify SomeModel
+  crudify SomeModel
 end
 ```
 
@@ -93,16 +95,14 @@ This will create following actions:
     - delete_index
     - options_index
 
-Each action will respond to corresponding request method.
 
-
-To route CRUD actions to a different path, simply pass the path as second argument:
+To route CRUD actions to a different path, simply pass it as second argument:
 
 ```ruby
 class App < E
-    map '/'
+  map '/'
 
-    crudify UsersModel, :users
+  crudify UsersModel, :users
 end
 ```
 
@@ -117,23 +117,23 @@ This will create following actions:
     - options_users
 
 
-*IMPORTANT!* The common pitfall here is to define a method that will override 
+**IMPORTANT!** The common pitfall here is to define a method that will override 
 the actions created by crudifier.
 
 ```ruby
 class App < E
-    map '/'
+  map '/'
 
-    crudify SomeModel
+  crudify SomeModel
 
-    def index
-        # Bad Idea!
-    end
+  def index
+    # Bad Idea! This will override all CRUD actions!
+  end
 end
 ```
 
 The `index` method here will override all actions created by `crudify SomeModel`,
-thus CRUD WONT WORK on this controller!
+thus **CRUD WONT WORK** on this controller!
 
 Why so?
 
@@ -144,27 +144,27 @@ it will override any actions previously defined with an explicit verb.
 
 ```ruby
 def get_index
-    # ...
+  # ...
 end
 
 def post_index
-    # ...
+  # ...
 end
 
 def index
-    # this will OVERRIDE `get_index` and `post_index`
+  # this will OVERRIDE `get_index` and `post_index`
 end
 
 def get_read
-    # ...
+  # ...
 end
 
 def post_read
-    # ...
+  # ...
 end
 
 def read
-    # this will OVERRIDE `get_read` and `post_read`
+  # this will OVERRIDE `get_read` and `post_read`
 end
 ```
 
@@ -177,13 +177,13 @@ Then you simply define `get_index` method:
 
 ```ruby
 class App < E
-    map '/'
+  map '/'
 
-    crudify SomeModel
+  crudify SomeModel
 
-    def get_index
-        # Good Idea!
-    end
+  def get_index
+    # Good Idea!
+  end
 end
 ```
 
@@ -207,9 +207,8 @@ crudify Resource, :pkey => 'prodID'
 
 If objects created by your resource does respond to `:[]` and does contain the pkey column, the value of `object[pkey column]` will be returned.
 
-
-Otherwise if objects created by your resource does respond to pkey column
-the value of `object.pkey_column` will be returned.
+Otherwise if objects created by your resource does respond to a method of same name as `pkey`,
+the value of `object.send(pkey)` will be returned.
 
 Otherwise the object itself will be returned.
 
@@ -219,25 +218,25 @@ The block will receive the object as first argument:
 
 ```ruby
 crudify UsersModel do |obj|
-    case
-        when post?, put?, patch?
-            obj.id
-        when head?
-            last_modified obj.last_modified
-        else
-            content_type '.json'
-            obj.to_json
-    end
+  case
+    when post?, put?, patch?
+      obj.id
+    when head?
+      last_modified obj.last_modified
+    else
+      content_type '.json'
+      obj.to_json
+  end
 end
 ```
 
-This will return object ID on POST, PUT, and PATCH requests.<br/>
+This will return object ID on POST, PUT, and PATCH requests.<br>
 
 On HEAD requests, the framework is always sending an empty body,
-so we only update the headers.<br/>
+so we only update the headers.<br>
 This way the client may decide when to fetch the object.
 
-On GET requests it will convert object to JSON before it is sent to client.<br/>
+On GET requests it will convert the object to JSON before it is sent to client.<br>
 Also `content_type` is used to set proper content type.
 
 DELETE action does not need a handler cause it ever returns an empty string.
@@ -251,7 +250,7 @@ crudifier will try to extract and format errors accordingly.
 
 In case of errors, crudifier will behave depending on given options and proc.
 
-If a proc given, crudifier will NOT halt the request.<br/>
+If a proc given, crudifier will NOT halt the request.<br>
 It will pass error to given proc via second argument instead.
 
 To halt the request when a proc given, set `:halt_on_errors` to true.
@@ -265,44 +264,44 @@ To use a custom status code pass it via `:halt_with` option.
 ## Access Restriction
 
 
-Using `auth` will instruct client to require authorization.<br/>
+Using `auth` will instruct client to require authorization.<br>
 Access can be restricted to some or all actions.
 
 In example below we will restrict access to Create, Update and Delete actions:
 
 ```ruby
 class App < E
-    # ...
+  # ...
 
-    auth :post_index, :put_index, :patch_index, :delete_index do |user, pass|
-        [user, pass] = ['admin', 'someReally?secretPass']
-    end
+  auth :post_index, :put_index, :patch_index, :delete_index do |user, pass|
+    [user, pass] = ['admin', 'someReally?secretPass']
+  end
 
-    crudify ModelName
+  crudify ModelName
 end
 ```
 
-Now, when an client will want to POST, PUT, PATCH, DELETE,
+Now, when the client will want to POST, PUT, PATCH, DELETE,
 it will be asked for authorization.
 
 And an OPTIONS request will return all actions for authorized clients and
 only GET, HEAD, OPTIONS for non-authorized clients.
 
-If an root given, `crudify` will create actions that responds to that root,
+If a root path given, `crudify` will create actions that responds to that root,
 thus actions name will contain given root.
 
-In example below, `crudify` will create actions like `get_users`, `post_users`, `put_users` etc.<br/>
+In example below, `crudify` will create actions like `get_users`, `post_users`, `put_users` etc.<br>
 That's why we should specify proper action name in `auth` for authorization to work:
 
 ```ruby
 class App < E
-    # ...
+  # ...
 
-    auth :post_users, :put_users, :patch_users, :delete_users do |user, pass|
-        [user, pass] = ['admin', 'someReally?secretPass']
-    end
+  auth :post_users, :put_users, :patch_users, :delete_users do |user, pass|
+    [user, pass] = ['admin', 'someReally?secretPass']
+  end
 
-    crudify UsersModel, :users
+  crudify UsersModel, :users
 end
 ```
 

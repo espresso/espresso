@@ -2,6 +2,8 @@ module EMoreTest__CRUD
 
   class Resource
 
+    attr_reader :objects
+
     def initialize
       @objects = {}
     end
@@ -15,11 +17,10 @@ module EMoreTest__CRUD
         object[:id] = obj_id.to_i
       end
       id = @objects.size + 1
-      @objects[id] = object.update('__id__' => id)
-    end
-
-    def delete id
-      @objects.delete id.to_i
+      def object.destroy
+        self['__objects__'].delete self['__id__']
+      end
+      @objects[id] = object.update('__objects__' => @objects, '__id__' => id)
     end
 
     def [] key
@@ -113,10 +114,8 @@ module EMoreTest__CRUD
 
       Test :get do
         RESOURCE.keys.each do |key|
-          rsp = get key
-          data = eval(rsp.body) rescue nil
-          expect(data).is_a?(Hash)
-          expect(data['name']) == RESOURCE[key]['name']
+          get key
+          expect(last_response.body) =~ /"name"=>"#{RESOURCE[key]['name']}"/
         end
       end
 
@@ -189,10 +188,9 @@ module EMoreTest__CRUD
             new_name = rand.to_s
             patch id, :name => new_name
 
-            rsp = get id
-            data = eval(rsp.body) rescue nil
-            expect(data).is_a?(Hash)
-            false?(data['name']) == name
+            get id
+            refute(last_response.body) =~ /"name"=>"#{name}"/
+            expect(last_response.body) =~ /"name"=>"#{new_name}"/
 
             And 'finally delete it' do
               delete id
