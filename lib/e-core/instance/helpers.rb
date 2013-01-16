@@ -1,6 +1,6 @@
 class E
 
-  ['xhr'] + EspressoFrameworkConstants::HTTP__REQUEST_METHODS.each do |rm|
+  ['xhr'].concat(EspressoFrameworkConstants::HTTP__REQUEST_METHODS).each do |rm|
     define_method '%s?' % rm.downcase do
       request.send __method__
     end
