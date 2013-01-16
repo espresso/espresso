@@ -1,25 +1,24 @@
-
 ## Intro
 
 `crudify` method will automatically create CRUD actions that will map HTTP requests to corresponding methods on given Resource.
 
 <pre>
-<b>Request           Resource</b>
-GET   /id          get(id)
+<b>Request                      Resource</b>
+GET   /id                    #get(id)
 
-POST  /   with POST data   create(params)
+POST    /   with POST data   #create(params)
 
-PUT   /id with POST data   get(id).update(params) for DataMapper
-                 get(id).update_attributes(params) for ActiveRecord
+PUT     /id with POST data   #get(id).update(params) for DataMapper
+                             #get(id).update_attributes(params) for ActiveRecord
 
-PATCH   /id with POST data   get(id).update(params) for DataMapper
-                 get(id).update_attributes(params) for ActiveRecord
+PATCH   /id with POST data   #get(id).update(params) for DataMapper
+                             #get(id).update_attributes(params) for ActiveRecord
 
-DELETE  /id          get(id).destroy
+DELETE  /id                  #get(id).destroy
 
-HEAD  /id          get(id)
+HEAD    /id                  #get(id)
 
-OPTIONS /            returns actions available to client
+OPTIONS /                    returns actions available to client
 </pre>
 
 **[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
