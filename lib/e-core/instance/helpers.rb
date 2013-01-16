@@ -1,5 +1,14 @@
 class E
 
+  EspressoFrameworkConstants::HTTP__REQUEST_METHODS.each do |rm|
+    define_method '%s?' % rm.downcase do
+      # Hash lookup is much faster than String comparison
+      (@__e__request_methods ||= EspressoFrameworkConstants::HTTP__REQUEST_METHODS.inject({}) do |f,c|
+        f.merge(c => c == request.request_method)
+      end)[rm]
+    end
+  end
+
   # shortcut for Rack::Mime::MIME_TYPES.fetch
   def mime_type type, fallback = nil
     Rack::Mime::MIME_TYPES.fetch type, fallback
@@ -22,6 +31,12 @@ class E
   end
 
   begin # borrowed from [Sinatra Framework](https://github.com/sinatra/sinatra)
+
+    # Set or retrieve the response status code.
+    def status(value=nil)
+      response.status = value if value
+      response.status
+    end
     
     # Sugar for redirect (example:  redirect back)
     def back

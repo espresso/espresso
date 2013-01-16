@@ -83,13 +83,6 @@ class E
   end
   private :call!
 
-
-  # Set or retrieve the response status code.
-  def status(value=nil)
-    response.status = value if value
-    response.status
-  end
-
   # @example ruby 1.8
   #    def index id, status
   #      action_params
