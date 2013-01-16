@@ -138,7 +138,7 @@ module EMoreTest__CRUD
 
       Test :options do
         rsp = options
-        expect(rsp.body) == 'GET, POST, PUT, HEAD, DELETE, OPTIONS, PATCH'
+        expect(rsp.body) == 'GET, POST, PUT, HEAD, DELETE, OPTIONS, PATCH, TRACE'
       end
 
     end
@@ -149,11 +149,11 @@ module EMoreTest__CRUD
 
       Test :options do
         rsp = options
-        expect(rsp.body) == 'GET, HEAD, OPTIONS'
+        expect(rsp.body) == 'GET, HEAD, OPTIONS, TRACE'
 
         authorize 'user', 'pass'
         rsp = options
-        expect(rsp.body) == 'GET, POST, PUT, HEAD, DELETE, OPTIONS, PATCH'
+        expect(rsp.body) == 'GET, POST, PUT, HEAD, DELETE, OPTIONS, PATCH, TRACE'
       end
 
       reset_app!
