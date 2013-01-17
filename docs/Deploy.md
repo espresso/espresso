@@ -166,10 +166,10 @@ Running an app instance:
 ```ruby
 require 'your-app-file(s)'
 
-app = App.mount
-# or
+app = MyController.mount
+
+# or create new application using EApp
 app = EApp.new :automount  # will auto-discover all available controllers
-# etc .
 
 run app
 ```
