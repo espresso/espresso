@@ -166,7 +166,7 @@ class E
 
 end
 
-class EApp
+class EspressoApp
 
   # set the baseurl for assets.
   # by default, assets URL is empty.

@@ -1,5 +1,5 @@
 # Inter-Process Cache Manager
-class EApp
+class EspressoApp
   
   def ipcm_trigger *args
     if pids_reader

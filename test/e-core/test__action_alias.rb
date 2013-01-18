@@ -121,7 +121,7 @@ module ECoreTest__ActionAlias
   end
 
   Spec.new self do
-    app EApp.new.mount(AppCanonicals, '/', '/app-canonical')
+    app EspressoApp.new.mount(AppCanonicals, '/', '/app-canonical')
     map AppCanonicals.base_url
 
     ['app-canonical/some-url', 'app-canonical/some-another/url'].each do |url|

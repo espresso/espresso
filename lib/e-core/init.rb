@@ -6,21 +6,7 @@ end
 class << E
   include EspressoFrameworkConstants
   include EspressoFrameworkUtils
-end
 
-class EApp
-  include EspressoFrameworkConstants
-  include EspressoFrameworkUtils
-end
-
-
-class EspressoFrameworkRewriter
-  include Rack::Utils
-  include EspressoFrameworkConstants
-  include EspressoFrameworkUtils
-end
-
-class << E
   def include mdl
     super
     (@included_actions ||= []).concat mdl.public_instance_methods(false)
@@ -57,4 +43,20 @@ class << E
       e_attribute m
     end
   end
+end
+
+class EspressoFrameworkRewriter
+  include Rack::Utils
+  include EspressoFrameworkConstants
+  include EspressoFrameworkUtils
+end
+
+class EspressoApp
+  include EspressoFrameworkConstants
+  include EspressoFrameworkUtils
+end
+
+def EApp
+  warn "EApp will be deprecated. Please use EspressoApp instead."
+  EspressoApp
 end

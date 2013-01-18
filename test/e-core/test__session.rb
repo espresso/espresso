@@ -34,7 +34,7 @@ module ECoreTest__Session
   end
 
   Spec.new self do
-    app EApp.new { session :memory }.mount(App)
+    app EspressoApp.new { session :memory }.mount(App)
     map App.base_url
 
     var, val = 2.times.map { rand.to_s }

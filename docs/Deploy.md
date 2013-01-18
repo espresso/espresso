@@ -17,7 +17,7 @@ end
 app.run
 
 # or create a new app and mount controller
-app = EApp.new
+app = EspressoApp.new
 app.mount App do
   # some setup
 end
@@ -27,7 +27,7 @@ app.run
 Controllers can be also mounted by using Regexps:
 
 ```ruby
-app = EApp.new
+app = EspressoApp.new
 app.mount /SomeController/
 # etc.
 app.run
@@ -67,7 +67,7 @@ end
 app.run
 
 # or create a new app and mount the slice
-app = EApp.new
+app = EspressoApp.new
 app.mount Forum do
   # some setup
 end
@@ -98,7 +98,7 @@ app = Forum.mount '/forum'
 app.run
 
 # or
-app = EApp.new
+app = EspressoApp.new
 app.mount Forum, '/forum'
 app.run
 ```
@@ -110,7 +110,7 @@ app = Forum.mount '/forum', '/Forums'
 app.run
 
 # or
-app = EApp.new
+app = EspressoApp.new
 app.mount Forum, '/forum', '/Forums'
 app.run
 ```
@@ -168,8 +168,8 @@ require 'your-app-file(s)'
 
 app = MyController.mount
 
-# or create new application using EApp
-app = EApp.new :automount  # will auto-discover all available controllers
+# or create a new Espresso application using EspressoApp
+app = EspressoApp.new :automount  # will auto-discover all available controllers
 
 run app
 ```

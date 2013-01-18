@@ -6,7 +6,7 @@ module ECoreTest__Mount
     end
 
     Spec.new self do
-      eapp = EApp.new
+      eapp = EspressoApp.new
       eapp.mount App1, App1::App2, '/app'
       app eapp
       map '/app'
@@ -29,7 +29,7 @@ module ECoreTest__Mount
     end
 
     Spec.new self do
-      eapp = EApp.new
+      eapp = EspressoApp.new
       eapp.mount ByModule
       app eapp
 
@@ -51,7 +51,7 @@ module ECoreTest__Mount
     end
 
     Spec.new self do
-      eapp = EApp.new
+      eapp = EspressoApp.new
       eapp.mount ByClass
       app eapp
 
@@ -75,7 +75,7 @@ module ECoreTest__Mount
     end
 
     Spec.new self do
-      eapp = EApp.new
+      eapp = EspressoApp.new
       eapp.mount /ByRegexp/
       app eapp
 

@@ -1,4 +1,4 @@
-class EApp
+class EspressoApp
 
   # Rack interface to all found controllers
   #
@@ -17,7 +17,7 @@ class EApp
   #      end
   #    end
   #
-  #    run EApp
+  #    run EspressoApp
   def self.call env
     new(:automount).call(env)
   end
@@ -69,14 +69,14 @@ class EApp
   #   end
   #
   #   # this will work correctly
-  #   app = EApp.new
+  #   app = EspressoApp.new
   #   app.global_setup { controllers setup }
   #   app.mount News
   #   app.mount Articles
   #   app.run
   #
   #   # and this will NOT!
-  #   app = EApp.new
+  #   app = EspressoApp.new
   #   app.mount News
   #   app.mount Articles
   #   app.global_setup { controllers setup }

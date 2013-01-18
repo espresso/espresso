@@ -30,7 +30,7 @@ class << E
   end
 
   def mount *roots, &setup
-    @app || EApp.new.mount(self, *roots, &setup)
+    @app || EspressoApp.new.mount(self, *roots, &setup)
   end
   alias to_app  mount
   alias to_app! mount
@@ -47,7 +47,7 @@ class << E
     @mounted
   end
 
-  # @param [EApp] app EApp instance
+  # @param [EspressoApp] app EspressoApp instance
   def mount! app
     return if mounted?
     @app = app
@@ -70,7 +70,7 @@ class << E
   #   class Forum < E
   #     map '/forum', '/forums'
   #   end
-  #   app = EApp.new.mount(Forum, '/site-01', '/site-one')
+  #   app = EspressoApp.new.mount(Forum, '/site-01', '/site-one')
   #   # app will serve:
   #   #   - /site-01/forum
   #   #   - /site-01/forums

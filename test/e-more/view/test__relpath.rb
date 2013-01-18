@@ -37,7 +37,7 @@ module EMoreTest__View__Relpath
   end
 
   Spec.new self do
-    app EApp.new { root File.expand_path '..', __FILE__ }.mount(App)
+    app EspressoApp.new { root File.expand_path '..', __FILE__ }.mount(App)
 
     get
     expect(last_response.body) == "Hello World!"

@@ -1,4 +1,4 @@
-class EApp
+class EspressoApp
 
   # set base URL to be prepended to all controllers
   def map url
@@ -22,7 +22,7 @@ class EApp
   #    class App < E
   #      # ...
   #    end
-  #    app = EApp.new
+  #    app = EspressoApp.new
   #    app.session :memory
   #    app.run
   #
@@ -30,7 +30,7 @@ class EApp
   #    class App < E
   #      # ...
   #    end
-  #    app = EApp.new
+  #    app = EspressoApp.new
   #    app.session :memory, :domain => 'foo.com', :expire_after => 2592000
   #    app.run
   #
@@ -38,7 +38,7 @@ class EApp
   #    class App < E
   #      # ...
   #    end
-  #    app = EApp.new
+  #    app = EspressoApp.new
   #    app.session :cookies
   #    app.run
   #
@@ -46,7 +46,7 @@ class EApp
   #    class App < E
   #      # ...
   #    end
-  #    app = EApp.new
+  #    app = EspressoApp.new
   #    app.session :memcache
   #    app.run
   #
@@ -59,7 +59,7 @@ class EApp
   #
   #    require 'rack/session/mongo'
   #
-  #    app = EApp.new
+  #    app = EspressoApp.new
   #    app.session Rack::Session::Mongo
   #    app.run
   #
@@ -107,7 +107,7 @@ class EApp
   #    class App < E
   #      # ...
   #    end
-  #    app = EApp.new
+  #    app = EspressoApp.new
   #    app.use SomeMiddleware, :with, :some => :opts
   #    app.run
   #
@@ -130,7 +130,7 @@ class EApp
   #      end
   #    end
   #
-  #    app = EApp.new
+  #    app = EspressoApp.new
   #    app.use Rack::CommonLogger
   #    app.use Rack::ShowExceptions
   #    app.run
@@ -175,7 +175,7 @@ class EApp
   #       or do permanent redirect for robots and simple redirect for browsers etc.
   #
   # @example
-  #    app = EApp.new
+  #    app = EspressoApp.new
   #
   #    # redirect to new address
   #    app.rewrite /\A\/(.*)\.php$/ do |title|

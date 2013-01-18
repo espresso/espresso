@@ -59,7 +59,7 @@ module EMoreTest__View__AdhocRender
   end
 
   Spec.new self do
-    app EApp.new { root File.expand_path '..', __FILE__ }.mount(App)
+    app EspressoApp.new { root File.expand_path '..', __FILE__ }.mount(App)
     map App.base_url
 
     Testing 'current action' do

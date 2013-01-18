@@ -471,7 +471,7 @@ A rewrite rule consist of a regular expression and a block that receives matches
 **Example:**
 
 ```ruby
-app = EApp.new do
+app = EspressoApp.new do
 
   rewrite /\A\/(.*)\.php\Z/ do |title|
     redirect Cms.route(:index, title)
@@ -500,7 +500,7 @@ class Pages < E
   end
 end
 
-app = EApp.new do
+app = EspressoApp.new do
 
   # pass old pages to archive action
   rewrite /\A\/(.*)\.php\Z/ do |title|
@@ -527,7 +527,7 @@ If a single argument given and it is an Array, it is treated as a bare Rack resp
 **Example:**
 
 ```ruby
-app = EApp.new do
+app = EspressoApp.new do
 
   rewrite /\A\/archived\/(.*)\.html\Z/ do |title|
 
