@@ -158,8 +158,8 @@ class E
     self.class.route *args
   end
 
-  def action_aliases
-    self.class.action_aliases[action] || []
+  def alias_actions
+    self.class.alias_actions[action] || []
   end
 
   def path_rules

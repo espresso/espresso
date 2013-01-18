@@ -3,8 +3,8 @@ module ECoreTest__ActionAlias
   class AnyRequestMethod < E
     map '/', '/some-canonical'
 
-    action_alias 'some-url', :endpoint
-    action_alias 'some-another/url', :endpoint
+    alias_action 'some-url', :endpoint
+    alias_action 'some-another/url', :endpoint
 
     def index
     end
@@ -16,8 +16,8 @@ module ECoreTest__ActionAlias
   class SpecificRequestMethod < E
     map '/', '/some-canonical'
 
-    action_alias 'some-url', :get_endpoint
-    action_alias 'some-another/url', :get_endpoint
+    alias_action 'some-url', :get_endpoint
+    alias_action 'some-another/url', :get_endpoint
 
     def index
     end
@@ -28,8 +28,8 @@ module ECoreTest__ActionAlias
 
   class PrivateZone < E
 
-    action_alias 'protected_alias', :protected_method
-    action_alias 'private_alias',   :private_method
+    alias_action 'protected_alias', :protected_method
+    alias_action 'private_alias',   :private_method
 
     def index
     end
@@ -46,8 +46,8 @@ module ECoreTest__ActionAlias
   class AppCanonicals < E
     map '/', '/some-canonical'
 
-    action_alias 'some-url', :endpoint
-    action_alias 'some-another/url', :endpoint
+    alias_action 'some-url', :endpoint
+    alias_action 'some-another/url', :endpoint
 
     def index
     end

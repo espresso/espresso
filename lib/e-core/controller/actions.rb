@@ -79,7 +79,7 @@ class << E
 
     actions = (
       (self.public_instance_methods(false)) +
-      (@action_aliases   || {}).keys +
+      (@alias_actions   || {}).keys +
       (@included_actions || [])
     ).uniq.map {|a| a.to_sym} # to_sym needed for 1.8
     

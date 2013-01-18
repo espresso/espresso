@@ -113,7 +113,7 @@ class << E
 
   def lock!
     [
-      @base_url, @canonicals, @path_rules, @action_aliases,
+      @base_url, @canonicals, @path_rules, @alias_actions,
       @routes, @route_setup, @route_by_action, @route_by_action_with_format,
       @expanded_formats, @expanded_setups,
       @middleware,
@@ -166,7 +166,7 @@ class << E
       @route_setup[matcher]     = action_route_setup
     end
 
-    aliases = action_aliases[action] || []
+    aliases = alias_actions[action] || []
     request_methods.each do |rm|
       set_action_routes_by_request_method(rm, action_route_setup, aliases)
     end

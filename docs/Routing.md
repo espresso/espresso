@@ -172,29 +172,32 @@ Though path rules are useful enough, you can bypass them and set routes directly
 
 ```ruby
 def bar
+  map '/'
   # ...
 end
 
-action_alias 'some/url', :bar
-action_alias 'some/another/url', :bar
+alias_action 'some/url', :bar
+alias_action 'some/another/url', :bar
 ```
 
 **Example:** make `foo` method to serve `/foo` and `/some/url` via any request method
 
 ```ruby
 def foo
+  map '/'
   # ...
 end
-action_alias 'some/url', :foo
+alias_action 'some/url', :foo
 ```
 
 **Example:** `get_foo` method will serve `/foo` and `/some/url` only via `GET` request method 
 
 ```ruby
 def get_foo
+  map '/'
   # ...
 end
-action_alias 'some/url', :get_foo
+alias_action 'some/url', :get_foo
 ```
 
 Also standard Ruby `alias` can be used:
@@ -219,9 +222,10 @@ Now `news` action will serve any of:
 *   /headlines/recent.html
 
 **NOTE:** Private and protected methods usually are not publicly available via HTTP.<br>
-However, if you add an action alias to such a method, **it becomes public**.<br>
+However, if you add an action alias to such a method, **it becomes public** via its alias.<br>
 To alias a private/protected method and keep it private,<br>
-use  a  standard ruby alias rather than an action alias.
+use standard ruby `alias` or `alias_method` rather than `alias_action`.
+
 
 **[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 

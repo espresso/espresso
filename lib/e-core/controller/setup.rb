@@ -70,21 +70,23 @@ class << E
   #     # ...
   #   end
   #
-  #   action_alias 'some/url', :bar
-  #   action_alias 'some/another/url', :bar
+  #   alias_action 'some/url', :bar
+  #   alias_action 'some/another/url', :bar
   #
   # @note private and protected methods usually are not publicly available via HTTP.
-  #       however, if you add an action alias to such a method, it becomes public.
+  #       however, if you add an action alias to such a method, it becomes public via its alias.
   #       to alias a private/protected method and keep it private,
-  #       use  a  standard ruby alias rather than an action alias.
+  #       use standard ruby `alias` or `alias_method` rather than `alias_action`
   #
-  def action_alias url, action
+  # @param [String] url target URL
+  # @param [Symbol] action
+  def alias_action url, action
     return if mounted?
-    ((@action_aliases ||= {})[action]||=[]) << url
+    ((@alias_actions ||= {})[action]||=[]) << url
   end
 
-  def action_aliases
-    @action_aliases || {}
+  def alias_actions
+    @alias_actions || {}
   end
 
   # automatically setting URL extension and Content-Type.
