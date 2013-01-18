@@ -56,7 +56,9 @@ class EspressoApp
   include EspressoFrameworkUtils
 end
 
-def EApp
-  warn "EApp will be deprecated. Please use EspressoApp instead."
-  EspressoApp
+class EApp < EspressoApp
+  def initialize(*)
+    warn "\n--- Warning: EApp will be deprecated soon. Please use EspressoApp instead ---\n"
+    super
+  end
 end
