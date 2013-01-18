@@ -274,7 +274,8 @@ class << E
         action_setups = setups.select do |(m,_)| # |(m)| does not work on 1.8
           m == :* || m == action ||
             (m.is_a?(Regexp) && action.to_s =~ m) ||
-            (m.is_a?(String) && action_formats.include?(m))
+            (m.is_a?(String) && action_formats.include?(m)) ||
+            setup_aliases(position, action).include?(m)
         end
 
         ((map[position]||={})[action]||={})[nil] = action_setups.inject([]) do |f,s|

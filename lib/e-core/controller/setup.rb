@@ -212,9 +212,48 @@ class << E
   alias on    before
   alias setup before
 
+  # allow to run multiple callbacks for same action.
+  # action will run its callback(s)(if any) regardless aliased callbacks.
+  # callbacks will run in the order was added, that's it,
+  # if an aliased callback defined before action's callback, it will run first.
+  #
+  # @example run :save callback on :post_crud action
+  #   class App < E
+  #     before :save do
+  #       # ...
+  #     end
+  #
+  #     def post_crud
+  #       # ...
+  #     end
+  #     alias_before :post_crud, :save
+  #   end
+  #
+  # @param [Symbol] action
+  # @param [Array] others callbacks to run before given actions, beside its own callback
+  #
+  def alias_before action, *others
+    return if mounted?
+    (@before_aliases ||= {})[action] = others
+  end
+
   # (see #before)
   def after *matchers, &proc
     add_setup :z, *matchers, &proc
+  end
+  
+  # (see #alias_before)
+  def alias_after action, *others
+    return if mounted?
+    (@after_aliases ||= {})[action] = others
+  end
+
+  def setup_aliases position, action
+    if position == :a
+      (@before_aliases || {})[action] || []
+    elsif position == :z
+      (@after_aliases  || {})[action] || []
+    end
   end
 
   def add_setup position, *matchers, &proc
