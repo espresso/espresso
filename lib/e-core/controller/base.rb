@@ -135,8 +135,9 @@ class << E
     persist_action_setups!
     
     public_actions.each do |action|
-      set_action_route action
-      set_canonical_routes action
+      set_action_route(action)
+      set_canonical_routes(action)
+      set_alias_routes(action)
     end
   end
 
@@ -144,7 +145,8 @@ class << E
     public_actions.each do |action|
       action_setup = generate_action_setup(action)
       action_setup.values_at(:action, :action_name).each do |matcher|
-        @action_setup[matcher]    = action_setup
+        (@action_setup[matcher] ||= {})[action_setup[:request_method]] = action_setup
+
         @route_by_action[matcher] = action_setup[:path]
         formats(action).each do |format|
           @route_by_action_with_format[matcher.to_s + format] = action_setup[:path] + format
@@ -155,24 +157,16 @@ class << E
 
   def set_action_route action
     action_setup = action_setup(action)
-    route_regexp = route_to_regexp(action_setup[:path])
-    @routes[route_regexp] = {action_setup[:request_method] => action_setup}.freeze
+    set_route(action_setup[:path], action_setup)
   end
 
   def set_canonical_routes action
     action_setup = action_setup(action)
-    aliases = alias_actions[action] || []
 
     canonicals.each do |c|
       c_path  = rootify_url(c, @route_by_action[action])
       c_setup = action_setup.merge(:path => c_path, :canonical => action_setup[:path])
-      @routes[route_to_regexp(c_path)] = {action_setup[:request_method] => c_setup}.freeze
-
-      aliases.each do |a|
-        a_path  = rootify_url(c, a)
-        a_setup = action_setup.merge(:path => a_path, :canonical => action_setup[:path])
-        @routes[route_to_regexp(a_path)] = {action_setup[:request_method] => a_setup}.freeze
-      end
+      set_route(c_path, c_setup)
     end
   end
 
@@ -183,8 +177,22 @@ class << E
     aliases.each do |a|
       a_path  = rootify_url(base_url, a)
       a_setup = action_setup.merge(:path => a_path)
-      @routes[route_to_regexp(a_path)] = {action_setup[:request_method] => a_setup}
+      set_route(a_path, a_setup)
     end
+
+    canonicals.each do |c|
+      c_path  = rootify_url(c, @route_by_action[action])
+      aliases.each do |a|
+        a_path  = rootify_url(c_path, a)
+        a_setup = action_setup.merge(:path => a_path, :canonical => action_setup[:path])
+        set_route(a_path, a_setup)
+      end
+    end
+  end
+
+  def set_route route, setup
+    regexp = route_to_regexp(route)
+    (@routes[regexp] ||= {})[setup[:request_method]] = setup
   end
 
   # avoid regexp operations at runtime
@@ -311,30 +319,7 @@ class << E
       u << [m, f.map {|e| '.' << e.to_s.sub('.', '')}.uniq]
     end
 
-    # defining a handy #format? method for each format.
-    # eg. json? for ".json", xml? for ".xml" etc.
-    # these methods aimed to replace the `if format == '.json'` redundancy
-    #
-    # @example
-    #
-    #   class App < E
-    #
-    #     format '.json'
-    #
-    #     def page
-    #       # on /page, json? will return nil
-    #       # on /page.json, json? will return '.json'
-    #     end
-    #   end
-    #
-    (all_formats = (global_formats + strict_formats.map {|s| s.last}.flatten).uniq)
-    (all_formats = Hash[all_formats.zip(all_formats)]).each_key do |f|
-      define_method '%s?' % f.sub('.', '') do
-        # Hash searching is a lot faster than String comparison
-        all_formats[format]
-      end
-      private '%s?' % f.sub('.', '')
-    end
+    define_format_helpers(global_formats, strict_formats)
 
     @expanded_formats = public_actions.inject({}) do |map, action|
 
@@ -353,4 +338,33 @@ class << E
       map
     end
   end
+
+  # defining a handy #format? method for each format.
+  # eg. json? for ".json", xml? for ".xml" etc.
+  # these methods aimed to replace the `if format == '.json'` redundancy
+  #
+  # @example
+  #
+  #   class App < E
+  #
+  #     format '.json'
+  #
+  #     def page
+  #       # on /page, json? will return nil
+  #       # on /page.json, json? will return '.json'
+  #     end
+  #   end
+  #
+  def define_format_helpers global_formats, strict_formats
+    (all_formats = (global_formats + strict_formats.map {|s| s.last}.flatten).uniq)
+    (all_formats = Hash[all_formats.zip(all_formats)]).each_key do |f|
+      method_name = '%s?' % f.sub('.', '')
+      define_method method_name do
+        # Hash searching is a lot faster than String comparison
+        all_formats[format]
+      end
+      private method_name
+    end
+  end
+
 end
