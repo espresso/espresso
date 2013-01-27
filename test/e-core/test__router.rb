@@ -37,14 +37,11 @@ module ECoreTest__Router
   Spec.new App do
 
     Testing 'with zero args' do
-      It do
-        r = get
-        is('index').ok_body?
+      get
+      is(last_response).ok?
 
-        r = post
-        is('index').ok_body?
-
-      end
+      post
+      is(last_response).not_implemented?
 
       It 'returns 404 cause It does not accept any args' do
         r = get :a1
@@ -56,13 +53,11 @@ module ECoreTest__Router
     end
 
     Testing 'with one arg' do
-      It do
-        get :exact, :arg
-        is('arg').ok_body?
+      get :exact, :arg
+      is('arg').ok_body?
 
-        post :exact, :arg
-        is('arg').ok_body?
-      end
+      post :exact, :arg
+      is('arg').ok_body?
 
       It 'returns 404 cause called without args' do
         get :exact
@@ -74,11 +69,6 @@ module ECoreTest__Router
 
       It 'returns 404 cause redundant args provided' do
         post :exact, :arg, :redundant_arg
-        is(last_response).not_found?
-      end
-
-      It 'returns 404 cause :head_exact action does not exists' do
-        head :exact
         is(last_response).not_found?
       end
     end
@@ -108,26 +98,19 @@ module ECoreTest__Router
         r = get :one_or_two, 1, 2, 3, 4, 5, 6
         is(last_response).not_found?
       end
-
-      It 'returns 404 cause :post_one_or_two action does not exists' do
-        r = post :one_or_two
-        is(last_response).not_found?
-      end
     end
 
     Testing 'with one or more args' do
-      It do
-        r = get :one_or_more, :a1
-        is(['a1'].to_s).ok_body?
+      r = get :one_or_more, :a1
+      is(['a1'].to_s).ok_body?
 
-        r = get :one_or_more, :a1, :a2, :a3, :etc
-        if E.is_ruby19?
-          is(['a1', 'a2', 'a3', 'etc'].to_s).ok_body?
-        else
-          #'return 404 cause trailing default params does not work on Appetite running on ruby1.8'
-          is(last_response).not_found?
-          is('max params accepted: 1; params given: 4').current_body?
-        end
+      r = get :one_or_more, :a1, :a2, :a3, :etc
+      if E.is_ruby19?
+        is(['a1', 'a2', 'a3', 'etc'].to_s).ok_body?
+      else
+        #'return 404 cause trailing default params does not work on Appetite running on ruby1.8'
+        is(last_response).not_found?
+        is('max params accepted: 1; params given: 4').current_body?
       end
     end
 

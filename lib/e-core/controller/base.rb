@@ -181,7 +181,7 @@ class << E
     canonicals.each do |c|
       c_path  = rootify_url(c, action_setup[:path])
       aliases.each do |a|
-        a_path  = rootify_url(c_path, a)
+        a_path  = rootify_url(c, a)
         a_setup = action_setup.merge(:path => a_path, :canonical => action_setup[:path])
         set_route(a_path, a_setup)
       end

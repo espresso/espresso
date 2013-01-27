@@ -48,33 +48,15 @@ module ECoreTest__REST
 
   Spec.new RestApp do
 
-    Ensure "index respond to any Request Method" do
-      EspressoFrameworkConstants::HTTP__REQUEST_METHODS.each do |m|
-        self.send m.to_s.downcase
-        is(last_response).ok?
-      end
-    end
+    Ensure "index respond only to GET" do
+      get
+      is(last_response).ok?
 
-    Ensure 'actions with verb override verbless ones' do
       post
-      is("POST|post_index").current_body?
+      is(last_response).ok?
 
-      get :foo
-      is("GET|get_foo").current_body?
-
-      post :foo
-      is("POST|post_foo").current_body?
-    end
-
-    Ensure 'verbless action overrides verbified ones' do
-      get :override
-      is('GET|override').current_body?
-
-      post :override
-      is('POST|override').current_body?
-
-      delete :override
-      is('DELETE|override').current_body?
+      put
+      is(last_response).not_implemented?
     end
 
     Ensure 'defined actions responds only to given request method' do

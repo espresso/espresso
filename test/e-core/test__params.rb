@@ -3,7 +3,12 @@ module ECoreTest__Params
   class ParamsApp < E
 
     def symbolized var, symbolize
-      params[symbolize == 'true' ? var.to_sym : var]
+    end
+    def post_symbolized var, symbolize
+    end
+    after /symbolized/ do
+      var, symbolize = action_params__array[0..1]
+      response.body  = [params[symbolize == 'true' ? var.to_sym : var]]
     end
 
     if RUBY_VERSION.to_f > 1.8
@@ -24,13 +29,6 @@ module ECoreTest__Params
       params.inspect
     end
 
-  end
-
-  class ActionParams < E
-
-    def index a1, a2 = nil
-      action_params.inspect
-    end
   end
 
   Spec.new ParamsApp do
@@ -79,7 +77,7 @@ module ECoreTest__Params
       end
     end
 
-    Describe 'nested params' do
+    Testing 'nested params' do
       params = {"user"=>{"username"=>"user", "password"=>"pass"}}
 
       # using regex cause ruby1.8 sometimes reverses the order
@@ -90,31 +88,24 @@ module ECoreTest__Params
 
       post :nested, params
       does(regex).match_body?
-    
     end
   end
 
+  class ActionParams < E
+
+    def index a1, a2 = nil
+      action_params.inspect
+    end
+  end
   Spec.new ActionParams do
     if RUBY_VERSION.to_f > 1.8
-      It  do
-        a1, a2 = rand.to_s, rand.to_s
-        get a1, a2
-        is({:a1 => a1, :a2 => a2}.inspect).current_body?
-        get a1
-        is({:a1 => a1, :a2 => nil}.inspect).current_body?
-      end
-    else
-      It 'returns 404 cause trailing default params does not work on Appetite running on ruby1.8' do
-        a1, a2 = rand.to_s, rand.to_s
-        get a1, a2
-        is(last_response).not_found?
-        is('max params accepted: 1; params given: 2').current_body?
-      end
-      It "works with one default param" do
-        a1 = rand.to_s
-        get a1
-        is([a1].inspect).current_body?
-      end
+      a1, a2 = rand.to_s, rand.to_s
+
+      get a1, a2
+      is({:a1 => a1, :a2 => a2}.inspect).current_body?
+
+      get a1
+      is({:a1 => a1, :a2 => nil}.inspect).current_body?
     end
   end
 end

@@ -1,22 +1,9 @@
 module ECoreTest__ActionAlias
 
-  class AnyRequestMethod < E
+  class App < E
     map '/', '/some-canonical'
 
-    alias_action 'some-url', :endpoint
-    alias_action 'some-another/url', :endpoint
-
-    def index
-    end
-
-    def endpoint
-    end
-  end
-
-  class SpecificRequestMethod < E
-    map '/', '/some-canonical'
-
-    alias_action 'some-url', :get_endpoint
+    alias_action 'some-url',         :get_endpoint
     alias_action 'some-another/url', :get_endpoint
 
     def index
@@ -43,7 +30,7 @@ module ECoreTest__ActionAlias
     end
   end
 
-  class AppCanonicals < E
+  class CanonicalsApp < E
     map '/', '/some-canonical'
 
     alias_action 'some-url', :endpoint
@@ -56,32 +43,7 @@ module ECoreTest__ActionAlias
     end
   end
 
-  Spec.new AnyRequestMethod do
-  
-    ['endpoint', 'some-url', 'some-another/url'].each do |url|
-      get url
-      is(last_response).ok?
-
-      post url
-      is(last_response).ok?
-    end
-
-    Testing :canonicals do
-      ['some-canonical/some-url', 'some-canonical/some-another/url'].each do |url|
-        get url
-        is(last_response).ok?
-
-        post url
-        is(last_response).ok?
-      end
-    end
-
-    get '/blah'
-    is(last_response).not_found?
-    
-  end
-
-  Spec.new SpecificRequestMethod do
+  Spec.new App do
 
     ['endpoint', 'some-url', 'some-another/url'].each do |url|
       get url
@@ -121,8 +83,8 @@ module ECoreTest__ActionAlias
   end
 
   Spec.new self do
-    app EspressoApp.new.mount(AppCanonicals, '/', '/app-canonical')
-    map AppCanonicals.base_url
+    app EspressoApp.new.mount(CanonicalsApp, '/', '/app-canonical')
+    map CanonicalsApp.base_url
 
     ['app-canonical/some-url', 'app-canonical/some-another/url'].each do |url|
       get url
