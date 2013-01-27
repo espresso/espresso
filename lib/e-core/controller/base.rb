@@ -11,8 +11,8 @@ class << E
     build_path(route || base_url, *args)
   end
 
-  def action_setup action
-    (@action_setup||{})[action]
+  def action_setup action, request_method = HTTP__DEFAULT_REQUEST_METHOD
+    ((@action_setup||{})[action]||{})[request_method]
   end
 
   # @example
@@ -135,9 +135,11 @@ class << E
     persist_action_setups!
     
     public_actions.each do |action|
-      set_action_route(action)
-      set_canonical_routes(action)
-      set_alias_routes(action)
+      @action_setup[action].each_pair do |request_method, setup|
+        set_action_route(setup)
+        set_canonical_routes(setup)
+        set_alias_routes(setup)
+      end
     end
   end
 
@@ -155,24 +157,20 @@ class << E
     end
   end
 
-  def set_action_route action
-    action_setup = action_setup(action)
+  def set_action_route action_setup
     set_route(action_setup[:path], action_setup)
   end
 
-  def set_canonical_routes action
-    action_setup = action_setup(action)
-
+  def set_canonical_routes action_setup
     canonicals.each do |c|
-      c_path  = rootify_url(c, @route_by_action[action])
+      c_path  = rootify_url(c, action_setup[:path])
       c_setup = action_setup.merge(:path => c_path, :canonical => action_setup[:path])
       set_route(c_path, c_setup)
     end
   end
 
-  def set_alias_routes action
-    action_setup = action_setup(action)
-    aliases = alias_actions[action] || []
+  def set_alias_routes action_setup
+    aliases = alias_actions[action_setup[:action]] || []
 
     aliases.each do |a|
       a_path  = rootify_url(base_url, a)
@@ -181,7 +179,7 @@ class << E
     end
 
     canonicals.each do |c|
-      c_path  = rootify_url(c, @route_by_action[action])
+      c_path  = rootify_url(c, action_setup[:path])
       aliases.each do |a|
         a_path  = rootify_url(c_path, a)
         a_setup = action_setup.merge(:path => a_path, :canonical => action_setup[:path])

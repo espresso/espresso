@@ -1,7 +1,7 @@
 class E
 
-  def initialize action
-    @__e__action = action
+  def initialize action = nil
+    @__e__action_passed_at_initialize = action
   end
 
   def env
@@ -23,7 +23,7 @@ class E
   end
 
   def action
-    @__e__action
+    action_setup[:action]
   end
 
   def action_setup setup = nil
@@ -41,8 +41,7 @@ class E
   alias canonical? canonical
 
   def action_with_format
-    @__e__action_with_format ||=
-      (format ? action.to_s + format : action).freeze
+    @__e__action_with_format ||= (format ? action.to_s + format : action).freeze
   end
 
   def format
@@ -54,6 +53,14 @@ class E
     @__e__env     = env
     @__e__request = EspressoFrameworkRequest.new(env)
     @__e__format  = env[ENV__ESPRESSO_FORMAT]
+
+    unless action_setup
+      if action = @__e__action_passed_at_initialize || env[ENV__ESPRESSO_ACTION]
+        action_setup self.class.action_setup(action, env[ENV__REQUEST_METHOD])
+      end
+      action_setup ||
+        fail(STATUS__NOT_FOUND, '%s route not found or it is misconfigured' % rq.path)
+    end
     
     e_response = catch :__e__catch__response__ do
 

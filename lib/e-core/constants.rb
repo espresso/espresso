@@ -43,6 +43,7 @@ module EspressoFrameworkConstants
   ENV__HTTP_X_REQUESTED_WITH    = 'HTTP_X_REQUESTED_WITH'.freeze
 
   ENV__ESPRESSO_PATH_INFO = 'espresso.path_info'.freeze
+  ENV__ESPRESSO_ACTION    = 'espresso.action'.freeze
   ENV__ESPRESSO_FORMAT    = 'espresso.format'.freeze
 
   HEADER__CONTENT_TYPE  = 'Content-Type'.freeze

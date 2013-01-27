@@ -58,7 +58,7 @@ module ECoreTest__Pass
         rq.xhr?.inspect
       end
 
-      def xhr_post_destination
+      def post_xhr_post_destination
         [rq.xhr?, rq.post?].inspect
       end
     end

@@ -173,10 +173,11 @@ class EspressoApp
             env[ENV__ESPRESSO_PATH_INFO] = epi
             env[ENV__ESPRESSO_FORMAT]    = format
 
-            controller_instance = route_setup[:ctrl].new(route_setup)
+            controller_instance = route_setup[:controller].new
+            controller_instance.action_setup route_setup
             app = Rack::Builder.new
             app.run controller_instance
-            route_setup[:ctrl].middleware.each {|w,a,p| app.use w, *a, &p}
+            route_setup[:controller].middleware.each {|w,a,p| app.use w, *a, &p}
             return app.call(env)
           end
         else
