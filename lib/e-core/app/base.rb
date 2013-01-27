@@ -151,7 +151,6 @@ class EspressoApp
   def call! env
     path = env[ENV__PATH_INFO]
     script_name = env[ENV__SCRIPT_NAME]
-
     sorted_routes.each do |route|
       if matches = route.match(path)
 
@@ -174,8 +173,9 @@ class EspressoApp
             env[ENV__ESPRESSO_PATH_INFO] = epi
             env[ENV__ESPRESSO_FORMAT]    = format
 
+            controller_instance = route_setup[:ctrl].new(route_setup)
             app = Rack::Builder.new
-            app.run route_setup[:ctrl].new(route_setup[:action])
+            app.run controller_instance
             route_setup[:ctrl].middleware.each {|w,a,p| app.use w, *a, &p}
             return app.call(env)
           end

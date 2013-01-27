@@ -1,5 +1,5 @@
 class E
-  e_attributes :env, :action, :action_arguments, :required_arguments
+  e_attributes :env, :action, :action_name, :action_arguments, :required_arguments
 
   e_attribute :request
   alias rq request
@@ -24,12 +24,12 @@ class E
       (format ? action.to_s + format : action).freeze
   end
 
-  def initialize action
-    route_setup = self.class.route_setup[action]
-    self.action = route_setup[:action]
-    self.canonical = route_setup[:canonical]
-    self.action_arguments = route_setup[:action_arguments]
-    self.required_arguments = route_setup[:required_arguments]
+  def initialize setup
+    self.action = setup[:action]
+    self.action_name = setup[:action_name]
+    self.canonical   = setup[:canonical]
+    self.action_arguments   = setup[:action_arguments]
+    self.required_arguments = setup[:required_arguments]
   end
 
   def call env
@@ -69,6 +69,8 @@ class E
     response.body ||= [body.to_s]
 
     setups(:z).each {|m| self.send m}
+
+    response[HEADER__CONTENT_TYPE] ||= CONTENT_TYPE__DEFAULT
 
     response
   rescue => e

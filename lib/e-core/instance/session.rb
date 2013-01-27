@@ -16,6 +16,14 @@ class E
         @session[key] = val
       end
 
+      def keys
+        @session.to_hash.keys
+      end
+
+      def values
+        @session.to_hash.values
+      end
+
       def delete key
         @session.delete key
       end

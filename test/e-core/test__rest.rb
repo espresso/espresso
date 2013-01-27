@@ -5,6 +5,25 @@ module ECoreTest__REST
     def index
     end
 
+    def post_index
+    end
+
+    def foo
+    end
+
+    def get_foo
+    end
+
+    def post_foo
+    end
+
+    def post_override
+    end
+    def delete_override
+    end
+    def override
+    end
+
     def post_edit
     end
 
@@ -20,6 +39,11 @@ module ECoreTest__REST
     def router_test action
       route action.to_sym
     end
+
+    after /index/, /foo/, /override/ do
+      response.body = [[rq.request_method, action].join("|")]
+    end
+
   end
 
   Spec.new RestApp do
@@ -31,7 +55,29 @@ module ECoreTest__REST
       end
     end
 
-    Testing 'defined actions responds only to given request method' do
+    Ensure 'actions with verb override verbless ones' do
+      post
+      is("POST|post_index").current_body?
+
+      get :foo
+      is("GET|get_foo").current_body?
+
+      post :foo
+      is("POST|post_foo").current_body?
+    end
+
+    Ensure 'verbless action overrides verbified ones' do
+      get :override
+      is('GET|override').current_body?
+
+      post :override
+      is('POST|override').current_body?
+
+      delete :override
+      is('DELETE|override').current_body?
+    end
+
+    Ensure 'defined actions responds only to given request method' do
       get :edit
       is(last_response).not_implemented?
 
@@ -62,7 +108,7 @@ module ECoreTest__REST
       is(last_response).not_found?
     end
 
-    Ensure 'route works correctly with deverbified actions' do
+    Ensure 'route works correctly with deRESTified actions' do
       get :router_test, :post_edit
       is(RestApp.base_url + '/edit').current_body?
 

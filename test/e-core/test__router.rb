@@ -189,7 +189,7 @@ module ECoreTest__Router
       end
     end
 
-    Ensure 'route works correctly with deverbified actions' do
+    Ensure 'route works correctly with deRESTified actions' do
       get :rest_test, :post_exact
       is(App.base_url + '/exact').current_body?
 

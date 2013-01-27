@@ -82,7 +82,8 @@ class E
       params.any? &&
         env.update(ENV__QUERY_STRING => build_nested_query(params))
     end
-    controller.new(action).call(env)
+    setup = controller.route_setup(action, env[ENV__REQUEST_METHOD])
+    controller.new(setup).call(env)
   end
 
   # same as `invoke` except it returns only body

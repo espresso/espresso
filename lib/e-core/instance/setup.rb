@@ -32,7 +32,7 @@ class E
       end
     end
     if charset = opts[:charset]
-      type << '; charset=' << charset
+      type = '%s; charset=%s' % [type, charset]
     end
     response[HEADER__CONTENT_TYPE] = type
   end

@@ -2,6 +2,7 @@ module EspressoFrameworkConstants
 
   HTTP__DEFAULT_SERVER = :WEBrick
   HTTP__DEFAULT_PORT   = 5252
+  HTTP__DEFAULT_REQUEST_METHOD = 'GET'.freeze
 
   HTTP__REQUEST_METHODS = %w[GET POST PUT HEAD DELETE OPTIONS PATCH TRACE].freeze
 
@@ -11,7 +12,7 @@ module EspressoFrameworkConstants
     %r[__]   => '/'.freeze,
   }.freeze
 
-  E__INDEX_ROUTE = 'index'.freeze
+  E__INDEX_ACTION = :index
 
   CONTENT_TYPE__DEFAULT      = 'text/html'.freeze
   CONTENT_TYPE__EVENT_STREAM = 'text/event-stream'.freeze

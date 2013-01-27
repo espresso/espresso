@@ -81,7 +81,7 @@ class << E
       (self.public_instance_methods(false)) +
       (@alias_actions   || {}).keys +
       (@included_actions || [])
-    ).uniq.map {|a| a.to_sym} # to_sym needed for 1.8
+    ).uniq.map(&:to_sym) # to_sym needed on 1.8
     
     if actions.empty?
       define_method :index do |*|
@@ -93,12 +93,11 @@ class << E
     @public_actions = actions
   end
 
-  def action_to_route action
-    path, request_methods = deRESTify_action(action)
-    request_methods ||= HTTP__REQUEST_METHODS
+  def generate_action_setup action
+    action_name, request_method = deRESTify_action(action)
     
-    path == E__INDEX_ROUTE ?  path = '' :
-      path_rules.each_pair {|from, to| path = path.gsub(from, to)}
+    path = action_name == E__INDEX_ACTION ? '' : action_name.to_s
+    path_rules.each_pair {|from, to| path = path.gsub(from, to)}
     path = rootify_url(base_url, path).freeze
     path = '' if path == '/'
 
@@ -107,27 +106,29 @@ class << E
     format_regexp = formats(action).any? ?
       /(?:\A(?:\/{0,})?#{action})?(#{formats(action).map {|f| Regexp.escape f}.join("|")})\Z/ : nil
 
-    [{
-        :ctrl                => self,
-        :action              => action,
-        :action_arguments    => action_arguments,
-        :required_arguments  => required_arguments,
-        :path                => path,
-        :format_regexp       => format_regexp,
-      }.freeze, request_methods.freeze]
+    {
+      :controller          => self,
+      :action              => action,
+      :action_name         => action_name,
+      :action_arguments    => action_arguments,
+      :required_arguments  => required_arguments,
+      :path                => path.freeze,
+      :format_regexp       => format_regexp,
+      :request_method      => request_method
+    }.freeze
   end
 
   def deRESTify_action action
-    path, request_methods = action.to_s, nil
+    action_name, request_method = action.to_s.dup, HTTP__DEFAULT_REQUEST_METHOD
     HTTP__REQUEST_METHODS.each do |m|
       regex = /\A#{m}_/i
-      if action.to_s =~ regex
-        request_methods = [m]
-        path = path.sub(regex, '')
+      if action_name =~ regex
+        request_method = m.freeze
+        action_name = action_name.sub(regex, '')
         break
       end
     end
-    [path, request_methods]
+    [action_name.to_sym, request_method.freeze]
   end
 
   if RESPOND_TO__PARAMETERS # ruby 1.9
@@ -155,13 +156,13 @@ class << E
         min += 1 if increment
       end
       max = nil if unlimited
-      [parameters, [min, max]]
+      [parameters.freeze, [min, max].freeze]
     end
   else # ruby 1.8
     def action_parameters action
       method = self.instance_method(action)
       min = max = (method.arity < 0 ? -method.arity - 1 : method.arity)
-      [nil, [min, max]]
+      [nil, [min, max].freeze]
     end
   end
   
