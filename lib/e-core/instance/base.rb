@@ -59,7 +59,7 @@ class E
         action_setup self.class.action_setup(action, env[ENV__REQUEST_METHOD])
       end
       action_setup ||
-        fail(STATUS__NOT_FOUND, '%s route not found or it is misconfigured' % rq.path)
+        fail(STATUS__NOT_FOUND, '%s %s route not found or misconfigured' % [rq.request_method, rq.path])
     end
     
     e_response = catch :__e__catch__response__ do
