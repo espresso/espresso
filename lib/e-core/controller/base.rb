@@ -1,6 +1,6 @@
 class << E
 
-  attr_reader :app, :routes
+  attr_reader :app, :routes, :action_setup
 
   # build URL from given action name(or path) and consequent params
   # @return [String]
@@ -9,10 +9,6 @@ class << E
     return base_url if args.size == 0
     (route = self[args.first]) && args.shift
     build_path(route || base_url, *args)
-  end
-
-  def action_setup action, request_method = HTTP__DEFAULT_REQUEST_METHOD
-    ((@action_setup||{})[action]||{})[request_method]
   end
 
   # @example

@@ -13,6 +13,14 @@ module ECoreTest__Pass
       def post_index key, val
         pass :post_destination, key, val
       end
+      
+      def put_index
+        pass :post_destination, 1, 2
+      end
+
+      def not_found_test
+        pass :blah
+      end
 
       def custom_query_string key, val
         pass :destination, key, val, key => val
@@ -94,6 +102,16 @@ module ECoreTest__Pass
     Testing :post_pass do
       post args, params
       is([ARGS, PARAMS].inspect).current_body?
+    end
+
+    Should 'return 501 cause :put_destination missing' do
+      put
+      is(last_response).not_implemented?
+    end
+
+    Should 'return 404' do
+      get :not_found_test
+      is(last_response).not_found?
     end
 
     Testing :custom_query_string do

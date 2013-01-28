@@ -50,18 +50,21 @@ class E
   def invoke *args
 
     if args.empty?
-      return [500, {}, '`%s` expects an action(or a Controller and some action) to be provided' % __method__]
+      body = '`%s` expects an action(or a Controller and some action) to be provided' % __method__
+      return [STATUS__BAD_REQUEST, {}, [body]]
     end
 
     controller = EspressoFrameworkUtils.is_app?(args.first) ? args.shift : self.class
 
     if args.empty?
-      return [500, {}, 'Beside Controller, `%s` expects some action to be provided' % __method__]
+      body = 'Beside Controller, `%s` expects some action to be provided' % __method__
+      return [STATUS__BAD_REQUEST, {}, [body]]
     end
 
     action = args.shift.to_sym
     unless route = controller[action]
-      return [404, {}, '%s does not respond to %s action' % [controller, action]]
+      body = '%s does not respond to %s action' % [controller, action]
+      return [STATUS__NOT_FOUND, {}, [body]]
     end
 
     env = Hash[env()] # faster than #dup
