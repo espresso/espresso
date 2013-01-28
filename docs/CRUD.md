@@ -116,8 +116,8 @@ This will create following actions:
     - options_users
 
 
-**IMPORTANT!** The common pitfall here is to define a method that will override 
-the actions created by crudifier.
+**IMPORTANT!** When you need to override some CRUD action, define it using the corresponding verb.<br>
+Verbless actions will have no effect cause **verbified actions has priority over verbless ones, regardless definition order**:
 
 ```ruby
 class App < E
@@ -126,68 +126,14 @@ class App < E
   crudify SomeModel
 
   def index
-    # Bad Idea! This will override all CRUD actions!
+    # will have no effect at all
   end
-end
-```
-
-The `index` method here will override all actions created by `crudify SomeModel`,
-thus **CRUD WONT WORK** on this controller!
-
-Why so?
-
-Cause actions defined without a verb will listen on all request methods.
-
-So if we define `index` or just `whatever` without `get_`, `post_` etc. prefix,
-it will override any actions previously defined with an explicit verb.
-
-```ruby
-def get_index
-  # ...
-end
-
-def post_index
-  # ...
-end
-
-def index
-  # this will OVERRIDE `get_index` and `post_index`
-end
-
-def get_read
-  # ...
-end
-
-def post_read
-  # ...
-end
-
-def read
-  # this will OVERRIDE `get_read` and `post_read`
-end
-```
-
-In case of CRUD actions, when you need to override some action, define the method with a verb.
-
-For ex. you want "GET /index" requests to be served by your `index` method, 
-not by one created by crudifier.
-
-Then you simply define `get_index` method:
-
-```ruby
-class App < E
-  map '/'
-
-  crudify SomeModel
 
   def get_index
-    # Good Idea!
+    # will override crudified method that responds to GET requests
   end
 end
 ```
-
-*Please Note* that you'll have to name your template "get_index.ext" instead of just "index.ext"
-
 
 **[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 

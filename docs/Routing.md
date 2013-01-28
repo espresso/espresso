@@ -456,7 +456,7 @@ class App < E
 end
 ```
 
-**IMPORTANT:** verbified actions has priority over verbless ones!<br>
+**IMPORTANT: verbified actions has priority over verbless ones, regardless definition order!**<br>
 That's it, if you have `news` and `post_news` actions, on POST requests `post_news` will be executed:
 
 ```ruby
