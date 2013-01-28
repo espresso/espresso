@@ -456,6 +456,24 @@ class App < E
 end
 ```
 
+**IMPORTANT:** verbified actions has priority over verbless ones!<br>
+That's it, if you have `news` and `post_news` actions, on POST requests `post_news` will be executed:
+
+```ruby
+class App < E
+
+  def post_news  # will serve POST requests
+    # ...
+  end
+
+  def news  # will serve any requests except POST ones
+    # ...
+  end
+
+end
+```
+
+
 **[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
 

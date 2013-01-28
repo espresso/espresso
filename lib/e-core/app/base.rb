@@ -154,7 +154,7 @@ class EspressoApp
     sorted_routes.each do |route|
       if matches = route.match(path)
 
-        if route_setup = @routes[route][env[ENV__REQUEST_METHOD]]
+        if route_setup = @routes[route][env[ENV__REQUEST_METHOD]] || @routes[route][:*]
 
           if route_setup[:rewriter]
             app = EspressoFrameworkRewriter.new(*matches.captures, &route_setup[:rewriter])

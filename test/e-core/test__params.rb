@@ -1,6 +1,6 @@
 module ECoreTest__Params
 
-  class ParamsApp < E
+  class App < E
 
     def symbolized var, symbolize
     end
@@ -28,10 +28,9 @@ module ECoreTest__Params
     def post_nested
       params.inspect
     end
-
   end
 
-  Spec.new ParamsApp do
+  Spec.new App do
     It 'can access params by both string and symbol keys' do
       var, val = 'foo', 'bar'
       get :symbolized, var, false, var => val
@@ -62,7 +61,6 @@ module ECoreTest__Params
         end
 
         It 'works with one and more' do
-
           get :splat_params_1
           is(last_response).not_found?
           does(%r{min params accepted\: 1}).match_body?
@@ -73,7 +71,6 @@ module ECoreTest__Params
           get :splat_params_1, 1, 2, 3
           is('{:a1=>"1", :args=>["2", "3"]}').ok_body?
         end
-
       end
     end
 
@@ -92,20 +89,40 @@ module ECoreTest__Params
   end
 
   class ActionParams < E
+    def one a1
+      action_params.inspect
+    end
 
-    def index a1, a2 = nil
+    def two a1, a2 = nil
       action_params.inspect
     end
   end
   Spec.new ActionParams do
-    if RUBY_VERSION.to_f > 1.8
-      a1, a2 = rand.to_s, rand.to_s
+    if RUBY_VERSION.to_f >= 1.9
+      It 'returns a Hash on Ruby 1.9+' do
+        a1, a2 = rand.to_s, rand.to_s
 
-      get a1, a2
-      is({:a1 => a1, :a2 => a2}.inspect).current_body?
+        get :one, a1
+        is({:a1 => a1}.inspect).current_body?
 
-      get a1
-      is({:a1 => a1, :a2 => nil}.inspect).current_body?
+        get :two, a1, a2
+        is({:a1 => a1, :a2 => a2}.inspect).current_body?
+
+        get :two, a1
+        is({:a1 => a1, :a2 => nil}.inspect).current_body?
+      end
+    else
+      It 'returns an Array on Ruby 1.8' do
+        a1, a2 = rand.to_s, rand.to_s
+        get :one, a1
+        is([a1].inspect).current_body?
+
+        And 'does not works when arguments has a default value' do
+          get :two, a1, a2
+          is(last_response).not_found?
+          does(last_response.body) =~ /max params accepted: 1/
+        end
+      end
     end
   end
 end

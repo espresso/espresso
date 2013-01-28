@@ -5,23 +5,13 @@ module ECoreTest__REST
     def index
     end
 
-    def post_index
-    end
-
     def foo
-    end
-
-    def get_foo
     end
 
     def post_foo
     end
 
-    def post_override
-    end
-    def delete_override
-    end
-    def override
+    def delete_foo
     end
 
     def post_edit
@@ -40,7 +30,7 @@ module ECoreTest__REST
       route action.to_sym
     end
 
-    after /index/, /foo/, /override/ do
+    after /index/, /foo/ do
       response.body = [[rq.request_method, action].join("|")]
     end
 
@@ -48,18 +38,26 @@ module ECoreTest__REST
 
   Spec.new RestApp do
 
-    Ensure "index respond only to GET" do
-      get
-      is(last_response).ok?
-
-      post
-      is(last_response).ok?
-
-      put
-      is(last_response).not_implemented?
+    Ensure "verbless actions respond to any Request Method" do
+      EspressoFrameworkConstants::HTTP__REQUEST_METHODS.each do |m|
+        self.send m.to_s.downcase
+        is(last_response).ok?
+        is('%s|index' % m).current_body? unless m == 'HEAD'
+      end
     end
 
-    Ensure 'defined actions responds only to given request method' do
+    Ensure 'verbified actions has priority over verbless ones' do
+      get :foo
+      is('GET|foo').current_body?
+
+      post :foo
+      is('POST|post_foo').current_body?
+
+      delete :foo
+      is('DELETE|delete_foo').current_body?
+    end
+
+    Ensure 'verbified actions responds only to given request method' do
       get :edit
       is(last_response).not_implemented?
 
@@ -82,7 +80,7 @@ module ECoreTest__REST
       is(last_response).not_implemented?
     end
 
-    It 'uses only first verb as request method' do
+    Ensure 'only first matched verb used as request method' do
       post :get_verb
       is(last_response).ok?
 

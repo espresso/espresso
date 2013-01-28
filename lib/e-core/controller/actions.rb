@@ -119,7 +119,7 @@ class << E
   end
 
   def deRESTify_action action
-    action_name, request_method = action.to_s.dup, HTTP__DEFAULT_REQUEST_METHOD
+    action_name, request_method = action.to_s.dup, :*
     HTTP__REQUEST_METHODS.each do |m|
       regex = /\A#{m}_/i
       if action_name =~ regex

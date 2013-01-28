@@ -41,7 +41,7 @@ module ECoreTest__Router
       is(last_response).ok?
 
       post
-      is(last_response).not_implemented?
+      is(last_response).ok?
 
       It 'returns 404 cause It does not accept any args' do
         r = get :a1

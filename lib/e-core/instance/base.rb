@@ -34,7 +34,7 @@ class E
   def setup_action! action = nil
     if action ||= @__e__action_passed_at_initialize || env[ENV__ESPRESSO_ACTION]
       if setup = self.class.action_setup[action]
-        action_setup setup[env[ENV__REQUEST_METHOD]]
+        action_setup(setup[env[ENV__REQUEST_METHOD]] || setup[:*])
         action_setup ||
           fail(STATUS__NOT_IMPLEMENTED, "Resource found but it can be accessed only through %s" % setup.keys.join(", "))
       end
@@ -67,9 +67,9 @@ class E
     @__e__request = EspressoFrameworkRequest.new(env)
     @__e__format  = env[ENV__ESPRESSO_FORMAT]
 
-    setup_action! unless action_setup
-
     e_response = catch :__e__catch__response__ do
+      
+      setup_action! unless action_setup
 
       min, max = action_setup[:required_arguments]
       given = action_params__array.size
