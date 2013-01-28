@@ -1,6 +1,7 @@
 
 + 0.4 [not released yet] - First Stable Release
-  
+
+  - Verbified actions has priority over verbless ones, regardless defining order
   - Removing Appetite dependency
   - Writing a new router crafted for specific Espresso needs. Also it tends to be faster than Rack::URLMap
   - Rewrite rules can now be defined inside controllers
