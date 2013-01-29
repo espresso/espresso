@@ -23,10 +23,8 @@ class EspressoApp
   end
 
   def initialize automount = false, &proc
-    @routes = {}
-    @controllers = automount ? discover_controllers : []
-    @mounted_controllers = []
-    @controllers.each {|c| mount_controller c}
+    @routes, @controllers = {}, {}
+    mount discovered_controllers if automount
     proc && self.instance_exec(&proc)
   end
 
@@ -51,14 +49,14 @@ class EspressoApp
         controllers.concat extract_controllers(a)
       end
     end
-    controllers.each {|c| mount_controller c, *roots, &setup}
+    controllers.each do |c|
+      @controllers[c] = [roots, setup]
+    end
     self
   end
 
   # proc given here will be executed inside ALL CONTROLLERS!
   # used to setup multiple controllers at once.
-  #
-  # @note this method should be called before mounting controllers
   #
   # @example
   #   #class News < E
@@ -149,6 +147,7 @@ class EspressoApp
   end
 
   def call! env
+    mount_controllers!
     path = env[ENV__PATH_INFO]
     script_name = env[ENV__SCRIPT_NAME]
     sorted_routes.each do |route|
@@ -210,6 +209,12 @@ class EspressoApp
       # using path[0..0] instead of just path[0] for compatibility with ruby 1.8
   end
 
+  def mount_controllers!
+    @mounted_controllers = []
+    @controllers.each_pair {|c,(roots,setup)| mount_controller c, *roots, &setup}
+    def mount_controllers!; end
+  end
+
   def mount_controller controller, *roots, &setup
     return if @mounted_controllers.include?(controller)
 
@@ -218,8 +223,8 @@ class EspressoApp
       controller.remap!(base_url + root.to_s, *roots)
     end
 
+    @global_setup && controller.class_exec(controller, &@global_setup)
     setup && controller.class_exec(&setup)
-    @global_setup && controller.class_exec(&@global_setup)
     controller.mount! self
     @routes.update controller.routes
     controller.rewrite_rules.each {|(rule,proc)| rewrite_rule rule, &proc}
@@ -230,11 +235,11 @@ class EspressoApp
   def discover_controllers namespace = nil
     controllers = ObjectSpace.each_object(Class).
       select { |c| is_app?(c) }.reject { |c| [E].include? c }
-    return controllers unless namespace
-
     namespace.is_a?(Regexp) ?
-      controllers.select { |c| c.name =~ namespace } : controllers
+      controllers.select { |c| c.name =~ namespace } :
+      controllers
   end
+  alias discovered_controllers discover_controllers
 
   def extract_controllers namespace
     if [Class, Module].include?(namespace.class)
