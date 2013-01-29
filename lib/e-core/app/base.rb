@@ -1,5 +1,7 @@
 class EspressoApp
 
+  attr_reader :app
+
   # Rack interface to all found controllers
   #
   # @example config.ru
@@ -134,20 +136,24 @@ class EspressoApp
     host = opts.delete(:host) || opts.delete(:bind)
     opts[:Host] = host if host
 
+    to_app!
     Rack::Handler.const_get(server).run app, opts
   end
 
   def call env
+    app || to_app!
     app.call env
   end
 
-  private
-  def app
-    @app ||= middleware.reverse.inject(lambda {|env| call!(env)}) {|a,e| e[a]}
+  def to_app!
+    @app ||= begin
+      mount_controllers!
+      middleware.reverse.inject(lambda {|env| call!(env)}) {|a,e| e[a]}
+    end
   end
 
+  private
   def call! env
-    mount_controllers!
     path = env[ENV__PATH_INFO]
     script_name = env[ENV__SCRIPT_NAME]
     sorted_routes.each do |route|
@@ -212,7 +218,6 @@ class EspressoApp
   def mount_controllers!
     @mounted_controllers = []
     @controllers.each_pair {|c,(roots,setup)| mount_controller c, *roots, &setup}
-    def mount_controllers!; end
   end
 
   def mount_controller controller, *roots, &setup

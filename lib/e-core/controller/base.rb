@@ -29,12 +29,6 @@ class << E
       @route_by_action_with_format[action_or_action_with_format]
   end
 
-  def mount *roots, &setup
-    @app || EspressoApp.new.mount(self, *roots, &setup)
-  end
-  alias to_app  mount
-  alias to_app! mount
-
   def run *args
     mount.run *args
   end
@@ -43,11 +37,24 @@ class << E
     mount.call(env)
   end
 
-  def mounted?
-    @mounted
+  # used when mounted manually
+  #
+  # @param [Array]  roots first arg treated as base URL,
+  #                       consequent ones treated as canonical URLs.
+  # @param [Proc]   setup setup block. to be executed at class level
+  #
+  def mount *roots, &setup
+    @app ||= begin 
+      app = EspressoApp.new.mount(self, *roots, &setup)
+      app.to_app!
+      app
+    end
   end
 
+  # used when mounted from an EspressoApp instance
+  #
   # @param [EspressoApp] app EspressoApp instance
+  #
   def mount! app
     return if mounted?
     @app = app
@@ -59,6 +66,10 @@ class << E
     lock!
 
     @mounted = true
+  end
+
+  def mounted?
+    @mounted
   end
 
   # remap served root(s) by prepend given path
