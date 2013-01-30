@@ -291,36 +291,41 @@ class << E
   #
   #   end
   def expand_setups!
-    @__e__expanded_setups = public_actions.inject({}) do |map, action|
+    setups_map = {}
+    [:global, :external, nil].each do |container|
+      container_setups = (@__e__setups||{})[container]||{}
+      public_actions.each do |action|
 
-      # making sure it will work for both ".format" and "action.format" matchers
-      action_formats = formats(action) + formats(action).map {|f| action.to_s + f}
+        # making sure it will work for both ".format" and "action.format" matchers
+        action_formats = formats(action) + formats(action).map {|f| action.to_s + f}
 
-      (@__e__setups||{}).each_pair do |position, setups|
+        container_setups.each_pair do |position, setups|
 
-        action_setups = setups.select do |(m,_)| # |(m)| does not work on 1.8
-          m == :* || m == action ||
-            (m.is_a?(Regexp) && action.to_s =~ m) ||
-            (m.is_a?(String) && action_formats.include?(m)) ||
-            setup_aliases(position, action).include?(m)
-        end
-
-        ((map[position]||={})[action]||={})[nil] = action_setups.inject([]) do |f,s|
-          # excluding format-related setups
-          s.first.is_a?(String) ? f : f << s.last
-        end
-
-        formats(action).each do |format|
-          map[position][action][format] = action_setups.inject([]) do |f,s|
-            # excluding format-related setups that does not match current format
-            s.first.is_a?(String) ?
-              (s.first =~ /#{Regexp.escape format}\Z/ ? f << s.last : f) : f << s.last
+          action_setups = setups.select do |(m,_)| # |(m)| does not work on 1.8
+            m == :* || m == action ||
+              (m.is_a?(Regexp) && action.to_s =~ m) ||
+              (m.is_a?(String) && action_formats.include?(m)) ||
+              setup_aliases(position, action).include?(m)
           end
-        end
 
+          (((setups_map[position]||={})[action]||={})[nil]||=[]).concat action_setups.inject([]) { |f,s|
+            # excluding format-related setups
+            s.first.is_a?(String) ? f : f << s.last
+          }
+
+          formats(action).each do |format|
+            (setups_map[position][action][format]||=[]).concat action_setups.inject([]) {|f,s|
+              # excluding format-related setups that does not match current format
+              s.first.is_a?(String) ?
+                (s.first =~ /#{Regexp.escape format}\Z/ ? f << s.last : f) : f << s.last
+            }
+          end
+
+        end
+        
       end
-      map
     end
+    @__e__expanded_setups = setups_map
   end
 
   # turning Regexp and * matchers into real action names

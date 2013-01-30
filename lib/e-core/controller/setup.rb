@@ -258,11 +258,11 @@ class << E
 
   def add_setup position, *matchers, &proc
     return if mounted?
-    @__e__setups  ||= {}
+    (@__e__setups  ||= {})[@__e__setup_container] ||= {}
     method   = proc_to_method(:setups, position, *matchers, &proc)
     matchers = [:*] if matchers.empty?
     matchers.each do |matcher|
-      (@__e__setups[position] ||= []) << [matcher, method]
+      (@__e__setups[@__e__setup_container][position] ||= []) << [matcher, method]
     end
   end
   private :add_setup
