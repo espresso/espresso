@@ -1,9 +1,13 @@
 class E
 
-  ['xhr'].concat(EspressoFrameworkConstants::HTTP__REQUEST_METHODS).each do |rm|
-    define_method '%s?' % rm.downcase do
-      request.send __method__
+  EspressoFrameworkConstants::HTTP__REQUEST_METHODS.each do |request_method|
+    define_method '%s?' % request_method.downcase do
+      (@__e__request_method_map ||= {request.request_method => true})[request_method]
     end
+  end
+
+  def xhr?
+    (@__e__requested_with_map ||= {env["HTTP_X_REQUESTED_WITH"] => true})["XMLHttpRequest"]
   end
 
   # shortcut for Rack::Mime::MIME_TYPES.fetch

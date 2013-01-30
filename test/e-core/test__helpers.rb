@@ -1,21 +1,34 @@
 module ECoreTest__Helpers
-  class RequestMethods < E
+  class App < E
 
     def get
-      get?.inspect
+      [get?, post?].inspect
     end
+
     def post_post
-      post?.inspect
+      [get?, post?].inspect
+    end
+
+    def xhr
+      [get?, xhr?].inspect
     end
   end
 
-  Spec.new RequestMethods do
-    Testing 'request method helpers' do
+  Spec.new App do
+    Testing :request_method do
       get :get
-      is('true').current_body?
+      is([true, nil].inspect).current_body?
       
       post :post
-      is('true').current_body?
+      is([nil, true].inspect).current_body?
+    end
+
+    Testing :requested_with do
+      get_x :xhr
+      is([true, true].inspect).current_body?
+
+      get :xhr
+      is([true, nil].inspect).current_body?
     end
   end
 
