@@ -103,7 +103,7 @@ class EspressoApp
         out << "%s\n" % route.source
         request_methods.each_pair do |request_method, route_setup|
           out << "  %s%s" % [request_method, ' ' * (10 - request_method.size)]
-          out << "%s#%s\n" % [route_setup[:ctrl], route_setup[:action]]
+          out << "%s#%s\n" % [route_setup[:controller], route_setup[:action]]
         end
         out << "\n"
       end
