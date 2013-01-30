@@ -9,7 +9,7 @@ class << E
 
   def include mdl
     super
-    (@included_actions ||= []).concat mdl.public_instance_methods(false)
+    (@__e__included_actions ||= []).concat mdl.public_instance_methods(false)
   end
 
   def define_setup_method meth

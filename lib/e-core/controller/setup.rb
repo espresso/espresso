@@ -12,14 +12,14 @@ class << E
   end
 
   def base_url
-    @base_url ||= ('/' << self.name.to_s.split('::').last.
+    @__e__base_url ||= ('/' << self.name.to_s.split('::').last.
       gsub(/([A-Z]+)([A-Z][a-z])/, '\1_\2').
       gsub(/([a-z\d])([A-Z])/, '\1_\2').downcase).freeze
   end
   alias baseurl base_url
 
   def canonicals
-    @canonicals || []
+    @__e__canonicals || []
   end
 
   # add/update a path rule
@@ -53,12 +53,12 @@ class << E
   def path_rule from, to
     return if mounted?
     from = %r[#{from}] unless from.is_a?(Regexp)
-    (@path_rules ||= Hash[E__PATH_RULES]).update from => to
+    (@__e__path_rules ||= Hash[E__PATH_RULES]).update from => to
   end
 
   def path_rules
-    @sorted_path_rules ||= begin
-      rules = @path_rules || E__PATH_RULES
+    @__e__sorted_path_rules ||= begin
+      rules = @__e__path_rules || E__PATH_RULES
       Hash[rules.sort {|a,b| b.first.source.size <=> a.first.source.size}].freeze
     end
   end
@@ -82,11 +82,11 @@ class << E
   # @param [Symbol] action
   def alias_action url, action
     return if mounted?
-    ((@alias_actions ||= {})[action]||=[]) << url
+    ((@__e__alias_actions ||= {})[action]||=[]) << url
   end
 
   def alias_actions
-    @alias_actions || {}
+    @__e__alias_actions || {}
   end
 
   # automatically setting URL extension and Content-Type.
@@ -102,7 +102,7 @@ class << E
   #
   def format *formats
     return if mounted?
-    (@formats ||= []).concat formats
+    (@__e__formats ||= []).concat formats
   end
 
   # setting format(s) for specific action.
@@ -145,7 +145,7 @@ class << E
   #
   def format_for matcher, *formats
     return if mounted?
-    (@formats_for ||= []) << [matcher, formats]
+    (@__e__formats_for ||= []) << [matcher, formats]
   end
 
   # allow to disable format for specific action(s).
@@ -163,11 +163,11 @@ class << E
   #
   def disable_format_for *matchers
     return if mounted?
-    (@disable_formats_for ||= []).concat matchers
+    (@__e__disable_formats_for ||= []).concat matchers
   end
 
   def formats action
-    (@expanded_formats || {})[action] || []
+    (@__e__expanded_formats || {})[action] || []
   end
 
   # add setups to be executed before/after given(or all) actions.
@@ -234,7 +234,7 @@ class << E
   #
   def alias_before action, *others
     return if mounted?
-    (@before_aliases ||= {})[action] = others
+    (@__e__before_aliases ||= {})[action] = others
   end
 
   # (see #before)
@@ -245,41 +245,42 @@ class << E
   # (see #alias_before)
   def alias_after action, *others
     return if mounted?
-    (@after_aliases ||= {})[action] = others
+    (@__e__after_aliases ||= {})[action] = others
   end
 
   def setup_aliases position, action
     if position == :a
-      (@before_aliases || {})[action] || []
+      (@__e__before_aliases || {})[action] || []
     elsif position == :z
-      (@after_aliases  || {})[action] || []
+      (@__e__after_aliases  || {})[action] || []
     end
   end
 
   def add_setup position, *matchers, &proc
     return if mounted?
-    @setups  ||= {}
+    @__e__setups  ||= {}
     method   = proc_to_method(:setups, position, *matchers, &proc)
     matchers = [:*] if matchers.empty?
     matchers.each do |matcher|
-      (@setups[position] ||= []) << [matcher, method]
+      (@__e__setups[position] ||= []) << [matcher, method]
     end
   end
   private :add_setup
 
   def setups position, action, format
-    return [] unless (s = @expanded_setups) && (s = s[position]) && (s = s[action])
+    return [] unless (s = @__e__expanded_setups) && (s = s[position]) && (s = s[action])
     s[format] || []
   end
 
   # add Rack middleware to chain
   def use ware, *args, &proc
     return if mounted?
-    (@middleware ||= []).none? {|w| w.first == ware} && @middleware << [ware, args, proc]
+    (@__e__middleware ||= []).none? {|w| w.first == ware} && 
+      @__e__middleware << [ware, args, proc]
   end
 
   def middleware
-    @middleware || []
+    @__e__middleware || []
   end
 
   # define a block to be executed on errors.
@@ -304,16 +305,16 @@ class << E
     proc || raise(ArgumentError, 'Error handlers require a block')
     error_codes.any? || error_codes = [:*]
     meth = proc_to_method(:error_handlers, *error_codes, &proc)
-    error_codes.each {|c| (@error_handlers ||= {})[c] = [meth, proc.arity]}
+    error_codes.each {|c| (@__e__error_handlers ||= {})[c] = [meth, proc.arity]}
   end
 
   def error_handler error_code
-    ((@error_handlers || {}).find {|k,v| error_code == k} || []).last
+    ((@__e__error_handlers || {}).find {|k,v| error_code == k} || []).last
   end
 
   def rewrite rule, &proc
     proc || raise(ArgumentError, "Rewrite rules requires a block to run")
-    (@rewrite_rules ||= []) << [rule, proc]
+    (@__e__rewrite_rules ||= []) << [rule, proc]
   end
   alias rewrite_rule rewrite
 

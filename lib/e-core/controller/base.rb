@@ -1,6 +1,15 @@
 class << E
+  def app
+    @__e__app
+  end
 
-  attr_reader :app, :routes, :action_setup
+  def routes
+    @__e__routes
+  end
+
+  def action_setup
+    @__e__action_setup
+  end
 
   # build URL from given action name(or path) and consequent params
   # @return [String]
@@ -25,8 +34,8 @@ class << E
   #    App['posts.json']       #=> nil
   def [] action_or_action_with_format
     mounted? || raise("`[]' method works only on mounted controllers")
-    @route_by_action[action_or_action_with_format] ||
-      @route_by_action_with_format[action_or_action_with_format]
+    @__e__route_by_action[action_or_action_with_format] ||
+      @__e__route_by_action_with_format[action_or_action_with_format]
   end
 
   def run *args
@@ -44,7 +53,7 @@ class << E
   # @param [Proc]   setup setup block. to be executed at class level
   #
   def mount *roots, &setup
-    @app ||= begin 
+    @__e__app ||= begin 
       app = EspressoApp.new.mount(self, *roots, &setup)
       app.to_app!
       app
@@ -57,7 +66,7 @@ class << E
   #
   def mount! app
     return if mounted?
-    @app = app
+    @__e__app = app
 
     # Important - expand_formats! should run before expand_setups!
     expand_formats!
@@ -65,11 +74,11 @@ class << E
     generate_routes!
     lock!
 
-    @mounted = true
+    @__e__mounted = true
   end
 
   def mounted?
-    @mounted
+    @__e__mounted
   end
 
   # remap served root(s) by prepend given path
@@ -112,29 +121,24 @@ class << E
   end
 
   def rewrite_rules
-    @rewrite_rules || []
+    @__e__rewrite_rules || []
   end
 
   private
 
   def map! *paths
-    @base_url   = rootify_url(paths.shift.to_s).freeze
-    @canonicals = paths.map { |p| rootify_url(p.to_s) }.freeze
+    @__e__base_url   = rootify_url(paths.shift.to_s).freeze
+    @__e__canonicals = paths.map { |p| rootify_url(p.to_s) }.freeze
   end
 
   def lock!
-    [
-      @base_url, @canonicals, @path_rules, @alias_actions,
-      @routes, @action_setup, @route_by_action, @route_by_action_with_format,
-      @expanded_formats, @expanded_setups,
-      @middleware,
-    ].map {|v| v.freeze}
+    
   end
 
   def reset_routes_data!
-    @routes = {}
-    @action_setup = {}
-    @route_by_action, @route_by_action_with_format = {}, {}
+    @__e__routes = {}
+    @__e__action_setup = {}
+    @__e__route_by_action, @__e__route_by_action_with_format = {}, {}
   end
  
   def generate_routes!
@@ -142,7 +146,7 @@ class << E
     persist_action_setups!
     
     public_actions.each do |action|
-      @action_setup[action].each_pair do |request_method, setup|
+      @__e__action_setup[action].each_pair do |request_method, setup|
         set_action_route(setup)
         set_canonical_routes(setup)
         set_alias_routes(setup)
@@ -154,11 +158,11 @@ class << E
     public_actions.each do |action|
       action_setup = generate_action_setup(action)
       action_setup.values_at(:action, :action_name).each do |matcher|
-        (@action_setup[matcher] ||= {})[action_setup[:request_method]] = action_setup
+        (@__e__action_setup[matcher] ||= {})[action_setup[:request_method]] = action_setup
 
-        @route_by_action[matcher] = action_setup[:path]
+        @__e__route_by_action[matcher] = action_setup[:path]
         formats(action).each do |format|
-          @route_by_action_with_format[matcher.to_s + format] = action_setup[:path] + format
+          @__e__route_by_action_with_format[matcher.to_s + format] = action_setup[:path] + format
         end
       end
     end
@@ -197,7 +201,7 @@ class << E
 
   def set_route route, setup
     regexp = route_to_regexp(route)
-    (@routes[regexp] ||= {})[setup[:request_method]] = setup
+    (@__e__routes[regexp] ||= {})[setup[:request_method]] = setup
   end
 
   # avoid regexp operations at runtime
@@ -285,12 +289,12 @@ class << E
   #
   #   end
   def expand_setups!
-    @expanded_setups = public_actions.inject({}) do |map, action|
+    @__e__expanded_setups = public_actions.inject({}) do |map, action|
 
       # making sure it will work for both ".format" and "action.format" matchers
       action_formats = formats(action) + formats(action).map {|f| action.to_s + f}
 
-      (@setups||{}).each_pair do |position, setups|
+      (@__e__setups||{}).each_pair do |position, setups|
 
         action_setups = setups.select do |(m,_)| # |(m)| does not work on 1.8
           m == :* || m == action ||
@@ -319,14 +323,14 @@ class << E
 
   # turning Regexp and * matchers into real action names
   def expand_formats!
-    global_formats = (@formats||[]).map {|f| '.' << f.to_s.sub('.', '')}.uniq
-    strict_formats = (@formats_for||[]).inject([]) do |u,(m,f)|
+    global_formats = (@__e__formats||[]).map {|f| '.' << f.to_s.sub('.', '')}.uniq
+    strict_formats = (@__e__formats_for||[]).inject([]) do |u,(m,f)|
       u << [m, f.map {|e| '.' << e.to_s.sub('.', '')}.uniq]
     end
 
     define_format_helpers(global_formats, strict_formats)
 
-    @expanded_formats = public_actions.inject({}) do |map, action|
+    @__e__expanded_formats = public_actions.inject({}) do |map, action|
 
       map[action] = global_formats
 
@@ -336,7 +340,7 @@ class << E
       end
       map[action] = action_formats if action_formats.any?
 
-      (@disable_formats_for||[]).each do |m|
+      (@__e__disable_formats_for||[]).each do |m|
         map.delete(action) if m == action || (m.is_a?(Regexp) && action.to_s =~ m)
       end
 

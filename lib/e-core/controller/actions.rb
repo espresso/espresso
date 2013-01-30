@@ -75,12 +75,12 @@ class << E
   #
   # @return [Array]
   def public_actions
-    return @public_actions if @public_actions
+    return @__e__public_actions if @__e__public_actions
 
     actions = (
       (self.public_instance_methods(false)) +
-      (@alias_actions   || {}).keys +
-      (@included_actions || [])
+      (@__e__alias_actions    || {}).keys +
+      (@__e__included_actions || [])
     ).uniq.map(&:to_sym) # to_sym needed on 1.8
     
     if actions.empty?
@@ -90,7 +90,7 @@ class << E
       actions << :index
     end
 
-    @public_actions = actions
+    @__e__public_actions = actions
   end
 
   def generate_action_setup action
