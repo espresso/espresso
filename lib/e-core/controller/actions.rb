@@ -75,22 +75,22 @@ class << E
   #
   # @return [Array]
   def public_actions
-    return @__e__public_actions if @__e__public_actions
+    @__e__public_actions ||= begin
 
-    actions = (
-      (self.public_instance_methods(false)) +
-      (@__e__alias_actions    || {}).keys +
-      (@__e__included_actions || [])
-    ).uniq.map(&:to_sym) # to_sym needed on 1.8
-    
-    if actions.empty?
-      define_method :index do |*|
-        'Get rid of this placeholder by defining %s#index' % self.class
+      actions = (
+        (self.public_instance_methods(false)) +
+        (@__e__alias_actions    || {}).keys   +
+        (@__e__included_actions || [])
+      ).uniq.map(&:to_sym) # to_sym needed on 1.8
+      
+      if actions.empty?
+        define_method :index do |*|
+          'Get rid of this placeholder by defining %s#index' % self.class
+        end
+        actions << :index
       end
-      actions << :index
+      actions
     end
-
-    @__e__public_actions = actions
   end
 
   def generate_action_setup action
@@ -107,14 +107,14 @@ class << E
       /(?:\A(?:\/{0,})?#{action})?(#{formats(action).map {|f| Regexp.escape f}.join("|")})\Z/ : nil
 
     {
-      :controller          => self,
-      :action              => action,
-      :action_name         => action_name,
-      :action_arguments    => action_arguments,
-      :required_arguments  => required_arguments,
-      :path                => path.freeze,
-      :format_regexp       => format_regexp,
-      :request_method      => request_method
+              :controller => self,
+                  :action => action,
+             :action_name => action_name,
+        :action_arguments => action_arguments,
+      :required_arguments => required_arguments,
+                    :path => path.freeze,
+           :format_regexp => format_regexp,
+          :request_method => request_method
     }.freeze
   end
 

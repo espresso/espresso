@@ -32,6 +32,7 @@ class << E
   #    App['posts.html']       #=> /forum/posts.html
   #    App['posts.xml']        #=> /forum/posts.xml
   #    App['posts.json']       #=> nil
+  #
   def [] action_or_action_with_format
     mounted? || raise("`[]' method works only on mounted controllers")
     @__e__route_by_action[action_or_action_with_format] ||
@@ -132,7 +133,9 @@ class << E
   end
 
   def lock!
-    
+    self.instance_variables.reject {|v| v.to_s == '@__e__app' }.each do |var|
+      (var.to_s =~ /@__e__/) && (val = self.instance_variable_get(var)) && val.freeze
+    end
   end
 
   def reset_routes_data!
