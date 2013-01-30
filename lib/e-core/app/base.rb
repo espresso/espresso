@@ -228,11 +228,13 @@ class EspressoApp
       controller.remap!(base_url + root.to_s, *roots)
     end
 
-    @global_setup && controller.class_exec(controller, &@global_setup)
-    setup && controller.class_exec(&setup)
+    @global_setup && controller.global_setup!(&@global_setup)
+    setup && controller.external_setup!(&setup)
+
     controller.mount! self
+
     @routes.update controller.routes
-    controller.rewrite_rules.each {|(rule,proc)| rewrite_rule rule, &proc}
+    controller.rewrite_rules.each {|(rule,proc)| rewrite_rule(rule, &proc)}
 
     @mounted_controllers << controller
   end

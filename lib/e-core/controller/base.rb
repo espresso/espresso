@@ -1,15 +1,10 @@
 class << E
-  def app
-    @__e__app
-  end
 
-  def routes
-    @__e__routes
-  end
-
-  def action_setup
-    @__e__action_setup
-  end
+  def app; @__e__app end
+  def routes; @__e__routes end
+  def action_setup; @__e__action_setup end
+  def rewrite_rules; @__e__rewrite_rules || [] end
+  def mounted?; @__e__mounted end
 
   # build URL from given action name(or path) and consequent params
   # @return [String]
@@ -78,10 +73,6 @@ class << E
     @__e__mounted = true
   end
 
-  def mounted?
-    @__e__mounted
-  end
-
   # remap served root(s) by prepend given path
   # to controller's root and canonical paths
   #
@@ -121,8 +112,16 @@ class << E
     map! new_base_url, *new_canonicals.uniq
   end
 
-  def rewrite_rules
-    @__e__rewrite_rules || []
+  def global_setup! &setup
+    @__e__setup_container = :global
+    self.class_exec self, &setup
+    @__e__setup_container = nil
+  end
+
+  def external_setup! &setup
+    @__e__setup_container = :external
+    self.class_exec &setup
+    @__e__setup_container = nil
   end
 
   private
