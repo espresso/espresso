@@ -4,15 +4,15 @@ class EspressoApp
   def ipcm_trigger *args
     if pids_reader
       pids = pids_reader.call rescue nil
-      if pids.is_a?(Array) 
-        pids.map {|p| p.to_i}.reject {|p| p < 2 || p == Process.pid }.each do |pid|
+      if pids.is_a?(Array)
+        pids.map(&:to_i).reject {|p| p < 2 || p == Process.pid }.each do |pid|
+          file = '%s/%s.%s-%s' % [ipcm_tmpdir, pid, args.hash, Time.now.to_f]
           begin
-            File.open('%s/%s.%s-%s' % [ipcm_tmpdir, pid, args.hash, Time.now.to_f], 'w') do |f|
-              f << Marshal.dump(args)
-            end
+            File.open(file, 'w') {|f| f << Marshal.dump(args)}
             Process.kill ipcm_signal, pid
           rescue => e
             warn "was unable to perform IPCM operation because of error: %s" % ::CGI.escapeHTML(e.message)
+            File.unlink(file) if File.file?(file)
           end
         end
       else
@@ -44,7 +44,7 @@ class EspressoApp
         unless (setup = Marshal.restore(File.read(file)) rescue nil).is_a?(Array)
           warn "Was unable to process \"%s\" cache file, skipping cache cleaning" % file
         end
-        File.unlink file
+        File.unlink(file) if File.file?(file)
         meth = setup.shift
         [ :clear_cache,
           :clear_cache_like,
