@@ -49,11 +49,7 @@ class << E
   # @param [Proc]   setup setup block. to be executed at class level
   #
   def mount *roots, &setup
-    @__e__app ||= begin 
-      app = EspressoApp.new.mount(self, *roots, &setup)
-      app.to_app!
-      app
-    end
+    @__e__app ||= EspressoApp.new.mount(self, *roots, &setup).to_app
   end
 
   # used when mounted from an EspressoApp instance

@@ -1,7 +1,5 @@
 class EspressoApp
 
-  attr_reader :app
-
   # Rack interface to all found controllers
   #
   # @example config.ru
@@ -92,6 +90,7 @@ class EspressoApp
   # displays URLs the app will respond to,
   # with controller and action that serving each URL.
   def url_map opts = {}
+    to_app!
     map = {}
     sorted_routes.each do |r|
       @routes[r].each_pair { |rm, as| (map[r] ||= {})[rm] = as.dup }
@@ -136,23 +135,28 @@ class EspressoApp
     host = opts.delete(:host) || opts.delete(:bind)
     opts[:Host] = host if host
 
-    to_app!
     Rack::Handler.const_get(server).run app, opts
   end
 
   def call env
-    app || to_app!
     app.call env
   end
 
-  def to_app!
-    @app ||= begin
-      mount_controllers!
-      middleware.reverse.inject(lambda {|env| call!(env)}) {|a,e| e[a]}
-    end
+  def app
+    @app ||= to_app!
+  end
+
+  def to_app
+    app
+    self
   end
 
   private
+  def to_app!
+    mount_controllers!
+    middleware.reverse.inject(lambda {|env| call!(env)}) {|a,e| e[a]}
+  end
+
   def call! env
     path = env[ENV__PATH_INFO]
     script_name = env[ENV__SCRIPT_NAME]
