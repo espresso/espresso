@@ -8,7 +8,7 @@ module ECoreTest__Utils
       ]
 
       variations.each do |variation|
-        is?(EspressoFrameworkUtils::rootify_url(*variation[0])) == variation[1]
+        is?(EspressoUtils::rootify_url(*variation[0])) == variation[1]
       end
     end
 
@@ -18,7 +18,7 @@ module ECoreTest__Utils
       ]
 
       variations.each do |variation|
-        is?(EspressoFrameworkUtils::underscore(variation[0])) == variation[1]
+        is?(EspressoUtils::underscore(variation[0])) == variation[1]
       end
     end
 
@@ -28,7 +28,7 @@ module ECoreTest__Utils
         end
       end
 
-      is?(EspressoFrameworkUtils::demodulize(Inner::TestClass)) == "TestClass"
+      is?(EspressoUtils::demodulize(Inner::TestClass)) == "TestClass"
     end
 
     Testing "build_path" do
@@ -39,7 +39,7 @@ module ECoreTest__Utils
         [['page', {:with => 'param-added', :an_ignored_param => nil}], "page?with=param-added"],
       ]
       variations.each do |variation|
-        res = EspressoFrameworkUtils.build_path(*variation[0])
+        res = EspressoUtils.build_path(*variation[0])
         is?(res) == variation[1]
       end
     end

@@ -1,4 +1,4 @@
-module EspressoFrameworkConstants
+module EspressoConstants
 
   HTTP__DEFAULT_SERVER = :WEBrick
   HTTP__DEFAULT_PORT   = 5252

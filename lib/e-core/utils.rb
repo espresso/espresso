@@ -1,5 +1,5 @@
-module EspressoFrameworkUtils
-  include EspressoFrameworkConstants
+module EspressoUtils
+  include EspressoConstants
 
   PATH_MODIFIERS = [
       /\A\.\.\Z/,

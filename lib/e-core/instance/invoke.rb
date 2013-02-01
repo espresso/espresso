@@ -54,7 +54,7 @@ class E
       return [STATUS__BAD_REQUEST, {}, [body]]
     end
 
-    controller = EspressoFrameworkUtils.is_app?(args.first) ? args.shift : self.class
+    controller = EspressoUtils.is_app?(args.first) ? args.shift : self.class
 
     if args.empty?
       body = 'Beside Controller, `%s` expects some action to be provided' % __method__

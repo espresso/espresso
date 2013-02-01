@@ -24,7 +24,7 @@ class E
   # ensure the browser will be redirected after code execution finished
   def delayed_redirect *args
     status = args.first.is_a?(Numeric) ? args.shift : STATUS__REDIRECT
-    app = EspressoFrameworkUtils.is_app?(args.first) ? args.shift : nil
+    app = EspressoUtils.is_app?(args.first) ? args.shift : nil
     action = args.first.is_a?(Symbol) ? args.shift : nil
     if app && action
       target = app.route action, *args
@@ -33,7 +33,7 @@ class E
     elsif action
       target = route action, *args
     else
-      target = EspressoFrameworkUtils.build_path *args
+      target = EspressoUtils.build_path *args
     end
     response.body = []
     response.redirect target, status

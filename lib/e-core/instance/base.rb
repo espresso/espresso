@@ -19,7 +19,7 @@ class E
   alias rs response
 
   def params
-    @__e__params ||= EspressoFrameworkUtils.indifferent_params(request.params)
+    @__e__params ||= EspressoUtils.indifferent_params(request.params)
   end
 
   def action
@@ -64,7 +64,7 @@ class E
   def call env
     
     @__e__env     = env
-    @__e__request = EspressoFrameworkRequest.new(env)
+    @__e__request = EspressoRequest.new(env)
     @__e__format  = env[ENV__ESPRESSO_FORMAT]
 
     e_response = catch :__e__catch__response__ do
@@ -144,7 +144,7 @@ class E
           action_params[name] = given_params.shift
         end
       end
-      @__e__action_params = EspressoFrameworkUtils.indifferent_params(action_params).freeze
+      @__e__action_params = EspressoUtils.indifferent_params(action_params).freeze
     end
   else
     # @example ruby 1.8

@@ -1,11 +1,11 @@
 class E
   include Rack::Utils
-  include EspressoFrameworkConstants
+  include EspressoConstants
 end
 
 class << E
-  include EspressoFrameworkConstants
-  include EspressoFrameworkUtils
+  include EspressoConstants
+  include EspressoUtils
 
   def include mdl
     super
@@ -22,15 +22,15 @@ class << E
 
 end
 
-class EspressoFrameworkRewriter
+class EspressoRewriter
   include Rack::Utils
-  include EspressoFrameworkConstants
-  include EspressoFrameworkUtils
+  include EspressoConstants
+  include EspressoUtils
 end
 
 class EspressoApp
-  include EspressoFrameworkConstants
-  include EspressoFrameworkUtils
+  include EspressoConstants
+  include EspressoUtils
 end
 
 class EApp < EspressoApp

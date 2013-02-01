@@ -1,4 +1,4 @@
-class EspressoFrameworkRewriter
+class EspressoRewriter
 
   attr_reader :env, :request
 
@@ -7,7 +7,7 @@ class EspressoFrameworkRewriter
   end
 
   def call env
-    @env, @request = env, EspressoFrameworkRequest.new(env)
+    @env, @request = env, EspressoRequest.new(env)
     @status, @headers, @body =
       STATUS__BAD_REQUEST, {"Content-Type" => "text/plain"}, []
 

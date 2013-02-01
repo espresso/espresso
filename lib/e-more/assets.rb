@@ -1,4 +1,4 @@
-module EspressoFrameworkAssetsMixin
+module EspressoAssetsMixin
   # building HTML script tag from given URL and/or opts.
   # if passing URL as first argument, 
   # it will be appended to the assets base URL, set via `assets_url` at app level.
@@ -83,8 +83,8 @@ module EspressoFrameworkAssetsMixin
   end
 end
 
-class EspressoFrameworkAssetsMapper
-  include EspressoFrameworkAssetsMixin
+class EspressoAssetsMapper
+  include EspressoAssetsMixin
 
   attr_reader :baseurl, :wd
 
@@ -147,14 +147,14 @@ class EspressoFrameworkAssetsMapper
 end
 
 class E
-  include EspressoFrameworkAssetsMixin
+  include EspressoAssetsMixin
 
   def assets *args, &proc
     app.assets *args, &proc
   end
 
   def assets_mapper *args, &proc
-    EspressoFrameworkAssetsMapper.new *args, &proc
+    EspressoAssetsMapper.new *args, &proc
   end
 
   private

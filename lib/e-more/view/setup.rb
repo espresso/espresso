@@ -19,7 +19,7 @@ class E
   # @param [String] *args
   #   any args to be passed to engine at initialization
   def engine engine, engine_opts = {}
-    EspressoFrameworkUtils.register_slim_engine!
+    EspressoUtils.register_slim_engine!
     engine = VIEW__ENGINE_BY_SYM[engine] ||
       raise(ArgumentError, '%s engine not supported. Supported engines: %s' %
         [engine, VIEW__ENGINE_BY_SYM.keys.join(', ')])

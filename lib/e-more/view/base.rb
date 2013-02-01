@@ -58,7 +58,7 @@ class E
   end
 
   def view_path_proxy *args
-    EspressoFrameworkExplicitViewPath.new File.join(*args)
+    EspressoExplicitViewPath.new File.join(*args)
   end
 
   # render a template with layout(if any defined).
@@ -190,16 +190,16 @@ class E
   end
 
   def __e__template template, ext = engine_ext_with_format
-    return template if template.instance_of?(EspressoFrameworkExplicitViewPath)
+    return template if template.instance_of?(EspressoExplicitViewPath)
     File.join(view_path?, view_prefix?, template.to_s) << ext
   end
 
   def __e__layout_template layout, ext = engine_ext_with_format
-    return layout if layout.instance_of?(EspressoFrameworkExplicitViewPath)
+    return layout if layout.instance_of?(EspressoExplicitViewPath)
     File.join(view_path?, layouts_path?, layout.to_s) << ext
   end
 
 end
 
 # allow to check whether explicit path given
-class EspressoFrameworkExplicitViewPath < String; end
+class EspressoExplicitViewPath < String; end

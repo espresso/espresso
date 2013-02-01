@@ -102,7 +102,7 @@ class EspressoApp
         next if route.source.size == 0
         out << "%s\n" % route.source
         request_methods.each_pair do |request_method, route_setup|
-          out << "  %s%s" % [request_method, ' ' * (10 - request_method.size)]
+          out << "  %s%s" % [request_method, ' ' * (10 - request_method.to_s.size)]
           out << "%s#%s\n" % [route_setup[:controller], route_setup[:action]]
         end
         out << "\n"
@@ -166,7 +166,7 @@ class EspressoApp
         if route_setup = @routes[route][env[ENV__REQUEST_METHOD]] || @routes[route][:*]
 
           if route_setup[:rewriter]
-            app = EspressoFrameworkRewriter.new(*matches.captures, &route_setup[:rewriter])
+            app = EspressoRewriter.new(*matches.captures, &route_setup[:rewriter])
             return app.call(env)
           elsif route_setup[:app]
             env[ENV__PATH_INFO] = matches[1].to_s

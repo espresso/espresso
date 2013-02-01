@@ -1,6 +1,6 @@
 class E
 
-  EspressoFrameworkConstants::HTTP__REQUEST_METHODS.each do |request_method|
+  EspressoConstants::HTTP__REQUEST_METHODS.each do |request_method|
     define_method '%s?' % request_method.downcase do
       (@__e__request_method_map ||= {request.request_method => true})[request_method]
     end

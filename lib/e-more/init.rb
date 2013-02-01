@@ -1,4 +1,4 @@
-module EspressoFrameworkConstants
+module EspressoConstants
 
   VIEW__ENGINE_BY_EXT, VIEW__ENGINE_BY_SYM = {}, {}
   
@@ -22,7 +22,7 @@ module EspressoFrameworkConstants
 
 end
 
-module EspressoFrameworkUtils
+module EspressoUtils
   def register_slim_engine!
     if Object.const_defined?(:Slim)
       VIEW__ENGINE_BY_EXT['.slim'] = Slim::Template

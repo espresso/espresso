@@ -1,6 +1,6 @@
-class EspressoFrameworkRequest < Rack::Request # partially borrowed from Sinatra Framework
+class EspressoRequest < Rack::Request # partially borrowed from Sinatra Framework
 
-  include EspressoFrameworkConstants
+  include EspressoConstants
 
   # getting various setups accepted by browser.
   # `accept?` is for content type, `accept_charset?` for charset etc.

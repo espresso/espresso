@@ -22,7 +22,7 @@ namespace :test do
       include HttpSpecHelper
     end
     session.before do |tested_app|
-      if tested_app && EspressoFrameworkUtils.is_app?(tested_app)
+      if tested_app && EspressoUtils.is_app?(tested_app)
         tested_app.use Rack::Lint
         if ['e-more', :ViewAPI].include?(unit)
           app tested_app.mount { view_fullpath File.expand_path('../test/e-more/view/templates', __FILE__) }
