@@ -11,17 +11,6 @@ class << E
     map! *paths
   end
 
-  def base_url
-    @__e__base_url ||= ('/' << self.name.to_s.split('::').last.
-      gsub(/([A-Z]+)([A-Z][a-z])/, '\1_\2').
-      gsub(/([a-z\d])([A-Z])/, '\1_\2').downcase).freeze
-  end
-  alias baseurl base_url
-
-  def canonicals
-    @__e__canonicals || []
-  end
-
   # add/update a path rule
   #
   # @note default rules

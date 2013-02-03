@@ -14,6 +14,21 @@ class << E
     (route = self[args.first]) && args.shift
     build_path(route || base_url, *args)
   end
+  
+  def base_url
+    @__e__base_url || underscored_name
+  end
+  alias baseurl base_url
+
+  def canonicals
+    @__e__canonicals || []
+  end
+
+  def underscored_name
+    @__e__underscored_name ||= ('/' << self.name.to_s.split('::').last.
+      gsub(/([A-Z]+)([A-Z][a-z])/, '\1_\2').
+      gsub(/([a-z\d])([A-Z])/, '\1_\2').downcase).freeze
+  end
 
   # @example
   #    class Forum < E
