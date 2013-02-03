@@ -1,5 +1,5 @@
 module EMoreTest__View__Slim
-  class App < E
+  class SlimTest < E
     map '/'
 
     engine :Slim
@@ -10,7 +10,7 @@ module EMoreTest__View__Slim
 
   end
 
-  Spec.new App do
+  Spec.new SlimTest do
 
     get
     expect(last_response.body) == "Slim successfully registered"

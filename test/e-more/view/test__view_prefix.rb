@@ -2,7 +2,7 @@ module EMoreTest__View__ViewPrefix
 
   class App < E
     map '/path-test-i-dont-care'
-    view_prefix '/path-test'
+    view_prefix '/path_test'
     layouts_path 'layouts'
     layout :base
 
@@ -11,15 +11,7 @@ module EMoreTest__View__ViewPrefix
     end
   end
 
-  class Nested < E
-    map 'nested/templates'
-
-    def index
-      render
-    end
-  end
-
-  class Canonical < E
+  class CanonicalTest < E
     map '/', '/canonical-url'
 
     def index
@@ -39,12 +31,7 @@ module EMoreTest__View__ViewPrefix
     expect(last_response.body) == 'HEADER/index.erb'
   end
 
-  Spec.new Nested do
-    get
-    expect(last_response.body) == '/nested/templates/index.erb'
-  end
-
-  Spec.new Canonical do
+  Spec.new CanonicalTest do
     get
     expect(last_response.body) == 'Hello!'
 

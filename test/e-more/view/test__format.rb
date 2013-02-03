@@ -1,5 +1,5 @@
 module EMoreTest__View__Format
-  class App < E
+  class FormatTest < E
     map '/'
 
     layout :layout__format
@@ -54,7 +54,7 @@ module EMoreTest__View__Format
 
   end
 
-  Spec.new App do
+  Spec.new FormatTest do
 
     Testing '`render` and `render_partial`' do
 

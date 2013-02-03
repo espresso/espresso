@@ -1,6 +1,6 @@
 module EMoreTest__View__Generic
 
-  class App < E
+  class GenericTest < E
     class Sandbox
       attr_reader :params
 
@@ -81,7 +81,7 @@ module EMoreTest__View__Generic
 
   end
 
-  Spec.new App do
+  Spec.new GenericTest do
 
     Should 'render template of current action with layout' do
       r = get

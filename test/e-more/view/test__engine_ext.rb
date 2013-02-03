@@ -1,5 +1,5 @@
 module EMoreTest__View__EngineExt
-  class App < E
+  class EngineExtTest < E
     map :/
 
     engine_ext '.xhtml'
@@ -27,7 +27,7 @@ module EMoreTest__View__EngineExt
 
   end
 
-  Spec.new App do
+  Spec.new EngineExtTest do
 
     Ensure 'extension can be set directly on controller' do
       get 'custom-ext'

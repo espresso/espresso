@@ -1,5 +1,5 @@
 module EMoreTest__View__File
-  class App < E
+  class RenderFileTest < E
     map '/'
 
     format '.xml'
@@ -30,7 +30,7 @@ module EMoreTest__View__File
 
   end
 
-  Spec.new App do
+  Spec.new RenderFileTest do
 
     Testing :render_file do
       
@@ -60,10 +60,10 @@ module EMoreTest__View__File
 
     Testing :adhoc_rendering do
       Testing :Slim do
-        get :slim_file, :file => 'adhoc/slim_file.slim'
+        get :slim_file, :file => 'adhoc_test/slim_file.slim'
         expect(last_response.body) == 'slim_file|slim_file.slim'
         
-        get :slim_layout_file, :file => 'adhoc/layouts/slim_layout_file.slim', :content => 'SLIMTEST'
+        get :slim_layout_file, :file => 'adhoc_test/layouts/slim_layout_file.slim', :content => 'SLIMTEST'
         expect(last_response.body) == 'HEADER|SLIMTEST|FOOTER'
 
       end

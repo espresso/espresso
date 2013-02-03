@@ -157,25 +157,21 @@ class E
   end
 
   # following methods are delegated to class
-  def base_url
-    self.class.base_url
-  end
+  def base_url; self.class.base_url end
   alias baseurl base_url
+
+  def app; self.class.app end
+  def canonicals; self.class.canonicals end
+  def path_rules; self.class.path_rules end
+  def middleware; self.class.middleware end
+  def controller_name;  self.class.controller_name  end
 
   def setups position
     self.class.setups position, action, format
   end
 
-  def app
-    self.class.app
-  end
-
   def formats
     self.class.formats action
-  end
-
-  def canonicals
-    self.class.canonicals
   end
 
   def [] action
@@ -190,17 +186,11 @@ class E
     self.class.alias_actions[action] || []
   end
 
-  def path_rules
-    self.class.path_rules
-  end
-
-  def middleware
-    self.class.middleware
-  end
 
   def user
     env[ENV__REMOTE_USER]
   end
   alias user? user
+
 
 end

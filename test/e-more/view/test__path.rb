@@ -1,5 +1,5 @@
 module EMoreTest__View__Path
-  class App < E
+  class PathTest < E
     map '/path-test'
     layouts_path 'layouts'
     layout :base
@@ -9,11 +9,11 @@ module EMoreTest__View__Path
     end
 
     def render_test
-      render path_to_templates('path-test/index.erb')
+      render path_to_templates(controller_name + '/index.erb')
     end
 
     def render_partial_test
-      render_p path_to_templates('path-test/partial.erb')
+      render_p path_to_templates(controller_name + '/partial.erb')
     end
 
     def render_layout_test
@@ -27,7 +27,7 @@ module EMoreTest__View__Path
     end
   end
 
-  Spec.new App do
+  Spec.new PathTest do
 
     get
     expect(last_response.body) == 'HEADER/index.erb'

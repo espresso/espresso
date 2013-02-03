@@ -18,7 +18,7 @@ class E
   end
 
   def view_prefix?
-    @__e__view_prefix || base_url
+    @__e__view_prefix || controller_name
   end
 
   def layouts_path?

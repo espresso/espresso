@@ -29,6 +29,7 @@ class << E
       gsub(/([A-Z]+)([A-Z][a-z])/, '\1_\2').
       gsub(/([a-z\d])([A-Z])/, '\1_\2').downcase).freeze
   end
+  alias controller_name underscored_name
 
   # @example
   #    class Forum < E

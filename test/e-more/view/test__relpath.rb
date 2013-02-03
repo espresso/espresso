@@ -1,6 +1,6 @@
 module EMoreTest__View__Relpath
 
-  class App < E
+  class RelpathTest < E
     map '/'
 
     view_path 'templates'
@@ -37,7 +37,9 @@ module EMoreTest__View__Relpath
   end
 
   Spec.new self do
-    app EspressoApp.new { root File.expand_path '..', __FILE__ }.mount(App)
+    app EspressoApp.new {
+      root File.expand_path '..', __FILE__
+    }.mount(RelpathTest)
 
     get
     expect(last_response.body) == "Hello World!"
@@ -51,10 +53,10 @@ module EMoreTest__View__Relpath
     get :given_tpl, :tpl => :partial
     expect(last_response.body) == "Hello partial!"
     
-    get :given_tpl, :tpl => '../custom-templates/some-file'
+    get :given_tpl, :tpl => '../../custom-templates/some-file'
     expect(last_response.body) == "Hello some-file.erb!"
 
-    get :given_partial, :tpl => '../custom-templates/some_partial'
+    get :given_partial, :tpl => '../../custom-templates/some_partial'
     expect(last_response.body) == "some_partial.erb"
 
     get :render_layout, :file => :layout__format

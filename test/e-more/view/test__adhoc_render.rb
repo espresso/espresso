@@ -1,9 +1,9 @@
 module EMoreTest__View__AdhocRender
-  class App < E
+  class AdhocTest < E
     map '/adhoc'
     layout :master
     view_path 'templates'
-    layouts_path 'adhoc/layouts'
+    layouts_path 'adhoc_test/layouts'
     format '.html'
 
     setup :custom_layout do
@@ -59,8 +59,10 @@ module EMoreTest__View__AdhocRender
   end
 
   Spec.new self do
-    app EspressoApp.new { root File.expand_path '..', __FILE__ }.mount(App)
-    map App.base_url
+    app EspressoApp.new {
+      root File.expand_path '..', __FILE__
+    }.mount(AdhocTest)
+    map AdhocTest.base_url
 
     Testing 'current action' do
       Should 'render with layout' do

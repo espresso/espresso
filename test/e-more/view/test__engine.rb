@@ -1,5 +1,5 @@
 module EMoreTest__View__Engine
-  class App < E
+  class EngineTest < E
     map '/'
 
     layout :layout
@@ -31,7 +31,7 @@ module EMoreTest__View__Engine
 
   end
 
-  Spec.new App do
+  Spec.new EngineTest do
 
     get
     expect(last_response.body) == "HAML Layout/\nval\n"
