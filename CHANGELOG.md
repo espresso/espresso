@@ -1,6 +1,7 @@
 
 + 0.4 [not released yet] - First Stable Release
 
+  - Path to templates are now resolved by controller name, not by base URL
   - Verbified actions has priority over verbless ones, regardless defining order
   - Removing Appetite dependency
   - Writing a new router crafted for specific Espresso needs. Also it tends to be faster than Rack::URLMap
