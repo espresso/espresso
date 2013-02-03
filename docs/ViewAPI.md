@@ -87,8 +87,7 @@ If that's not your case, use `view_path` to inform Espresso about correct path.
 **Example:**
 
 ```ruby
-class App < E
-  map '/cms'
+class Cms < E
 
   view_path 'base/view'
 
@@ -116,6 +115,20 @@ class News < E
 end
 ```
 
+**IMPORTANT:** As of version 0.4 Espresso will use underscored controller name to resolve path to templates. Before 0.4 base URL were used for this:
+
+
+```ruby
+class Cms < E
+  map '/pages'
+
+  def index
+    render
+    # on 0.4+ will render "view/cms/index.erb"
+    # before 0.4 - "view/pages/index.erb"
+  end
+end
+```
 
 
 **[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
@@ -374,7 +387,7 @@ render_haml_l      # will render only the layout of current action using Haml en
 Espresso is building the path to templates as follow:
 
 <code>
-view path / controller's base URL / action name or given template
+view path / controller's name / action name or given template
 </code>
 
 ```ruby
@@ -383,18 +396,41 @@ class Index < E
 
   def index
     render
-    # will render ./view/index.erb
+    # will render ./view/index/index.erb
   end
 
   def header
-    render_partial 'layouts/_header'
-    # will render ./view/layouts/_header.erb
+    render_partial 'banner'
+    # will render ./view/index/banner.erb
+  end
+end
+```
+
+**Note:** before 0.4 base URL were used instead of controller name.
+
+If your templates are located in a folder different from your controller name,
+use `view_prefix` to set correct path:
+
+```ruby
+class Index < E
+  map '/'
+  view_prefix '/'
+
+  def index
+    render
+    # will render ./view/index.erb instead of ./view/index/index.erb
+  end
+
+  def header
+    render_partial 'banner'
+    # will render ./view/banner.erb instead of ./view/index/banner.erb
   end
 end
 ```
 
 As you can see, Espresso will automatically add file extension,
 based on value defined via `engine_ext` or engine's default extension.
+
 
 To render a template by full name, use `render_file`:
 
@@ -404,6 +440,8 @@ class Index < E
 
   def index
     render_file 'banners/top.xhtml' # will render ./view/banners/top.xhtml
+
+    render_partial 'banners/top     # will render ./view/index/banners/top.erb
   end
 
 end
