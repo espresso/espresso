@@ -82,21 +82,21 @@ class << E
     @__e__mounted = true
   end
 
-  # remap served root(s) by prepend given path
-  # to controller's root and canonical paths
+  # remap served root(s) by prepend given path to controller's root.
+  # if some canonicals given they will be appended to existing controller's canonicals.
   #
   # @note Important: all actions should be defined before re-mapping occurring
   #
   # @example
   #   class Forum < E
   #     map '/forum', '/forums'
+  #     # ...
   #   end
-  #   app = EspressoApp.new.mount(Forum, '/site-01', '/site-one')
+  #   app = EspressoApp.new.mount(Forum, '/new-root', '/some-canonical')
   #   # app will serve:
-  #   #   - /site-01/forum
-  #   #   - /site-01/forums
-  #   #   - /site-one/forum
-  #   #   - /site-one/forums
+  #   #   - /new-root/forum
+  #   #   - /forums
+  #   #   - /some-canonical
   #
   def remap! root, *given_canonicals
     return if mounted?
