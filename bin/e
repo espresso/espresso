@@ -1,0 +1,66 @@
+#!/usr/bin/env ruby
+require 'fileutils'
+
+src_path = File.expand_path('../..', __FILE__) + '/'
+
+wd = Dir.pwd + '/'
+
+def fail msg
+  puts msg
+  exit 1
+end
+
+def putm msg
+  puts msg
+end
+
+if op = $*[0]
+  if op =~ /\Ag\:/
+    if op =~ /p/ # generating new project
+      project_name = $*[1].to_s
+      project_name.empty? && fail("Please provide project name as second argument")
+      project_name =~ /\.\.|\// && fail("Project name can not contain slashes nor ..")
+
+      project_path = File.expand_path(project_name, wd) + '/'
+      File.exists?(project_name) && fail("#{project_path} already exists")
+
+      putm "Generating \"#{project_name}\" project...\n"
+      
+      [
+        '',
+        'config',
+        'lib',
+        'lib/model',
+        'lib/view',
+        'lib/controller',
+        'lib/helper',
+        'lib/spec',
+        'public',
+        'var',
+        'var/db',
+        'var/log',
+        'var/pid',
+        'tmp'
+      ].each do |dir|
+        path = project_path + dir
+        putm "  Creating #{dir.empty? ? path : dir}"
+        FileUtils.mkdir(path)
+      end
+
+      Dir[src_path + 'app/**/*'].each do |path|
+        next unless File.file?(path)
+        file = path.sub(/\A#{Regexp.escape(src_path)}app\/+/, '')
+        putm "  Writing #{file}"
+        FileUtils.cp(path, project_path + file)
+      end
+
+      exit 0
+
+
+
+    end
+  end
+end
+
+require "rack"
+Rack::Server.start

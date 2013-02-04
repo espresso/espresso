@@ -1,0 +1,22 @@
+# SQLite version 3.x
+#   gem install sqlite3
+#
+#   Ensure the SQLite 3 gem is defined in your Gemfile
+#   gem 'sqlite3'
+dev:
+  type: sqlite3
+  name: var/db/dev.sqlite3
+  host:
+  port:
+
+test:
+  type: sqlite3
+  name: var/db/test.sqlite3
+  host:
+  port:
+
+prod:
+  type: sqlite3
+  name: var/db/prod.sqlite3
+  host:
+  port:

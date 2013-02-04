@@ -1,0 +1,9 @@
+# ensure the server is defined in Gemfile
+# ex:  gem 'Thin'
+:dev:
+  :server: Thin
+  :port:   5252
+
+:prod:
+  :server: Thin
+  :port:   5252
