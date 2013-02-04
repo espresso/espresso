@@ -1,3 +1,5 @@
 source :rubygems
 
-gem 'e'
+gem 'e', :path => File.expand_path('../..', __FILE__)
+gem 'thin'
+gem 'sprockets'

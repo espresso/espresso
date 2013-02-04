@@ -1,3 +1,3 @@
-require File.expand_path('../lib/boot', __FILE__)
+require File.expand_path('../app/boot', __FILE__)
 
 run App

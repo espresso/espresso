@@ -4,15 +4,16 @@ class AppConfig
 
   def initialize app
     path = {'root' => app.root}
-    %w[config lib public var tmp].each do |d|
+    %w[config app public var tmp].each do |d|
       path[d] = app.root + d + '/'
     end
-    %w[model view controller helper spec].each do |d|
-      path[d] = app.root + 'lib/' + d + '/'
+    %w[models views controllers helper spec].each do |d|
+      path[d] = app.root + 'app/' + d + '/'
     end
     %w[pid log].each do |d|
       path[d] = app.root + 'var/' + d + '/'
     end
+    path['assets'] = path['public'] + 'assets/'
 
     @path = Struct.new(*path.keys.map(&:to_sym)).new(*path.values)
 

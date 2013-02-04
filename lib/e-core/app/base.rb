@@ -24,8 +24,12 @@ class EspressoApp
 
   def initialize automount = false, &proc
     @routes, @controllers = {}, {}
-    mount discovered_controllers if automount
+    automount! if automount
     proc && self.instance_exec(&proc)
+  end
+
+  def automount!
+    mount discovered_controllers
   end
 
   # mount given/discovered controllers into current app.
