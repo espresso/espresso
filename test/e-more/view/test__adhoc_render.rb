@@ -1,8 +1,10 @@
 module EMoreTest__View__AdhocRender
   class AdhocTest < E
-    map '/adhoc'
-    layout :master
+    map '/adhoc_test'
+
     view_path 'templates'
+    view_prefix base_url
+    layout :master
     layouts_path 'adhoc_test/layouts'
     format '.html'
 

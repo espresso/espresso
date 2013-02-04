@@ -1,6 +1,7 @@
 module EMoreTest__View__Slim
   class SlimTest < E
-    map '/'
+    map :slim_test
+    view_prefix base_url
 
     engine :Slim
 

@@ -157,14 +157,19 @@ class E
   end
 
   # following methods are delegated to class
-  def base_url; self.class.base_url end
+  %w[
+    default_route
+    base_url
+    app
+    canonicals
+    path_rules
+    middleware
+  ].each do |meth|
+    define_method meth do
+      self.class.send __method__
+    end
+  end
   alias baseurl base_url
-
-  def app; self.class.app end
-  def canonicals; self.class.canonicals end
-  def path_rules; self.class.path_rules end
-  def middleware; self.class.middleware end
-  def controller_name;  self.class.controller_name  end
 
   def setups position
     self.class.setups position, action, format

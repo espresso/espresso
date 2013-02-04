@@ -1,67 +1,74 @@
 module ECoreTest__Canonical
-
-  class App < E
-    map '/', '/cms', '/pages'
-
+  module Actions
     def index
-     rq.path
+     [rq.path, canonical?].inspect
     end
 
     def post_eatme
-      rq.path
+     [rq.path, canonical?].inspect
     end
-
+  end
+  
+  class App < E
+    map '/root', '/cms', '/pages'
+    include Actions
   end
 
-  module Hlp
-    def pass_validation? variations
-      variations.each do |args|
-        self.send(args[0], *args[1])
-        is(args[2]).ok_body?
-      end
+  class RemountApp < E
+    map '/root', '/cms', '/pages'
+    include Actions
+  end
+
+
+  Spec.new App do
+    Testing 'without remap' do
+      get
+      is(last_response).ok?
+      expect(last_response.body) == ['/root/', nil].inspect
+
+      get '/cms'
+      is(last_response).ok?
+      expect(last_response.body) == ["/cms", "/root"].inspect
+
+      post '/cms/eatme'
+      is(last_response).ok?
+      expect(last_response.body) == ["/cms/eatme", "/root/eatme"].inspect
+
+      get '/pages'
+      is(last_response).ok?
+      expect(last_response.body) == ["/pages", "/root"].inspect
+
+      post '/pages/eatme'
+      is(last_response).ok?
+      expect(last_response.body) == ["/pages/eatme", "/root/eatme"].inspect
     end
   end
 
   Spec.new self do
-    include Hlp
-    app(App.mount '/', '/a')
+    app RemountApp.mount('/new-root', '/new-canonical')
+    map RemountApp.base_url
 
-    Testing "base_url" do
-      variations = [
-        [:get, [], '/'],
-        [:post, [:eatme], '/eatme'],
-      ]
+    Testing 'with remap' do
+      get
+      is(last_response).ok?
+      expect(last_response.body) == ['/new-root/root/', nil].inspect
 
-      does(variations).pass_validation?
+      get '/cms'
+      is(last_response).ok?
+      expect(last_response.body) == ["/cms", "/new-root/root"].inspect
+
+      post '/cms/eatme'
+      is(last_response).ok?
+      expect(last_response.body) == ["/cms/eatme", "/new-root/root/eatme"].inspect
+
+      get '/pages'
+      is(last_response).ok?
+      expect(last_response.body) == ["/pages", "/new-root/root"].inspect
+
+      post '/pages/eatme'
+      is(last_response).ok?
+      expect(last_response.body) == ["/pages/eatme", "/new-root/root/eatme"].inspect
     end
-
-    Testing "controller_canonicals" do
-      variations = [
-        [:get,  [:cms], '/cms'],
-        [:post, [:cms, :eatme], '/cms/eatme'],
-        [:get,  [:pages], '/pages'],
-        [:post, [:pages, :eatme], '/pages/eatme'],
-      ]
-
-      does(variations).pass_validation?
-    end
-
   end
 
-  Spec.new self do
-    include Hlp
-    app(App.mount '/', '/a')
-
-    Testing :app_canonicals do
-      variations = [
-        [:get,  [:a], '/a'],
-        [:get,  [:a, :cms], '/a/cms'],
-        [:get,  [:a, :pages], '/a/pages'],
-        [:post, [:a, :pages, :eatme], '/a/pages/eatme'],
-      ]
-
-      does(variations).pass_validation?
-    end
-
-  end
 end

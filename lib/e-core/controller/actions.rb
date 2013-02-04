@@ -96,9 +96,8 @@ class << E
   def generate_action_setup action
     action_name, request_method = deRESTify_action(action)
     
-    path = action_name == E__INDEX_ACTION ? '' : action_name.to_s
-    path_rules.each_pair {|from, to| path = path.gsub(from, to)}
-    path = rootify_url(base_url, path).freeze
+    action_path = apply_path_rules(action_name)
+    path = rootify_url(base_url, action_path).freeze
     path = '' if path == '/'
 
     action_arguments, required_arguments = action_parameters(action)
@@ -110,6 +109,7 @@ class << E
               :controller => self,
                   :action => action,
              :action_name => action_name,
+             :action_path => action_path,
         :action_arguments => action_arguments,
       :required_arguments => required_arguments,
                     :path => path.freeze,
@@ -129,6 +129,12 @@ class << E
       end
     end
     [action_name.to_sym, request_method.freeze]
+  end
+
+  def apply_path_rules action_name
+    action_path = action_name == E__INDEX_ACTION ? '' : action_name.to_s.dup
+    path_rules.each_pair {|from, to| action_path = action_path.gsub(from, to)}
+    action_path.freeze
   end
 
   if RESPOND_TO__PARAMETERS # ruby 1.9

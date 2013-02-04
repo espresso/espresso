@@ -1,7 +1,8 @@
 module EMoreTest__View__Relpath
 
   class RelpathTest < E
-    map '/'
+    map :relpath_test
+    view_prefix base_url
 
     view_path 'templates'
     view_fullpath false
@@ -40,6 +41,7 @@ module EMoreTest__View__Relpath
     app EspressoApp.new {
       root File.expand_path '..', __FILE__
     }.mount(RelpathTest)
+    map RelpathTest.base_url
 
     get
     expect(last_response.body) == "Hello World!"

@@ -1,6 +1,7 @@
 module ECoreTest__AppMap
 
   class App < E
+    map :app
 
     def index
     end

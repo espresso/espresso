@@ -1,6 +1,7 @@
 module EMoreTest__View__Path
   class PathTest < E
-    map '/path-test'
+    map '/path_test'
+    view_prefix base_url
     layouts_path 'layouts'
     layout :base
 
@@ -9,11 +10,11 @@ module EMoreTest__View__Path
     end
 
     def render_test
-      render path_to_templates(controller_name + '/index.erb')
+      render path_to_templates(base_url + '/index.erb')
     end
 
     def render_partial_test
-      render_p path_to_templates(controller_name + '/partial.erb')
+      render_p path_to_templates(base_url + '/partial.erb')
     end
 
     def render_layout_test

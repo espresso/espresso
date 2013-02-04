@@ -16,7 +16,7 @@ class << E
   end
   
   def base_url
-    @__e__base_url || underscored_name
+    @__e__base_url || default_route
   end
   alias baseurl base_url
 
@@ -24,12 +24,9 @@ class << E
     @__e__canonicals || []
   end
 
-  def underscored_name
-    @__e__underscored_name ||= ('/' << self.name.to_s.split('::').last.
-      gsub(/([A-Z]+)([A-Z][a-z])/, '\1_\2').
-      gsub(/([a-z\d])([A-Z])/, '\1_\2').downcase).freeze
+  def default_route
+    @__e__default_route ||= class_name_to_route(self.name).freeze
   end
-  alias controller_name underscored_name
 
   # @example
   #    class Forum < E
@@ -104,21 +101,10 @@ class << E
   def remap! root, *given_canonicals
     return if mounted?
     new_base_url   = rootify_url(root, base_url)
-    new_canonicals = []
-    canonicals.each do |ec|
+    new_canonicals = canonicals.dup
 
-      # each existing canonical should be prepended with new root
-      new_canonicals << rootify_url(new_base_url, ec)
-
-      # each existing canonical should be prepended with each given canonical
-      given_canonicals.each do |gc|
-        new_canonicals << rootify_url(new_base_url, gc, ec)
-      end
-    end
-
-    # app should respond to each given canonical
     given_canonicals.each do |gc|
-      new_canonicals << rootify_url(new_base_url, gc)
+      new_canonicals << rootify_url(gc)
     end
 
     map! new_base_url, *new_canonicals.uniq
@@ -188,7 +174,7 @@ class << E
 
   def set_canonical_routes action_setup
     canonicals.each do |c|
-      c_path  = rootify_url(c, action_setup[:path])
+      c_path  = rootify_url(c, action_setup[:action_path])
       c_setup = action_setup.merge(:path => c_path, :canonical => action_setup[:path])
       set_route(c_path, c_setup)
     end
@@ -204,7 +190,7 @@ class << E
     end
 
     canonicals.each do |c|
-      c_path  = rootify_url(c, action_setup[:path])
+      c_path = rootify_url(c, action_setup[:action_path])
       aliases.each do |a|
         a_path  = rootify_url(c, a)
         a_setup = action_setup.merge(:path => a_path, :canonical => action_setup[:path])

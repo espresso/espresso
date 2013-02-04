@@ -1,6 +1,7 @@
 module EMoreTest__View__Format
   class FormatTest < E
-    map '/'
+    map :format_test
+    view_prefix base_url
 
     layout :layout__format
 
@@ -59,7 +60,7 @@ module EMoreTest__View__Format
     Testing '`render` and `render_partial`' do
 
       Should 'render base template' do
-        expect { get('/').body } == 'format-less layout/Blah!'
+        expect { get.body } == 'format-less layout/Blah!'
       end
       Should 'render .html template with .html layout' do
         expect { get('index.html').body } == '.html layout/.html template'

@@ -1,6 +1,7 @@
 module EMoreTest__View__Engine
   class EngineTest < E
-    map '/'
+    map 'engine_test'
+    view_prefix base_url
 
     layout :layout
     engine :Haml

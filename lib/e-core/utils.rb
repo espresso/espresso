@@ -94,16 +94,15 @@ module EspressoUtils
 
   # call it like activesupport method
   # convert constant names to underscored (file) names
-  def underscore(str)
+  def underscore str
     str.gsub(/([A-Z]+)([A-Z][a-z])/, '\1_\2').gsub(/([a-z\d])([A-Z])/, '\1_\2').downcase
   end
   module_function :underscore
 
-  # returns the class names without modules
-  def demodulize(const)
-    const.name.to_s.split('::').last
+  def class_name_to_route class_name
+    '/' << class_name.to_s.split('::').map {|c| underscore(c)}.join('/')
   end
-  module_function :demodulize
+  module_function :class_name_to_route
 
   # instance_exec at runtime is expensive enough,
   # so compiling procs into methods at load time.

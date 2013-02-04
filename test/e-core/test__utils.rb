@@ -14,33 +14,34 @@ module ECoreTest__Utils
 
     Testing 'underscore' do
       variations = [
-        ["SuperClass", "super_class"]
+        ["SuperClass", "super_class"],
+        ["One1Two2", "one1_two2"]
       ]
-
       variations.each do |variation|
-        is?(EspressoUtils::underscore(variation[0])) == variation[1]
+        check(EspressoUtils.underscore(variation[0])) == variation[1]
       end
     end
 
-    Testing "demodulize" do
-      module Inner
-        class TestClass
-        end
+    Testing :class_name_to_route do
+      variations = [
+        ["SuperClass", "/super_class"],
+        ["Super::Class", "/super/class"],
+        ["Super::SubClass", "/super/sub_class"],
+        ["One1Two2", "/one1_two2"]
+      ]
+      variations.each do |variation|
+        check(EspressoUtils.class_name_to_route(variation[0])) == variation[1]
       end
-
-      is?(EspressoUtils::demodulize(Inner::TestClass)) == "TestClass"
     end
 
     Testing "build_path" do
-      # shouldn't this be  "some/page?and=some_param" ?
       variations = [
         [[:some, :page, {:and => :some_param}], "some/page?and"],
         [['another', 'page', {:with => {'nested' => 'params'}}], "another/page?with[nested]=params"],
         [['page', {:with => 'param-added', :an_ignored_param => nil}], "page?with=param-added"],
       ]
       variations.each do |variation|
-        res = EspressoUtils.build_path(*variation[0])
-        is?(res) == variation[1]
+        check(EspressoUtils.build_path(*variation[0])) == variation[1]
       end
     end
   end

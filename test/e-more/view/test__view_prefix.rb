@@ -12,16 +12,11 @@ module EMoreTest__View__ViewPrefix
   end
 
   class CanonicalTest < E
-    map '/', '/canonical-url'
+    map '/canonical_test', '/canonical-url'
+    view_prefix base_url
 
     def index
       @greeting = "Hello!"
-      render
-    end
-  end
-
-  class Failure < E
-    def tryme
       render
     end
   end
@@ -35,11 +30,8 @@ module EMoreTest__View__ViewPrefix
     get
     expect(last_response.body) == 'Hello!'
 
-    get 'canonical-url'
+    get '/canonical-url'
     expect(last_response.body) == 'Hello!'
   end
 
-  Spec.new Failure do
-    expect { get :tryme }.to_raise_error Errno::ENOENT
-  end
 end

@@ -1,7 +1,9 @@
 module ECoreTest__Mount
   module ByArgs
     class App1 < E
+      map :app1
       class App2 < E
+        map :app2
       end
     end
 
@@ -15,7 +17,7 @@ module ECoreTest__Mount
         get :app1
         is(last_response).ok?
         
-        get :app2
+        get 'app2'
         is(last_response).ok?
       end
 
@@ -24,7 +26,9 @@ module ECoreTest__Mount
 
   module ByModule
     class App1 < E
+      map :app1
       class App2 < E
+        map :app2
       end
     end
 
@@ -46,7 +50,9 @@ module ECoreTest__Mount
 
   module ByClass
     class App1 < E
+      map :app1
       class App2 < E
+        map :app2
       end
     end
 

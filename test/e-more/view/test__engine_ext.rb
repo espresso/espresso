@@ -1,6 +1,7 @@
 module EMoreTest__View__EngineExt
   class EngineExtTest < E
-    map :/
+    map :engine_ext_test
+    view_prefix base_url
 
     engine_ext '.xhtml'
 

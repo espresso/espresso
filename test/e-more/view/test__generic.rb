@@ -9,7 +9,8 @@ module EMoreTest__View__Generic
       end
     end
 
-    map '/'
+    map :generic_test
+    view_prefix base_url
     engine :ERB
     layout :layout
     format_for :custom___ext, '.xml'
@@ -84,22 +85,23 @@ module EMoreTest__View__Generic
   Spec.new GenericTest do
 
     Should 'render template of current action with layout' do
-      r = get
-      is?(r.body) == 'Hello World!'
+      get
+      is('Hello World!').current_body?
     end
+    
     Should 'render template of current action without layout' do
-      r = get :partial
-      is?(r.body) == 'get_partial'
+      get :partial
+      is('get_partial').current_body?
     end
 
     Should 'correctly resolve path for given template' do
       And 'render with layout' do
-        r = get :render_given, :some___action
-        is?(r.body) == 'Hello render_given!'
+        get :render_given, :some___action
+        is('Hello render_given!').current_body?
       end
       And 'render without layout' do
-        r = get :render_given_partial, :some___action
-        is?(r.body) == 'render_given_partial'
+        get :render_given_partial, :some___action
+        is('render_given_partial').current_body?
       end
     end
 
@@ -130,21 +132,21 @@ module EMoreTest__View__Generic
     end
 
     Should 'render template of current action within custom context' do
-      r = get :implicit_template_with_custom_context, :sandbox_params => {'foo' => 'bar'}, :sensitive_data => 'blah!'
-      expect(r.body) == 'layout-foo=bar;layout-sensitive_data=;foo=bar;sensitive_data='
+      get :implicit_template_with_custom_context, :sandbox_params => {'foo' => 'bar'}, :sensitive_data => 'blah!'
+      is('layout-foo=bar;layout-sensitive_data=;foo=bar;sensitive_data=').current_body?
     end
     Should 'render given template within custom context' do
-      r = get :explicit_template_with_custom_context, :implicit_template_with_custom_context, :sandbox_params => {'foo' => 'bar'}, :sensitive_data => 'blah!'
-      expect(r.body) == 'layout-foo=bar;layout-sensitive_data=;foo=bar;sensitive_data='
+      get :explicit_template_with_custom_context, :implicit_template_with_custom_context, :sandbox_params => {'foo' => 'bar'}, :sensitive_data => 'blah!'
+      is('layout-foo=bar;layout-sensitive_data=;foo=bar;sensitive_data=').current_body?
     end
 
     Should 'render current action with custom locals' do
-      r = get :implicit_template_with_custom_locals, 'foo' => 'bar'
-      expect(r.body) == 'layout-foo=bar;foo=bar'
+      get :implicit_template_with_custom_locals, 'foo' => 'bar'
+      is('layout-foo=bar;foo=bar').current_body?
     end
     Should 'render given action with custom locals' do
-      r = get :explicit_template_with_custom_locals, :implicit_template_with_custom_locals, 'foo' => 'bar'
-      expect(r.body) == 'foo=bar'
+      get :explicit_template_with_custom_locals, :implicit_template_with_custom_locals, 'foo' => 'bar'
+      is('foo=bar').current_body?
     end
 
   end
