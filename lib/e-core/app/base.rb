@@ -85,6 +85,7 @@ class EspressoApp
     self
   end
   alias setup_controllers global_setup
+  alias controllers_setup global_setup
   alias setup global_setup
 
   # displays URLs the app will respond to,
