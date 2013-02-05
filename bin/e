@@ -1,18 +1,14 @@
 #!/usr/bin/env ruby
 require 'fileutils'
 
-src_root = File.expand_path('../..', __FILE__) + '/'
-src_path = [:app, :lib].inject({}) do |map,p|
-  map.merge p => File.join(src_root, 'app', p.to_s, '')
-end
+espresso_root = File.expand_path('../..', __FILE__) + '/'
+src_root = espresso_root + 'app/'
 
-$:.unshift src_path[:lib]
+$:.unshift espresso_root + 'lib'
 require 'e'
 
-WD = Dir.pwd + '/'
-
 def dst_path path = '.'
-  dst_root = File.expand_path(path, WD) + '/'
+  dst_root = File.expand_path(path, Dir.pwd) + '/'
   [:controllers, :models, :views].inject({:root => dst_root}) do |map,p|
     map.merge p => File.join(dst_root, 'app', p.to_s, '')
   end
@@ -23,7 +19,7 @@ def fail msg
   exit 1
 end
 
-def putm msg
+def putm msg = ''
   puts msg
 end
 
@@ -46,27 +42,27 @@ if op = $*[0]
       name.empty? && fail("Please provide project name via second argument")
       name =~ /\.\.|\// && fail("Project name can not contain slashes nor ..")
 
-      path = dst_path(name)
-      File.exists?(path[:root]) && fail("#{name} already exists")
+      project_path = dst_path(name)
+      File.exists?(project_path[:root]) && fail("#{name} already exists")
 
       putm "Generating \"#{name}\" project...\n"
 
-      folders, files = Dir[src_path[:app] + '**/*'].partition do |entry|
+      folders, files = Dir[src_root + '**/*'].partition do |entry|
         File.directory?(entry)
       end
 
-      FileUtils.mkdir(path)
+      FileUtils.mkdir(project_path[:root])
       putm "  #{name}/"
       folders.each do |folder|
-        path = folder.sub(src_path[:app], '')
+        path = folder.sub(src_root, '')
         putm "  `- #{path}"
-        FileUtils.mkdir(path + path)
+        FileUtils.mkdir(project_path[:root] + path)
       end
 
       files.each do |file|
-        path = file.sub(src_path[:app], '')
+        path = file.sub(src_root, '')
         putm "  Writing #{path}"
-        FileUtils.cp(file, path + path)
+        FileUtils.cp(file, project_path[:root] + path)
       end
 
       exit 0
@@ -96,15 +92,20 @@ if op = $*[0]
         
         path = project_path[:controllers] + EspressoUtils.class_name_to_route(name)
         File.exists?(path) && fail("%s controller already exists" % name)
+        putm
+        putm "Creating #{path.sub(project_path[:root], '')}/"
         FileUtils.mkdir(path)
-        File.open(path + '.rb', 'w') {|f| f << c}
+        file = path + '.rb'
+        putm "Writing  #{file.sub(project_path[:root], '')}"
+        putm
+        File.open(file, 'w') {|f| f << c}
         exit 0
       end
 
       if op =~ /r/ # generating new route
         in_app_folder?
         project_path = dst_path
-        
+
       end
     end
   end
