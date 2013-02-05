@@ -14,7 +14,7 @@ class AppConfig
   def self.paths
     {
       :root   => [:config, :app, :public, :var, :tmp],
-      :app    => [:models, :views, :controllers, :helper, :spec],
+      :app    => [:models, :views, :controllers, :helpers, :specs],
       :var    => [:pid, :log],
       :public => [:assets],
     }
