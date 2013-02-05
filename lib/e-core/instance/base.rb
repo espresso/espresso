@@ -87,7 +87,7 @@ class E
   end
 
   def call!
-    setups(:a).each {|m| self.send m}
+    call_setups! :a
 
     # automatically set Content-Type by given format, if any.
     # @note this will override Content-Type set via setups.
@@ -99,7 +99,7 @@ class E
     body = self.send(action, *action_params__array)
     response.body ||= [body.to_s]
 
-    setups(:z).each {|m| self.send m}
+    call_setups! :z
 
     response[HEADER__CONTENT_TYPE] ||= CONTENT_TYPE__DEFAULT
 
@@ -115,6 +115,10 @@ class E
     end
   end
   private :call!
+
+  def call_setups! position = :a
+    setups(position).each {|m| self.send m}
+  end
 
   def action_params__array
     @__e__action_params__array ||=

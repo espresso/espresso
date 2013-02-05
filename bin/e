@@ -18,9 +18,6 @@ if op = $*[0]
 
       if op =~ /c/
         generator.generate_controller $*[1], $*[2]
-        generator.generate_route $*[1], 'index' do
-          'render'
-        end
       end
 
       if op =~ /r/

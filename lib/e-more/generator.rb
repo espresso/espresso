@@ -43,8 +43,6 @@ class EspressoProjectGenerator
 
   def generate_controller name, route = nil
 
-    project_path = dst_path
-
     name.nil? || name.empty? && fail("Please provide controller name via second argument")
     before, ctrl_name, after = controller_source_code(name)
 
@@ -56,13 +54,13 @@ class EspressoProjectGenerator
     after.each  {|s| source_code << s}
     source_code = source_code.join("\n")
     
-    path = project_path[:controllers] + class_name_to_route(name)
+    path = dst_path[:controllers] + class_name_to_route(name)
     File.exists?(path) && fail("%s controller already exists" % name)
     o
-    o "Creating #{path.sub(project_path[:root], '')}/"
+    o "Creating #{path.sub(dst_path[:root], '')}/"
     FileUtils.mkdir(path)
     file = path + '.rb'
-    o "Writing  #{file.sub(project_path[:root], '')}"
+    o "Writing  #{file.sub(dst_path[:root], '')}"
     o source_code
     o
     File.open(file, 'w') {|f| f << source_code}
@@ -70,38 +68,17 @@ class EspressoProjectGenerator
 
   def generate_route ctrl_name, name, *args
 
-    project_path = dst_path
-    
-    ctrl_name.nil? || ctrl_name.empty? && fail("Please provide controller name")
+    action_file, action = valid_action?(ctrl_name, name)
 
-    ctrl_path = project_path[:controllers] + class_name_to_route(ctrl_name) + '/'
-    File.directory?(ctrl_path) ||
-      fail("#{ctrl_name} controller does not exists. Please create it first")
-
-    ctrl = ctrl_name.split('::').inject(Object) do |ns,c|
-      ctrl_file = ctrl_path.sub(project_path[:root], '')
-      ns.const_defined?(c) || fail("#{ctrl_file} file exists but #{ctrl_name} controller not defined.
-        Please define it manually or delete #{ctrl_file} to start over.")
-      ns.const_get(c)
-    end
-
-    name.nil? || name.empty? && fail("Please provide route name via second argument")
-    path_rules = ctrl.path_rules.inject({}) do |map,(r,s)|
-      map.merge /#{Regexp.escape s}/ => r.source
-    end
-    action = action_name_to_route(name, path_rules)
-    validate_action_name(action)
-
-    file = ctrl_path + action + '.rb'
-    File.exists?(file) && fail("#{name} action already exists")
+    File.exists?(action_file) && fail("#{name} action/route already exists")
 
     before, ctrl_name, after = controller_source_code(ctrl_name)
 
     source_code, i = [], '  ' * before.size
     before.each {|s| source_code << s}
     source_code << "#{i}class #{ctrl_name}"
+
     source_code << (i + INDENTATION + "def #{action}")
-    
     action_source_code = [INDENTATION]
     if block_given?
       action_source_code = yield
@@ -111,15 +88,15 @@ class EspressoProjectGenerator
       source_code << (i + INDENTATION*2 + line.to_s)
     end
     source_code << (i + INDENTATION + "end")
+
     source_code << "#{i}end"
     after.each  {|s| source_code << s}
     source_code = source_code.join("\n")
 
-    o "Writing #{file.sub(project_path[:root], '')}"
+    o "Writing #{action_file.sub(dst_path[:root], '')}"
     o source_code
-    File.open(file, 'w') {|f| f << source_code}
+    File.open(action_file, 'w') {|f| f << source_code}
   end
-
 
   def in_app_folder?
     File.exists?(dst_path[:controllers]) ||
@@ -127,6 +104,35 @@ class EspressoProjectGenerator
   end
 
   private
+
+  def valid_controller? name
+    name.nil? || name.empty? && fail("Please provide controller name")
+
+    ctrl_path = dst_path[:controllers] + class_name_to_route(name) + '/'
+    File.directory?(ctrl_path) ||
+      fail("#{name} controller does not exists. Please create it first")
+
+    ctrl = name.split('::').inject(Object) do |ns,c|
+      ctrl_folder = ctrl_path.sub(dst_path[:root], '').sub(/\/+\Z/, '*')
+      ns.const_defined?(c) || fail("#{ctrl_folder} exists but #{name} controller not defined.
+        Please define it manually or delete #{ctrl_folder} to start over.")
+      ns.const_get(c)
+    end
+    [ctrl_path, ctrl]
+  end
+
+  def valid_action? ctrl_name, name
+    ctrl_path, ctrl = valid_controller?(ctrl_name)
+    name.nil? || name.empty? && fail("Please provide action/route via second argument")
+    path_rules = ctrl.path_rules.inject({}) do |map,(r,s)|
+      map.merge /#{Regexp.escape s}/ => r.source
+    end
+    action = action_name_to_route(name, path_rules)
+    validate_action_name(action)
+    action_file = ctrl_path + action + '.rb'
+    [action_file, action]
+  end
+
   def dst_path path = '.'
     root = File.expand_path(path, dst_root) + '/'
     [:controllers, :models, :views].inject({:root => root}) do |map,p|
