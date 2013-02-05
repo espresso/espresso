@@ -4,14 +4,15 @@ Bundler.require
 
 App = EspressoApp.new
 require File.expand_path('../config', __FILE__)
-Cfg = AppConfig.new(App)
+Cfg = AppConfig.new(App, ENV['RACK_ENV'])
 App.assets_url 'assets'
-App.assets.prepend_path Cfg.path.assets
+App.assets.prepend_path Cfg.assets_path
   
-Dir[Cfg.path.controllers + '**/*.rb'].each {|file| require file}
+Dir[Cfg.controllers_path('**/*.rb')].each {|file| require file}
+Dir[Cfg.models_path('**/*.rb')].each {|file| require file}
 
 App.controllers_setup do
-  view_path 'lib/view'
+  view_path 'app/views'
 end
 App.automount!
 puts App.urlmap

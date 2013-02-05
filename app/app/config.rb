@@ -1,47 +1,78 @@
 class AppConfig
 
-  attr_reader :path, :env, :db
+  DEFAULT_ENV = :dev
+  attr_reader :path, :db, :env
 
-  def initialize app
-    path = {'root' => app.root}
-    %w[config app public var tmp].each do |d|
-      path[d] = app.root + d + '/'
-    end
-    %w[models views controllers helper spec].each do |d|
-      path[d] = app.root + 'app/' + d + '/'
-    end
-    %w[pid log].each do |d|
-      path[d] = app.root + 'var/' + d + '/'
-    end
-    path['assets'] = path['public'] + 'assets/'
+  def initialize app, env = DEFAULT_ENV
+    set_paths app.root
+    set_env env
 
-    @path = Struct.new(*path.keys.map(&:to_sym)).new(*path.values)
+    load_config
+    load_db_config
+    @opted_config = {}
+  end
 
-    @env = (ENV['RACK_ENV'] || 'dev').to_sym
+  def self.paths
+    {
+      :root   => [:config, :app, :public, :var, :tmp],
+      :app    => [:models, :views, :controllers, :helper, :spec],
+      :var    => [:pid, :log],
+      :public => [:assets],
+    }
+  end
 
-    yaml = YAML.load(File.read(@path.config + 'config.yml')).freeze
-    @config = EspressoUtils.indifferent_params(yaml[@env] || yaml[@env.to_s])
-  
-    yaml = YAML.load(File.read(@path.config + 'database.yml')).freeze
-    if config = yaml[@env] || yaml[@env.to_s]
-      @db = Struct.new(*config.keys.map(&:to_sym)).new(*config.values)
+  paths.each_value do |paths|
+    paths.each do |p|
+      define_method '%s_path' % p do |*chunks|
+        File.join(@path[p],  *chunks)
+      end
     end
   end
 
-  def method_missing meth
-    @config[meth]
+  def [] config
+    @config[config] || @opted_config[config]
   end
 
-  def dev_env?
+  def []= key, val
+    @opted_config[key] = val
+  end
+
+  def dev?
     env == :dev
   end
 
-  def prod_env?
+  def prod?
     env == :prod
   end
 
-  def test_env?
+  def test?
     env == :test
   end
-  
+
+  private
+
+  def set_paths root
+    path = {:root => root}
+    self.class.paths.each_pair do |ns,paths|
+      paths.each do |p|
+        path[p] = path[ns] + p.to_s + '/'
+      end
+    end
+    @path = EspressoUtils.indifferent_params(path).freeze
+  end
+
+  def set_env env
+    @env = env ? env.to_s.downcase.to_sym : DEFAULT_ENV
+  end
+
+  def load_config
+    yaml    = YAML.load(File.read(config_path 'config.yml')).freeze
+    @config = EspressoUtils.indifferent_params(yaml[@env] || yaml[@env.to_s] || {})
+  end
+
+  def load_db_config
+    yaml = YAML.load(File.read(config_path 'database.yml')).freeze
+    @db  = EspressoUtils.indifferent_params(yaml[@env] || yaml[@env.to_s] || {})
+  end
+
 end
