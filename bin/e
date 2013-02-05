@@ -11,28 +11,24 @@ if op = $*[0]
     generator = EspressoProjectGenerator.new(Dir.pwd)
 
     if op =~ /p/
-
       generator.generate_project $*[1]
-      exit 0
     else
       generator.in_app_folder?
       require generator.boot_file
 
       if op =~ /c/
-        
         generator.generate_controller $*[1], $*[2]
         generator.generate_route $*[1], 'index' do
-          ['render']
+          'render'
         end
-        exit 0
       end
 
       if op =~ /r/
-
         generator.generate_route $*[1], $*[2], *$*[2..-1]
-        exit 0
       end
     end
+
+    exit 0
   end
 end
 

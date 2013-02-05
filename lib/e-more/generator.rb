@@ -20,23 +20,23 @@ class EspressoProjectGenerator
     project_path = dst_path(name)
     File.exists?(project_path[:root]) && fail("#{name} already exists")
 
-    putm "Generating \"#{name}\" project...\n"
+    o "Generating \"#{name}\" project...\n"
 
     folders, files = Dir[src_root + '**/*'].partition do |entry|
       File.directory?(entry)
     end
 
     FileUtils.mkdir(project_path[:root])
-    putm "  #{name}/"
+    o "  #{name}/"
     folders.each do |folder|
       path = folder.sub(src_root, '')
-      putm "  `- #{path}"
+      o "  `- #{path}"
       FileUtils.mkdir(project_path[:root] + path)
     end
 
     files.each do |file|
       path = file.sub(src_root, '')
-      putm "  Writing #{path}"
+      o "  Writing #{path}"
       FileUtils.cp(file, project_path[:root] + path)
     end
   end
@@ -58,13 +58,13 @@ class EspressoProjectGenerator
     
     path = project_path[:controllers] + class_name_to_route(name)
     File.exists?(path) && fail("%s controller already exists" % name)
-    putm
-    putm "Creating #{path.sub(project_path[:root], '')}/"
+    o
+    o "Creating #{path.sub(project_path[:root], '')}/"
     FileUtils.mkdir(path)
     file = path + '.rb'
-    putm "Writing  #{file.sub(project_path[:root], '')}"
-    putm source_code
-    putm
+    o "Writing  #{file.sub(project_path[:root], '')}"
+    o source_code
+    o
     File.open(file, 'w') {|f| f << source_code}
   end
 
@@ -76,10 +76,17 @@ class EspressoProjectGenerator
 
     ctrl_path = project_path[:controllers] + class_name_to_route(ctrl_name) + '/'
     File.directory?(ctrl_path) ||
-      fail("#{ctrl_name} does not exists. Please create it first")
+      fail("#{ctrl_name} controller does not exists. Please create it first")
+
+    ctrl = ctrl_name.split('::').inject(Object) do |ns,c|
+      ctrl_file = ctrl_path.sub(project_path[:root], '')
+      ns.const_defined?(c) || fail("#{ctrl_file} file exists but #{ctrl_name} controller not defined.
+        Please define it manually or delete #{ctrl_file} to start over.")
+      ns.const_get(c)
+    end
 
     name.nil? || name.empty? && fail("Please provide route name via second argument")
-    path_rules = E__PATH_RULES.inject({}) do |map,(r,s)|
+    path_rules = ctrl.path_rules.inject({}) do |map,(r,s)|
       map.merge /#{Regexp.escape s}/ => r.source
     end
     action = action_name_to_route(name, path_rules)
@@ -94,16 +101,22 @@ class EspressoProjectGenerator
     before.each {|s| source_code << s}
     source_code << "#{i}class #{ctrl_name}"
     source_code << (i + INDENTATION + "def #{action}")
-    (block_given? ? yield : [INDENTATION]).each do |line|
-      source_code << (i + INDENTATION*2 + line)
+    
+    action_source_code = [INDENTATION]
+    if block_given?
+      action_source_code = yield
+      action_source_code.is_a?(Array) || action_source_code = [action_source_code]
+    end
+    action_source_code.each do |line|
+      source_code << (i + INDENTATION*2 + line.to_s)
     end
     source_code << (i + INDENTATION + "end")
     source_code << "#{i}end"
     after.each  {|s| source_code << s}
     source_code = source_code.join("\n")
 
-    putm "Writing #{file.sub(project_path[:root], '')}"
-    putm source_code
+    o "Writing #{file.sub(project_path[:root], '')}"
+    o source_code
     File.open(file, 'w') {|f| f << source_code}
   end
 
@@ -126,7 +139,7 @@ class EspressoProjectGenerator
     exit 1
   end
 
-  def putm msg = ''
+  def o msg = ''
     puts msg
   end
 
