@@ -132,9 +132,8 @@ class << E
   end
 
   def apply_path_rules action_name
-    action_path = action_name == E__INDEX_ACTION ? '' : action_name.to_s.dup
-    path_rules.each_pair {|from, to| action_path = action_path.gsub(from, to)}
-    action_path.freeze
+    return ''.freeze if action_name == E__INDEX_ACTION
+    action_name_to_route(action_name, path_rules).freeze
   end
 
   if RESPOND_TO__PARAMETERS # ruby 1.9

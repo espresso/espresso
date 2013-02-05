@@ -18,6 +18,7 @@ module EspressoUtils
   #
   # @param [String, Symbol] *chunks
   # @return [String]
+  #
   def normalize_path path
     path.gsub ::Regexp.union(/\\+/, /\/+/, *PATH_MODIFIERS), '/'
   end
@@ -29,6 +30,7 @@ module EspressoUtils
   # rootify_url('some', 'another', 'path/') # => /some/another/path
   #
   # @note slow method! use only at loadtime
+  #
   def rootify_url *paths
     '/' << normalize_path(paths.compact.join('/')).gsub(/\A\/+|\/+\Z/, '')
   end
@@ -49,6 +51,7 @@ module EspressoUtils
   # @param path
   # @param [Array] args
   # @return [String]
+  #
   def build_path path, *args
     path = path.to_s
     args.compact!
@@ -109,6 +112,13 @@ module EspressoUtils
   end
   module_function :class_name_to_route
 
+  def action_name_to_route action_name, path_rules = EspressoConstants::E__PATH_RULES
+    action_name = action_name.to_s.dup
+    path_rules.each_pair {|from, to| action_name = action_name.gsub(from, to)}
+    action_name
+  end
+  module_function :action_name_to_route
+
   # instance_exec at runtime is expensive enough,
   # so compiling procs into methods at load time.
   def proc_to_method *chunks, &proc
@@ -119,7 +129,4 @@ module EspressoUtils
     name
   end
 
-  def is_ruby19?
-    RUBY_VERSION.to_f > 1.8
-  end
 end

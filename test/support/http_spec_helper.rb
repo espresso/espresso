@@ -59,5 +59,9 @@ module HttpSpecHelper
   def current_location?(location)
     is?(last_response.headers['Location']) == location
   end
+  
+  def is_ruby19?
+    RUBY_VERSION.to_f > 1.8
+  end
 
 end
