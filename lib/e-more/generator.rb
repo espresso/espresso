@@ -98,6 +98,25 @@ class EspressoProjectGenerator
     File.open(action_file, 'w') {|f| f << source_code}
   end
 
+  def generate_view ctrl_name, name
+
+    action_file, action = valid_action?(ctrl_name, name)
+    action_relfile = action_file.sub(dst_path[:root], '')
+
+    File.exists?(action_file) ||
+      fail("#{name} action/route does not exists. Please create it first")
+
+    _, ctrl = valid_controller?(ctrl_name)
+    App.call({})
+    ctrl_instance = ctrl.new
+    ctrl_instance.respond_to?(action.to_sym) ||
+      fail("#{action_relfile} exists but #{action} action not defined.
+        Please define it manually or delete #{action_relfile} and start over.")
+    ctrl_instance.action_setup ctrl.action_setup[action.to_sym][:*]
+    ctrl_instance.call_setups!
+    p ctrl_instance.view_path?
+  end
+
   def in_app_folder?
     File.exists?(dst_path[:controllers]) ||
       fail("Current folder does not seem to contain a Espresso application")
@@ -115,7 +134,7 @@ class EspressoProjectGenerator
     ctrl = name.split('::').inject(Object) do |ns,c|
       ctrl_folder = ctrl_path.sub(dst_path[:root], '').sub(/\/+\Z/, '*')
       ns.const_defined?(c) || fail("#{ctrl_folder} exists but #{name} controller not defined.
-        Please define it manually or delete #{ctrl_folder} to start over.")
+        Please define it manually or delete #{ctrl_folder} and start over.")
       ns.const_get(c)
     end
     [ctrl_path, ctrl]
