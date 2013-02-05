@@ -1,14 +1,22 @@
 #!/usr/bin/env ruby
 require 'fileutils'
 
-src_path = File.expand_path('../..', __FILE__) + '/'
-app_path = src_path + 'app/'
-lib_path = src_path + 'lib/'
+src_root = File.expand_path('../..', __FILE__) + '/'
+src_path = [:app, :lib].inject({}) do |map,p|
+  map.merge p => File.join(src_root, 'app', p.to_s, '')
+end
 
-$:.unshift lib_path
+$:.unshift src_path[:lib]
 require 'e'
 
-wd = Dir.pwd + '/'
+WD = Dir.pwd + '/'
+
+def dst_path path = '.'
+  dst_root = File.expand_path(path, WD) + '/'
+  [:controllers, :models, :views].inject({:root => dst_root}) do |map,p|
+    map.merge p => File.join(dst_root, 'app', p.to_s, '')
+  end
+end
 
 def fail msg
   puts msg
@@ -26,42 +34,47 @@ def validate_constant_name constant
   constant
 end
 
+def in_app_folder?
+  File.exists?(dst_path[:controllers]) ||
+    fail("Current folder does not seem to contain a Espresso application")
+end
+
 if op = $*[0]
   if op =~ /\Ag\:/
     if op =~ /p/ # generating new project
-      project_name = $*[1].to_s
-      project_name.empty? && fail("Please provide project name via second argument")
-      project_name =~ /\.\.|\// && fail("Project name can not contain slashes nor ..")
+      name = $*[1].to_s
+      name.empty? && fail("Please provide project name via second argument")
+      name =~ /\.\.|\// && fail("Project name can not contain slashes nor ..")
 
-      project_path = File.expand_path(project_name, wd) + '/'
-      File.exists?(project_path) && fail("#{project_path} already exists")
+      path = dst_path(name)
+      File.exists?(path[:root]) && fail("#{name} already exists")
 
-      putm "Generating \"#{project_name}\" project...\n"
+      putm "Generating \"#{name}\" project...\n"
 
-      folders, files = Dir[app_path + '**/*'].partition do |entry|
+      folders, files = Dir[src_path[:app] + '**/*'].partition do |entry|
         File.directory?(entry)
       end
 
-      FileUtils.mkdir(project_path)
-      putm "  #{project_name}/"
+      FileUtils.mkdir(path)
+      putm "  #{name}/"
       folders.each do |folder|
-        path = folder.sub(app_path, '')
+        path = folder.sub(src_path[:app], '')
         putm "  `- #{path}"
-        FileUtils.mkdir(project_path + path)
+        FileUtils.mkdir(path + path)
       end
 
       files.each do |file|
-        path = file.sub(app_path, '')
+        path = file.sub(src_path[:app], '')
         putm "  Writing #{path}"
-        FileUtils.cp(file, project_path + path)
+        FileUtils.cp(file, path + path)
       end
 
       exit 0
     else
       if op =~ /c/ # generating new controller
         
-        controllers_path = wd + 'app/controllers/'
-        File.exists?(controllers_path) || fail("Current folder does not seem to contain a Espresso application")
+        in_app_folder?
+        project_path = dst_path
 
         name  = $*[1].to_s
         route = $*[2]
@@ -81,11 +94,17 @@ if op = $*[0]
         c << "#{i}end\n"
         z.reverse.each {|s| c << s}
         
-        path = controllers_path + EspressoUtils.class_name_to_route(name)
+        path = project_path[:controllers] + EspressoUtils.class_name_to_route(name)
         File.exists?(path) && fail("%s controller already exists" % name)
         FileUtils.mkdir(path)
         File.open(path + '.rb', 'w') {|f| f << c}
         exit 0
+      end
+
+      if op =~ /r/ # generating new route
+        in_app_folder?
+        project_path = dst_path
+        
       end
     end
   end
