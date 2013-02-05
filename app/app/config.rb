@@ -6,7 +6,6 @@ class AppConfig
   def initialize app, env = DEFAULT_ENV
     set_paths app.root
     set_env env
-
     load_config
     load_db_config
     @opted_config = {}

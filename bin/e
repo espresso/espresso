@@ -1,7 +1,12 @@
 #!/usr/bin/env ruby
 require 'fileutils'
 
-src_path = File.expand_path('../../app', __FILE__) + '/'
+src_path = File.expand_path('../..', __FILE__) + '/'
+app_path = src_path + 'app/'
+lib_path = src_path + 'lib/'
+
+$:.unshift lib_path
+require 'e'
 
 wd = Dir.pwd + '/'
 
@@ -14,11 +19,18 @@ def putm msg
   puts msg
 end
 
+def validate_constant_name constant
+  constant =~ /\W/      && fail("Wrong constant name - %s, it should contain only alphanumerics" % constant)
+  constant =~ /\A[0-9]/ && fail("Wrong constant name - %s, it should start with a letter" % constant)
+  constant =~ /\A[A-Z]/ || fail("Wrong constant name - %s, it should start with a uppercase letter" % constant)
+  constant
+end
+
 if op = $*[0]
   if op =~ /\Ag\:/
     if op =~ /p/ # generating new project
       project_name = $*[1].to_s
-      project_name.empty? && fail("Please provide project name as second argument")
+      project_name.empty? && fail("Please provide project name via second argument")
       project_name =~ /\.\.|\// && fail("Project name can not contain slashes nor ..")
 
       project_path = File.expand_path(project_name, wd) + '/'
@@ -26,25 +38,55 @@ if op = $*[0]
 
       putm "Generating \"#{project_name}\" project...\n"
 
-      folders, files = Dir[src_path + '**/*'].partition do |entry|
+      folders, files = Dir[app_path + '**/*'].partition do |entry|
         File.directory?(entry)
       end
 
       FileUtils.mkdir(project_path)
       putm "  #{project_name}/"
       folders.each do |folder|
-        path = folder.sub(src_path, '')
+        path = folder.sub(app_path, '')
         putm "  `- #{path}"
         FileUtils.mkdir(project_path + path)
       end
 
       files.each do |file|
-        path = file.sub(src_path, '')
+        path = file.sub(app_path, '')
         putm "  Writing #{path}"
         FileUtils.cp(file, project_path + path)
       end
 
       exit 0
+    else
+      if op =~ /c/ # generating new controller
+        
+        controllers_path = wd + 'app/controllers/'
+        File.exists?(controllers_path) || fail("Current folder does not seem to contain a Espresso application")
+
+        name  = $*[1].to_s
+        route = $*[2]
+        name.empty? && fail("Please provide controller name via second argument")
+        namespace = name.split('::').map {|c| validate_constant_name c}
+        ctrl_name = namespace.pop
+        a,z = [], []
+        namespace.each do |c|
+          i = '  '*a.size
+          a << "#{i}module %s\n" % c
+          z << "#{i}end\n"
+        end
+        c, i = '', '  '*a.size
+        a.each {|s| c << s}
+        c << "#{i}class %s < E\n" % ctrl_name
+        c << "#{i}  map '%s'\n" % route if route
+        c << "#{i}end\n"
+        z.reverse.each {|s| c << s}
+        
+        path = controllers_path + EspressoUtils.class_name_to_route(name)
+        File.exists?(path) && fail("%s controller already exists" % name)
+        FileUtils.mkdir(path)
+        File.open(path + '.rb', 'w') {|f| f << c}
+        exit 0
+      end
     end
   end
 end

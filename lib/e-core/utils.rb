@@ -99,8 +99,13 @@ module EspressoUtils
   end
   module_function :underscore
 
+  # convert class name to file path / URL.
+  # basically this will convert ClassName to class_name.
+  # but will also convert :: to -
+  # so Name::Space will become name-space rather than name/space,
+  # so all files/folders will be clearly visible at same level.
   def class_name_to_route class_name
-    '/' << class_name.to_s.split('::').map {|c| underscore(c)}.join('/')
+    '/' << class_name.to_s.split('::').map {|c| underscore(c)}.join('-')
   end
   module_function :class_name_to_route
 

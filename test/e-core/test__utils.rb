@@ -25,8 +25,8 @@ module ECoreTest__Utils
     Testing :class_name_to_route do
       variations = [
         ["SuperClass", "/super_class"],
-        ["Super::Class", "/super/class"],
-        ["Super::SubClass", "/super/sub_class"],
+        ["Super::Class", "/super-class"],
+        ["Super::SubClass", "/super-sub_class"],
         ["One1Two2", "/one1_two2"]
       ]
       variations.each do |variation|
