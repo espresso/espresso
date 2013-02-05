@@ -22,7 +22,6 @@ if op = $*[0]
 
       if op =~ /r/
         generator.generate_route $*[1], $*[2], *$*[2..-1]
-        load generator.boot_file
         generator.generate_view $*[1], $*[2]
       end
     end

@@ -106,15 +106,21 @@ class EspressoProjectGenerator
     File.exists?(action_file) ||
       fail("#{name} action/route does not exists. Please create it first")
 
-    _, ctrl = valid_controller?(ctrl_name)
-    App.call({})
-    ctrl_instance = ctrl.new
-    ctrl_instance.respond_to?(action.to_sym) ||
-      fail("#{action_relfile} exists but #{action} action not defined.
-        Please define it manually or delete #{action_relfile} and start over.")
-    ctrl_instance.action_setup ctrl.action_setup[action.to_sym][:*]
-    ctrl_instance.call_setups!
-    p ctrl_instance.view_path?
+    ctrl_path, ctrl = valid_controller?(ctrl_name)
+    ctrl_path = ctrl_path.sub(dst_path[:controllers], '')
+    path = File.join(Cfg.views_path, ctrl_path)
+
+    o
+    if File.exists?(path)
+      File.directory?(path) || fail("#{path.sub(dst_path[:root], '')} should be a directory")
+    else
+      o "Creating #{path.sub(dst_path[:root], '')}"
+      FileUtils.mkdir(path)
+    end
+    file = File.join(path, action + '.erb')
+    o "Writing  #{file.sub(dst_path[:root], '')}"
+    o
+    FileUtils.touch file
   end
 
   def in_app_folder?
