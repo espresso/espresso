@@ -5,10 +5,12 @@ class EspressoProjectGenerator
 
   INDENTATION = (" " * 2).freeze
 
-  attr_reader :src_root, :dst_root
+  attr_reader :src_root, :dst_root, :boot_file
 
-  def initialize src_root, dst_root
-    @src_root, @dst_root = src_root, dst_root
+  def initialize dst_root
+    @src_root = (File.expand_path('../../../app', __FILE__) + '/').freeze
+    @dst_root = (dst_root + '/').freeze
+    @boot_file = (@dst_root + 'app/boot.rb').freeze
   end
 
   def generate_project name
@@ -41,7 +43,6 @@ class EspressoProjectGenerator
 
   def generate_controller name, route = nil
 
-    in_app_folder?
     project_path = dst_path
 
     name.nil? || name.empty? && fail("Please provide controller name via second argument")
@@ -69,7 +70,6 @@ class EspressoProjectGenerator
 
   def generate_route ctrl_name, name, *args
 
-    in_app_folder?
     project_path = dst_path
     
     ctrl_name.nil? || ctrl_name.empty? && fail("Please provide controller name")
@@ -93,9 +93,11 @@ class EspressoProjectGenerator
     source_code, i = [], '  ' * before.size
     before.each {|s| source_code << s}
     source_code << "#{i}class #{ctrl_name}"
-    ["def #{action}", INDENTATION, "end"].each do |line|
-      source_code << (i + INDENTATION + line)
+    source_code << (i + INDENTATION + "def #{action}")
+    (block_given? ? yield : [INDENTATION]).each do |line|
+      source_code << (i + INDENTATION*2 + line)
     end
+    source_code << (i + INDENTATION + "end")
     source_code << "#{i}end"
     after.each  {|s| source_code << s}
     source_code = source_code.join("\n")
@@ -103,6 +105,12 @@ class EspressoProjectGenerator
     putm "Writing #{file.sub(project_path[:root], '')}"
     putm source_code
     File.open(file, 'w') {|f| f << source_code}
+  end
+
+
+  def in_app_folder?
+    File.exists?(dst_path[:controllers]) ||
+      fail("Current folder does not seem to contain a Espresso application")
   end
 
   private
@@ -132,11 +140,6 @@ class EspressoProjectGenerator
   def validate_action_name action
     action =~ /\W/ && fail("Action names may contain only alphanumerics")
     action
-  end
-
-  def in_app_folder?
-    File.exists?(dst_path[:controllers]) ||
-      fail("Current folder does not seem to contain a Espresso application")
   end
 
   def controller_source_code name

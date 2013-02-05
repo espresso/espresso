@@ -1,24 +1,29 @@
 #!/usr/bin/env ruby
 require 'fileutils'
 
-espresso_root = File.expand_path('../..', __FILE__) + '/'
-
-$:.unshift espresso_root + 'lib'
+$:.unshift File.expand_path('../../lib', __FILE__)
 require 'e'
 require 'e-more/generator'
 
-generator = EspressoProjectGenerator.new(espresso_root + 'app/', Dir.pwd)
-
 if op = $*[0]
   if op =~ /\Ag\:/
+
+    generator = EspressoProjectGenerator.new(Dir.pwd)
+
     if op =~ /p/
 
       generator.generate_project $*[1]
       exit 0
     else
+      generator.in_app_folder?
+      require generator.boot_file
+
       if op =~ /c/
         
         generator.generate_controller $*[1], $*[2]
+        generator.generate_route $*[1], 'index' do
+          ['render']
+        end
         exit 0
       end
 
