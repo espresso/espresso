@@ -9,27 +9,28 @@ if op = $*[0]
   if op =~ /\Ag/i
 
     generator = EspressoProjectGenerator.new(Dir.pwd)
+    unit = op.sub(/\Ag\W/i, '')
 
-    if op =~ /p/i
+    if unit =~ /\Ap/i
       generator.generate_project $*[1]
     else
       generator.in_app_folder?
       require generator.boot_file
 
-      if op =~ /c/i
+      if unit =~ /\Ac/i
         generator.generate_controller $*[1], $*[2]
       end
 
-      if op =~ /r/i
+      if unit =~ /\Ar/i
         generator.generate_route $*[1], $*[2], *$*[3..-1]
         puts %x["#{$0}" g:v #{$*[1]} #{$*[2]}]
       end
 
-      if op =~ /v/i
+      if unit =~ /\Av/i
         generator.generate_view $*[1], $*[2]
       end
 
-      if op =~ /m/i
+      if unit =~ /\Am/i
         generator.generate_model $*[1], $*[2]
       end
     end
