@@ -12,6 +12,6 @@ group :prod do
   # production environment gems
 end
 
-gem 'e', :path => '/somebit/projects/personal/Ruby/Gems/espresso'
+gem 'e'
 gem 'thin'
 gem 'sprockets'
