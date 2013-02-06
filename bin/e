@@ -28,6 +28,10 @@ if op = $*[0]
       if op =~ /v/i
         generator.generate_view $*[1], $*[2]
       end
+
+      if op =~ /m/i
+        generator.generate_model $*[1], $*[2]
+      end
     end
 
     exit 0

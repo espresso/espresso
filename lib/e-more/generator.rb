@@ -45,7 +45,7 @@ class EspressoProjectGenerator
   def generate_controller name, route = nil
 
     name.nil? || name.empty? && fail("Please provide controller name via second argument")
-    before, ctrl_name, after = controller_source_code(name)
+    before, ctrl_name, after = namespace_to_source_code(name)
 
     source_code, i = [], INDENTATION * before.size
     before.each {|s| source_code << s}
@@ -64,10 +64,10 @@ class EspressoProjectGenerator
     source_code = source_code.join("\n")
     
     path = dst_path[:controllers] + class_name_to_route(name)
-    File.exists?(path) && fail("%s controller already exists" % name)
+    File.exists?(path) && fail("#{name} controller already exists")
     
     o
-    o "--- Generating controller ---"
+    o "--- Generating #{name} controller ---"
     o "Creating #{unrootify path}/"
     FileUtils.mkdir(path)
     file = path + '.rb'
@@ -83,7 +83,7 @@ class EspressoProjectGenerator
 
     File.exists?(action_file) && fail("#{name} action/route already exists")
 
-    before, ctrl_name, after = controller_source_code(ctrl_name)
+    before, ctrl_name, after = namespace_to_source_code(ctrl_name)
 
     source_code, i = [], '  ' * before.size
     before.each {|s| source_code << s}
@@ -106,7 +106,7 @@ class EspressoProjectGenerator
     source_code = source_code.join("\n")
 
     o
-    o "--- Generating route ---"
+    o "--- Generating #{name} route ---"
     o "Writing #{unrootify action_file}"
     o source_code
     File.open(action_file, 'w') {|f| f << source_code}
@@ -132,7 +132,7 @@ class EspressoProjectGenerator
     path = File.join(ctrl_instance.view_path?, ctrl_instance.view_prefix?)
 
     o
-    o "--- Generating view ---"
+    o "--- Generating #{name} view ---"
     if File.exists?(path)
       File.directory?(path) ||
         fail("#{unrootify path} should be a directory")
@@ -144,6 +144,46 @@ class EspressoProjectGenerator
     o "Touching #{unrootify file}"
     o
     FileUtils.touch file
+  end
+
+  def generate_model name, orm = nil
+
+    name.nil? || name.empty? && fail("Please provide model name via second argument")
+    before, model_name, after = namespace_to_source_code(name)
+    
+    superclass = orm && orm =~ /\Aa/i ? ' < ActiveRecord::Base' : ''
+    insertions = []
+    if orm && orm =~ /\Ad/i
+      insertions << 'include DataMapper::Resource'
+      insertions << INDENTATION
+      insertions <<'property :id, Serial'
+    end
+    insertions << INDENTATION
+
+    source_code, i = [], INDENTATION * before.size
+    before.each {|s| source_code << s}
+    source_code << "#{i}class #{model_name + superclass}"
+
+    insertions.each do |line|
+      source_code << (i + INDENTATION + line.to_s)
+    end
+
+    source_code << "#{i}end"
+    after.each  {|s| source_code << s}
+    source_code = source_code.join("\n")
+    
+    path = dst_path[:models] + class_name_to_route(name)
+    File.exists?(path) && fail("#{name} model already exists")
+    
+    o
+    o "--- Generating #{name} model ---"
+    o "Creating #{unrootify path}/"
+    FileUtils.mkdir(path)
+    file = path + '.rb'
+    o "Writing  #{unrootify file}"
+    o source_code
+    o
+    File.open(file, 'w') {|f| f << source_code}
   end
 
   def in_app_folder?
@@ -213,7 +253,7 @@ class EspressoProjectGenerator
     action
   end
 
-  def controller_source_code name
+  def namespace_to_source_code name
     namespace = name.split('::').map {|c| validate_constant_name c}
     ctrl_name = namespace.pop
     before, after = [], []
