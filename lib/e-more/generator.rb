@@ -151,7 +151,10 @@ class EspressoProjectGenerator
     name.nil? || name.empty? && fail("Please provide model name via second argument")
     before, model_name, after = namespace_to_source_code(name)
     
-    superclass = orm && orm =~ /\Aa/i ? ' < ActiveRecord::Base' : ''
+    superclass = ''
+    orm && orm =~ /\Aa/i && superclass = ' < ActiveRecord::Base'
+    orm && orm =~ /\As/i && superclass = ' < Sequel::Model'
+
     insertions = []
     if orm && orm =~ /\Ad/i
       insertions << 'include DataMapper::Resource'
