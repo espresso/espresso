@@ -1,5 +1,18 @@
 source :rubygems
 
+group :dev do
+  # gems intended for development environment
+end
+
+group :test do
+  # gems intended for testing environment
+end
+
+group :prod do
+  # gems intended for production environment
+end
+
 gem 'e', :path => '/somebit/projects/personal/Ruby/Gems/espresso'
+gem 'yaml'
 gem 'thin'
 gem 'sprockets'

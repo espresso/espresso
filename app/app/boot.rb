@@ -1,15 +1,14 @@
+require File.expand_path('../config', __FILE__)
+Cfg = AppConfig.new
+
 require 'rubygems'
 require 'bundler/setup'
-Bundler.require
+Bundler.require(:default, Cfg.env)
 
 App = EspressoApp.new(:automount)
 App.controllers_setup do
   view_path 'app/views'
 end
-
-require File.expand_path('../config', __FILE__)
-
-Cfg = AppConfig.new(App, ENV['RACK_ENV'])
 
 App.assets_url 'assets'
 App.assets.prepend_path Cfg.assets_path

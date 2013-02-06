@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 require 'fileutils'
+require 'yaml'
 
 $:.unshift File.expand_path('../../lib', __FILE__)
 require 'e'
@@ -7,12 +8,11 @@ require 'e-more/generator'
 
 if op = $*[0]
   if op =~ /\Ag/i
-
     generator = EspressoProjectGenerator.new(Dir.pwd)
     unit = op.sub(/\Ag\W/i, '')
 
     if unit =~ /\Ap/i
-      generator.generate_project $*[1]
+      generator.generate_project $*[1], $*[2]
     else
       generator.in_app_folder?
       require generator.boot_file

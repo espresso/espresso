@@ -13,7 +13,7 @@ class EspressoProjectGenerator
     @boot_file = (@dst_root + 'app/boot.rb').freeze
   end
 
-  def generate_project name
+  def generate_project name, orm = nil
 
     name.nil? || name.empty? && fail("Please provide project name via second argument")
     name =~ /\.\.|\// && fail("Project name can not contain slashes nor ..")
@@ -35,10 +35,45 @@ class EspressoProjectGenerator
       FileUtils.mkdir(project_path[:root] + path)
     end
 
-    files.each do |file|
+    files.reject {|f| File.basename(f) =~ /\AGemfile\./}.each do |file|
       path = unrootify(file, src_root)
       o "  Writing #{path}"
       FileUtils.cp(file, project_path[:root] + path)
+    end
+    return unless orm
+
+    orm_class, orm_ext = if orm =~ /\Aa/i
+      [:ActiveRecord, '.ar']
+    elsif orm =~ /\Ad/i
+      [:DataMapper, '.dm']
+    elsif orm =~ /\As/i
+      [:Sequel, '.sq']
+    end
+    if orm_class
+      cfg_file = project_path[:config] + 'database.yml'
+      cfg = YAML.load(File.read(cfg_file))
+      %w[dev prod test].each do |env|
+        env_cfg = cfg[env] || cfg[env.to_sym]
+        env_cfg.update :orm => orm_class
+      end
+
+      o
+      o "Updating #{unrootify cfg_file}"
+      o ":orm: => #{orm_class}"
+      o
+      File.open(cfg_file, 'w') {|f| f << YAML.dump(cfg)}
+
+      gems = File.read(src_root + 'Gemfile' + orm_ext)
+      gemfile = project_path[:root] + 'Gemfile'
+      o "Updating #{unrootify gemfile}"
+      o gems
+      o
+      File.open(gemfile, 'a') do |f|
+        f << "\n"
+        f << gems
+      end
+    else
+      o "Unknown ORM #{orm}"
     end
   end
 
@@ -230,7 +265,8 @@ class EspressoProjectGenerator
 
   def dst_path path = '.'
     root = File.expand_path(path, dst_root) + '/'
-    [:controllers, :models, :views].inject({:root => root}) do |map,p|
+    paths = {:root => root, :config => File.join(root, 'config/')}
+    [:controllers, :models, :views].inject(paths) do |map,p|
       map.merge p => File.join(root, 'app', p.to_s, '')
     end
   end

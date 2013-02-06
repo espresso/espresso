@@ -1,10 +1,17 @@
 class AppConfig
 
-  DEFAULT_ENV = :dev
+  DEFAULT_ENV = 'dev'.freeze
+  ENVIRONMENTS = [:dev, :test, :prod].freeze
+
   attr_reader :path, :db, :env
 
-  def initialize app, env = DEFAULT_ENV
-    set_paths app.root
+  def initialize
+    env = ENV['RACK_ENV'] || DEFAULT_ENV
+    env = env.to_sym unless env.is_a?(Symbol)
+    ENVIRONMENTS.include?(env) ||
+      raise("#{env} environment not supported")
+
+    set_paths Dir.pwd
     set_env env
     load_config
     load_db_config
@@ -66,12 +73,12 @@ class AppConfig
   end
 
   def load_config
-    yaml    = YAML.load(File.read(config_path 'config.yml')).freeze
+    yaml    = YAML.load(File.read(config_path 'config.yml'))
     @config = EspressoUtils.indifferent_params(yaml[@env] || yaml[@env.to_s] || {})
   end
 
   def load_db_config
-    yaml = YAML.load(File.read(config_path 'database.yml')).freeze
+    yaml = YAML.load(File.read(config_path 'database.yml'))
     @db  = EspressoUtils.indifferent_params(yaml[@env] || yaml[@env.to_s] || {})
   end
 
