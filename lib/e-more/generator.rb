@@ -30,13 +30,13 @@ class EspressoProjectGenerator
     FileUtils.mkdir(project_path[:root])
     o "  #{name}/"
     folders.each do |folder|
-      path = folder.sub(src_root, '')
+      path = unrootify(folder, src_root)
       o "  `- #{path}"
       FileUtils.mkdir(project_path[:root] + path)
     end
 
     files.each do |file|
-      path = file.sub(src_root, '')
+      path = unrootify(file, src_root)
       o "  Writing #{path}"
       FileUtils.cp(file, project_path[:root] + path)
     end
@@ -60,10 +60,10 @@ class EspressoProjectGenerator
     
     o
     o "--- Generating controller ---"
-    o "Creating #{path.sub(dst_path[:root], '')}/"
+    o "Creating #{unrootify path}/"
     FileUtils.mkdir(path)
     file = path + '.rb'
-    o "Writing  #{file.sub(dst_path[:root], '')}"
+    o "Writing  #{unrootify file}"
     o source_code
     o
     File.open(file, 'w') {|f| f << source_code}
@@ -98,7 +98,7 @@ class EspressoProjectGenerator
 
     o
     o "--- Generating route ---"
-    o "Writing #{action_file.sub(dst_path[:root], '')}"
+    o "Writing #{unrootify action_file}"
     o source_code
     File.open(action_file, 'w') {|f| f << source_code}
   end
@@ -106,8 +106,6 @@ class EspressoProjectGenerator
   def generate_view ctrl_name, name
 
     action_file, action = valid_action?(ctrl_name, name)
-    action_relfile = action_file.sub(dst_path[:root], '')
-
     File.exists?(action_file) ||
       fail("#{name} action/route does not exists. Please create it first")
 
@@ -116,8 +114,8 @@ class EspressoProjectGenerator
     App.to_app!
     ctrl_instance = ctrl.new
     ctrl_instance.respond_to?(action.to_sym) ||
-      fail("#{action_relfile} exists but #{action} action not defined.
-        Please define it manually or delete #{action_relfile} and start over.")
+      fail("#{unrootify action_file} exists but #{action} action not defined.
+        Please define it manually or delete #{unrootify action_file} and start over.")
     
     action_name, request_method = deRESTify_action(action)
     ctrl_instance.action_setup  = ctrl.action_setup[action_name][request_method]
@@ -127,13 +125,14 @@ class EspressoProjectGenerator
     o
     o "--- Generating view ---"
     if File.exists?(path)
-      File.directory?(path) || fail("#{path.sub(dst_path[:root], '')} should be a directory")
+      File.directory?(path) ||
+        fail("#{unrootify path} should be a directory")
     else
-      o "Creating #{path.sub(dst_path[:root], '')}"
+      o "Creating #{unrootify path}/"
       FileUtils.mkdir(path)
     end
     file = File.join(path, action + ctrl_instance.engine_ext?)
-    o "Writing  #{file.sub(dst_path[:root], '')}"
+    o "Writing  #{unrootify file}"
     o
     FileUtils.touch file
   end
@@ -145,6 +144,10 @@ class EspressoProjectGenerator
 
   private
 
+  def unrootify path, root = dst_path[:root]
+    path.sub(root, '')
+  end
+
   def valid_controller? name
     name.nil? || name.empty? && fail("Please provide controller name")
 
@@ -153,7 +156,7 @@ class EspressoProjectGenerator
       fail("#{name} controller does not exists. Please create it first")
 
     ctrl = name.split('::').inject(Object) do |ns,c|
-      ctrl_folder = ctrl_path.sub(dst_path[:root], '').sub(/\/+\Z/, '*')
+      ctrl_folder = unrootify(ctrl_path).sub(/\/+\Z/, '*')
       ns.const_defined?(c) || fail("#{ctrl_folder} exists but #{name} controller not defined.
         Please define it manually or delete #{ctrl_folder} and start over.")
       ns.const_get(c)

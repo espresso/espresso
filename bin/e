@@ -6,26 +6,26 @@ require 'e'
 require 'e-more/generator'
 
 if op = $*[0]
-  if op =~ /\Ag\:/
+  if op =~ /\Ag/i
 
     generator = EspressoProjectGenerator.new(Dir.pwd)
 
-    if op =~ /p/
+    if op =~ /p/i
       generator.generate_project $*[1]
     else
       generator.in_app_folder?
       require generator.boot_file
 
-      if op =~ /c/
+      if op =~ /c/i
         generator.generate_controller $*[1], $*[2]
       end
 
-      if op =~ /r/
+      if op =~ /r/i
         generator.generate_route $*[1], $*[2], *$*[2..-1]
         puts %x["#{$0}" g:v #{$*[1]} #{$*[2]}]
       end
 
-      if op =~ /v/
+      if op =~ /v/i
         generator.generate_view $*[1], $*[2]
       end
     end
