@@ -24,12 +24,8 @@ class EspressoApp
 
   def initialize automount = false, &proc
     @routes, @controllers = {}, {}
-    automount! if automount
+    @automount = automount
     proc && self.instance_exec(&proc)
-  end
-
-  def automount!
-    mount discovered_controllers
   end
 
   # mount given/discovered controllers into current app.
@@ -59,31 +55,15 @@ class EspressoApp
     self
   end
 
-  # proc given here will be executed inside ALL CONTROLLERS!
+  # auto-mount auto-discovered controllers.
+  # call this only after all controllers defined and app ready to start!
+  # leaving it in public zone for better control over mounting.
+  def automount!
+    mount discovered_controllers
+  end
+
+  # proc given here will be executed inside all controllers.
   # used to setup multiple controllers at once.
-  #
-  # @example
-  #   #class News < E
-  #     # ...
-  #   end
-  #   class Articles < E
-  #     # ...
-  #   end
-  #
-  #   # this will work correctly
-  #   app = EspressoApp.new
-  #   app.global_setup { controllers setup }
-  #   app.mount News
-  #   app.mount Articles
-  #   app.run
-  #
-  #   # and this will NOT!
-  #   app = EspressoApp.new
-  #   app.mount News
-  #   app.mount Articles
-  #   app.global_setup { controllers setup }
-  #   app.run
-  #
   def global_setup &proc
     @global_setup = proc
     self
@@ -148,20 +128,19 @@ class EspressoApp
   end
 
   def app
-    @app ||= to_app!
+    @app ||= begin
+      mount_controllers!
+      middleware.reverse.inject(lambda {|env| call!(env)}) {|a,e| e[a]}
+    end
   end
 
   def to_app
     app
     self
   end
+  alias to_app! to_app
 
   private
-  def to_app!
-    mount_controllers!
-    middleware.reverse.inject(lambda {|env| call!(env)}) {|a,e| e[a]}
-  end
-
   def call! env
     path = env[ENV__PATH_INFO]
     script_name = env[ENV__SCRIPT_NAME]
@@ -225,6 +204,7 @@ class EspressoApp
   end
 
   def mount_controllers!
+    automount! if @automount
     @mounted_controllers = []
     @controllers.each_pair {|c,(roots,setup)| mount_controller c, *roots, &setup}
   end

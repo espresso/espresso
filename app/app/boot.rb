@@ -2,8 +2,9 @@ require 'rubygems'
 require 'bundler/setup'
 Bundler.require
 
-App = EspressoApp.new
+App = EspressoApp.new(:automount)
 require File.expand_path('../config', __FILE__)
+
 Cfg = AppConfig.new(App, ENV['RACK_ENV'])
 App.assets_url 'assets'
 App.assets.prepend_path Cfg.assets_path
@@ -20,5 +21,3 @@ end
 App.controllers_setup do
   view_path Cfg.view_path
 end
-
-App.automount!

@@ -113,7 +113,6 @@ class EspressoProjectGenerator
 
     _, ctrl = valid_controller?(ctrl_name)
 
-    App.to_app
     ctrl_instance = ctrl.new
     ctrl_instance.respond_to?(action.to_sym) ||
       fail("#{action_relfile} exists but #{action} action not defined.
