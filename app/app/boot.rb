@@ -18,7 +18,7 @@ Dir[Cfg.helpers_path + '*.rb'].each {|file| require file}
 end
 
 App.controllers_setup do
-  view_path Cfg.views_path
+  view_path Cfg.view_path
 end
 
 App.automount!

@@ -118,19 +118,6 @@ class << E
     }.freeze
   end
 
-  def deRESTify_action action
-    action_name, request_method = action.to_s.dup, :*
-    HTTP__REQUEST_METHODS.each do |m|
-      regex = /\A#{m}_/i
-      if action_name =~ regex
-        request_method = m.freeze
-        action_name = action_name.sub(regex, '')
-        break
-      end
-    end
-    [action_name.to_sym, request_method.freeze]
-  end
-
   def apply_path_rules action_name
     return ''.freeze if action_name == E__INDEX_ACTION
     action_name_to_route(action_name, path_rules).freeze

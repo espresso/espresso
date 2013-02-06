@@ -22,6 +22,10 @@ if op = $*[0]
 
       if op =~ /r/
         generator.generate_route $*[1], $*[2], *$*[2..-1]
+        puts %x["#{$0}" g:v #{$*[1]} #{$*[2]}]
+      end
+
+      if op =~ /v/
         generator.generate_view $*[1], $*[2]
       end
     end

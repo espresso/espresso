@@ -14,6 +14,7 @@ class EspressoProjectGenerator
   end
 
   def generate_project name
+
     name.nil? || name.empty? && fail("Please provide project name via second argument")
     name =~ /\.\.|\// && fail("Project name can not contain slashes nor ..")
 
@@ -56,7 +57,9 @@ class EspressoProjectGenerator
     
     path = dst_path[:controllers] + class_name_to_route(name)
     File.exists?(path) && fail("%s controller already exists" % name)
+    
     o
+    o "--- Generating controller ---"
     o "Creating #{path.sub(dst_path[:root], '')}/"
     FileUtils.mkdir(path)
     file = path + '.rb'
@@ -93,6 +96,8 @@ class EspressoProjectGenerator
     after.each  {|s| source_code << s}
     source_code = source_code.join("\n")
 
+    o
+    o "--- Generating route ---"
     o "Writing #{action_file.sub(dst_path[:root], '')}"
     o source_code
     File.open(action_file, 'w') {|f| f << source_code}
@@ -106,18 +111,28 @@ class EspressoProjectGenerator
     File.exists?(action_file) ||
       fail("#{name} action/route does not exists. Please create it first")
 
-    ctrl_path, ctrl = valid_controller?(ctrl_name)
-    ctrl_path = ctrl_path.sub(dst_path[:controllers], '')
-    path = File.join(Cfg.views_path, ctrl_path)
+    _, ctrl = valid_controller?(ctrl_name)
+
+    App.to_app
+    ctrl_instance = ctrl.new
+    ctrl_instance.respond_to?(action.to_sym) ||
+      fail("#{action_relfile} exists but #{action} action not defined.
+        Please define it manually or delete #{action_relfile} and start over.")
+    
+    action_name, request_method = deRESTify_action(action)
+    ctrl_instance.action_setup  = ctrl.action_setup[action_name][request_method]
+    ctrl_instance.call_setups!
+    path = File.join(ctrl_instance.view_path?, ctrl_instance.view_prefix?)
 
     o
+    o "--- Generating view ---"
     if File.exists?(path)
       File.directory?(path) || fail("#{path.sub(dst_path[:root], '')} should be a directory")
     else
       o "Creating #{path.sub(dst_path[:root], '')}"
       FileUtils.mkdir(path)
     end
-    file = File.join(path, action + '.erb')
+    file = File.join(path, action + ctrl_instance.engine_ext?)
     o "Writing  #{file.sub(dst_path[:root], '')}"
     o
     FileUtils.touch file

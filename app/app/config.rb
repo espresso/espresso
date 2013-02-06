@@ -27,6 +27,7 @@ class AppConfig
       end
     end
   end
+  alias view_path views_path
 
   def [] config
     @config[config] || @opted_config[config]

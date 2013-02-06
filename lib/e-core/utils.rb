@@ -119,6 +119,20 @@ module EspressoUtils
   end
   module_function :action_name_to_route
 
+  def deRESTify_action action
+    action_name, request_method = action.to_s.dup, :*
+    HTTP__REQUEST_METHODS.each do |m|
+      regex = /\A#{m}_/i
+      if action_name =~ regex
+        request_method = m.freeze
+        action_name = action_name.sub(regex, '')
+        break
+      end
+    end
+    [action_name.to_sym, request_method]
+  end
+  module_function :deRESTify_action
+
   # instance_exec at runtime is expensive enough,
   # so compiling procs into methods at load time.
   def proc_to_method *chunks, &proc

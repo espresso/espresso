@@ -26,20 +26,23 @@ class E
     action_setup[:action]
   end
 
-  def action_setup setup = nil
-    @__e__action_setup = setup if setup
+  def action_setup= setup
+    @__e__action_setup = setup
+  end
+  def action_setup
     @__e__action_setup
   end
 
   def setup_action! action = nil
     if action ||= @__e__action_passed_at_initialize || env[ENV__ESPRESSO_ACTION]
       if setup = self.class.action_setup[action]
-        action_setup(setup[env[ENV__REQUEST_METHOD]] || setup[:*])
-        action_setup ||
-          fail(STATUS__NOT_IMPLEMENTED, "Resource found but it can be accessed only through %s" % setup.keys.join(", "))
+        self.action_setup = setup[env[ENV__REQUEST_METHOD]] || setup[:*]
+        self.action_setup ||
+          fail(STATUS__NOT_IMPLEMENTED, "Resource found
+            but it can be accessed only through %s" % setup.keys.join(", "))
       end
     end
-    action_setup ||
+    self.action_setup ||
       fail(STATUS__NOT_FOUND, '%s %s not found' % [rq.request_method, rq.path])
   end
   private :setup_action!
