@@ -1,9 +1,12 @@
-require File.expand_path('../config', __FILE__)
-Cfg = AppConfig.new
-
 require 'rubygems'
 require 'bundler/setup'
-Bundler.require(:default, Cfg.env)
+Bundler.require(:default)
+require 'yaml'
+require File.expand_path('../config', __FILE__)
+
+Cfg = AppConfig.new
+
+Bundler.require(Cfg.env)
 
 require Cfg.app_path('database.rb')
 

@@ -44,42 +44,6 @@ class EspressoProjectGenerator
     insert_orm(orm, project_path) if orm
   end
 
-  def insert_orm orm, project_path
-    orm_class, orm_ext = if orm =~ /\Aa/i
-      [:ActiveRecord, '.ar']
-    elsif orm =~ /\Ad/i
-      [:DataMapper, '.dm']
-    elsif orm =~ /\As/i
-      [:Sequel, '.sq']
-    end
-    if orm_class
-      file = project_path[:config] + 'database.yml'
-      cfg = YAML.load(File.read(file))
-      %w[dev prod test].each do |env|
-        env_cfg = cfg[env] || cfg[env.to_sym]
-        env_cfg.update 'orm' => orm_class
-      end
-
-      o
-      o "Updating #{unrootify file}"
-      o "orm: :#{orm_class}"
-      o
-      File.open(file, 'w') {|f| f << YAML.dump(cfg)}
-
-      gems = File.read(src_root  + 'Gemfile' + orm_ext)
-      file = project_path[:root] + 'Gemfile'
-      o "Updating #{unrootify file}"
-      o gems
-      o
-      File.open(file, 'a') do |f|
-        f << "\n"
-        f << gems
-      end
-    else
-      o "Unknown ORM #{orm}"
-    end
-  end
-
   def generate_controller name, route = nil
 
     name.nil? || name.empty? && fail("Please provide controller name via second argument")
@@ -189,6 +153,8 @@ class EspressoProjectGenerator
     name.nil? || name.empty? && fail("Please provide model name via second argument")
     before, model_name, after = namespace_to_source_code(name)
     
+    orm ||= Cfg.db[:orm]
+
     superclass = ''
     orm && orm =~ /\Aa/i && superclass = ' < ActiveRecord::Base'
     orm && orm =~ /\As/i && superclass = ' < Sequel::Model'
@@ -234,8 +200,44 @@ class EspressoProjectGenerator
 
   private
 
-  def unrootify path, root = dst_path[:root]
-    path.sub(root, '')
+  def unrootify path, root = nil
+    path.sub(root || dst_path[:root], '')
+  end
+
+  def insert_orm orm, project_path
+    orm_class, orm_ext = if orm =~ /\Aa/i
+      [:ActiveRecord, '.ar']
+    elsif orm =~ /\Ad/i
+      [:DataMapper, '.dm']
+    elsif orm =~ /\As/i
+      [:Sequel, '.sq']
+    end
+    if orm_class
+      file = project_path[:config] + 'database.yml'
+      cfg = YAML.load(File.read(file))
+      %w[dev prod test].each do |env|
+        env_cfg = cfg[env] || cfg[env.to_sym]
+        env_cfg.update 'orm' => orm_class
+      end
+
+      o
+      o "Updating #{unrootify file}"
+      o "orm: :#{orm_class}"
+      o
+      File.open(file, 'w') {|f| f << YAML.dump(cfg)}
+
+      gems = File.read(src_root  + 'Gemfile' + orm_ext)
+      file = project_path[:root] + 'Gemfile'
+      o "Updating #{unrootify file}"
+      o gems
+      o
+      File.open(file, 'a') do |f|
+        f << "\n"
+        f << gems
+      end
+    else
+      o "Unknown ORM #{orm}"
+    end
   end
 
   def valid_controller? name

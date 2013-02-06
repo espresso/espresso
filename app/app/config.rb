@@ -1,5 +1,7 @@
 class AppConfig
 
+  include EspressoUtils
+
   DEFAULT_ENV = 'dev'.freeze
   ENVIRONMENTS = [:dev, :test, :prod].freeze
 
@@ -11,7 +13,7 @@ class AppConfig
     ENVIRONMENTS.include?(env) ||
       raise("#{env} environment not supported. Please use one of #{ENVIRONMENTS.join ', '}")
 
-    set_paths Dir.pwd
+    set_paths Dir.pwd + '/'
     set_env env
     load_config
     load_db_config
@@ -30,7 +32,7 @@ class AppConfig
   paths.each_value do |paths|
     paths.each do |p|
       define_method '%s_path' % p do |*chunks|
-        File.join(@path[p],  *chunks)
+        File.join(@path[p], *chunks)
       end
     end
   end
@@ -65,7 +67,7 @@ class AppConfig
         path[p] = path[ns] + p.to_s + '/'
       end
     end
-    @path = EspressoUtils.indifferent_params(path).freeze
+    @path = indifferent_params(path).freeze
   end
 
   def set_env env
@@ -74,12 +76,12 @@ class AppConfig
 
   def load_config
     yaml    = YAML.load(File.read(config_path 'config.yml'))
-    @config = EspressoUtils.indifferent_params(yaml[@env] || yaml[@env.to_s] || {})
+    @config = indifferent_params(yaml[@env] || yaml[@env.to_s] || {})
   end
 
   def load_db_config
     yaml = YAML.load(File.read(config_path 'database.yml'))
-    @db  = EspressoUtils.indifferent_params(yaml[@env] || yaml[@env.to_s] || {})
+    @db  = indifferent_params(yaml[@env] || yaml[@env.to_s] || {})
   end
 
 end
