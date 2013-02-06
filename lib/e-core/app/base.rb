@@ -1,23 +1,6 @@
 class EspressoApp
 
   # Rack interface to all found controllers
-  #
-  # @example config.ru
-  #    module App
-  #      class Forum < E
-  #        map '/forum'
-  #
-  #        # ...
-  #      end
-  #
-  #      class Blog < E
-  #        map '/blog'
-  #
-  #        # ...
-  #      end
-  #    end
-  #
-  #    run EspressoApp
   def self.call env
     new(:automount).call(env)
   end
@@ -101,7 +84,7 @@ class EspressoApp
   # by default, Espresso will use WEBrick server.
   # pass :server option and any option accepted by selected(or default) server:
   #
-  # @example use Thin server with its default port
+  # @example use Thin server on its default port
   #   app.run :server => :Thin
   # @example use EventedMongrel server with custom options
   #   app.run :server => :EventedMongrel, :port => 9090, :num_processors => 1000
@@ -110,6 +93,7 @@ class EspressoApp
   # @option opts [Symbol]  :server (:WEBrick) web server
   # @option opts [Integer] :port   (5252)
   # @option opts [String]  :host   (0.0.0.0)
+  #
   def run opts = {}
     server = opts.delete(:server)
     (server && Rack::Handler.const_defined?(server)) || (server = HTTP__DEFAULT_SERVER)
