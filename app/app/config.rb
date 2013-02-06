@@ -9,7 +9,7 @@ class AppConfig
     env = ENV['RACK_ENV'] || DEFAULT_ENV
     env = env.to_sym unless env.is_a?(Symbol)
     ENVIRONMENTS.include?(env) ||
-      raise("#{env} environment not supported")
+      raise("#{env} environment not supported. Please use one of #{ENVIRONMENTS.join ', '}")
 
     set_paths Dir.pwd
     set_env env

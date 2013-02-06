@@ -40,8 +40,11 @@ class EspressoProjectGenerator
       o "  Writing #{path}"
       FileUtils.cp(file, project_path[:root] + path)
     end
-    return unless orm
 
+    insert_orm(orm, project_path) if orm
+  end
+
+  def insert_orm orm, project_path
     orm_class, orm_ext = if orm =~ /\Aa/i
       [:ActiveRecord, '.ar']
     elsif orm =~ /\Ad/i
@@ -50,25 +53,25 @@ class EspressoProjectGenerator
       [:Sequel, '.sq']
     end
     if orm_class
-      cfg_file = project_path[:config] + 'database.yml'
-      cfg = YAML.load(File.read(cfg_file))
+      file = project_path[:config] + 'database.yml'
+      cfg = YAML.load(File.read(file))
       %w[dev prod test].each do |env|
         env_cfg = cfg[env] || cfg[env.to_sym]
-        env_cfg.update :orm => orm_class
+        env_cfg.update 'orm' => orm_class
       end
 
       o
-      o "Updating #{unrootify cfg_file}"
-      o ":orm: => #{orm_class}"
+      o "Updating #{unrootify file}"
+      o "orm: :#{orm_class}"
       o
-      File.open(cfg_file, 'w') {|f| f << YAML.dump(cfg)}
+      File.open(file, 'w') {|f| f << YAML.dump(cfg)}
 
-      gems = File.read(src_root + 'Gemfile' + orm_ext)
-      gemfile = project_path[:root] + 'Gemfile'
-      o "Updating #{unrootify gemfile}"
+      gems = File.read(src_root  + 'Gemfile' + orm_ext)
+      file = project_path[:root] + 'Gemfile'
+      o "Updating #{unrootify file}"
       o gems
       o
-      File.open(gemfile, 'a') do |f|
+      File.open(file, 'a') do |f|
         f << "\n"
         f << gems
       end

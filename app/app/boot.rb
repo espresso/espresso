@@ -5,6 +5,8 @@ require 'rubygems'
 require 'bundler/setup'
 Bundler.require(:default, Cfg.env)
 
+require Cfg.app_path('database.rb')
+
 App = EspressoApp.new(:automount)
 App.controllers_setup do
   view_path 'app/views'
@@ -21,3 +23,5 @@ Dir[Cfg.helpers_path + '*.rb'].each {|file| require file}
     Dir[file.sub(/(\.rb)\Z/, '/*\1')].each {|f| require f}
   end
 end
+
+DataMapper.finalize if Cfg.db[:orm] == :DataMapper
