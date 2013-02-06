@@ -50,7 +50,15 @@ class EspressoProjectGenerator
     source_code, i = [], INDENTATION * before.size
     before.each {|s| source_code << s}
     source_code << "#{i}class #{ctrl_name} < E"
-    source_code << "#{i + INDENTATION}map '#{route}'" if route
+    if route
+      source_code << "#{i + INDENTATION}map '#{route}'"
+      source_code << INDENTATION
+    end
+
+    ["def index", INDENTATION, "end"].each do |line|
+      source_code << (i + INDENTATION + line.to_s)
+    end
+
     source_code << "#{i}end"
     after.each  {|s| source_code << s}
     source_code = source_code.join("\n")
@@ -133,7 +141,7 @@ class EspressoProjectGenerator
       FileUtils.mkdir(path)
     end
     file = File.join(path, action + ctrl_instance.engine_ext?)
-    o "Writing  #{unrootify file}"
+    o "Touching #{unrootify file}"
     o
     FileUtils.touch file
   end
