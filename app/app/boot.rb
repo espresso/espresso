@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'bundler/setup'
 Bundler.require(:default)
+
 require 'yaml'
 require File.expand_path('../config', __FILE__)
 
@@ -21,10 +22,11 @@ App.assets.prepend_path Cfg.assets_path
 Dir[Cfg.helpers_path + '*.rb'].each {|file| require file}
 
 [Cfg.models_path, Cfg.controllers_path].each do |path|
-  Dir[path + '*.rb'].each do |file|
+  extra = Dir[path + '*.rb'].inject([]) do |files,file|
     require file
-    Dir[file.sub(/(\.rb)\Z/, '/*\1')].each {|f| require f}
+    files.concat Dir[file.sub(/(\.rb)\Z/, '/*\1')]
   end
+  extra.each {|f| require f}
 end
 
 DataMapper.finalize if Cfg.db[:orm] == :DataMapper

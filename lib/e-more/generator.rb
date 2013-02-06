@@ -21,7 +21,7 @@ class EspressoProjectGenerator
     project_path = dst_path(name)
     File.exists?(project_path[:root]) && fail("#{name} already exists")
 
-    o "Generating \"#{name}\" project...\n"
+    o '--- Generating "%s" project ---' % name
 
     folders, files = Dir[src_root + '**/*'].partition do |entry|
       File.directory?(entry)
@@ -69,7 +69,7 @@ class EspressoProjectGenerator
     File.exists?(path) && fail("#{name} controller already exists")
     
     o
-    o "--- Generating #{name} controller ---"
+    o '--- Generating "%s" controller ---' % name
     o "Creating #{unrootify path}/"
     FileUtils.mkdir(path)
     file = path + '.rb'
@@ -108,7 +108,7 @@ class EspressoProjectGenerator
     source_code = source_code.join("\n")
 
     o
-    o "--- Generating #{name} route ---"
+    o '--- Generating "%s" route ---' % name
     o "Writing #{unrootify action_file}"
     o source_code
     File.open(action_file, 'w') {|f| f << source_code}
@@ -122,7 +122,7 @@ class EspressoProjectGenerator
 
     _, ctrl = valid_controller?(ctrl_name)
 
-    App.to_app!
+    App.boot!
     ctrl_instance = ctrl.new
     ctrl_instance.respond_to?(action.to_sym) ||
       fail("#{unrootify action_file} exists but #{action} action not defined.
@@ -134,7 +134,7 @@ class EspressoProjectGenerator
     path = File.join(ctrl_instance.view_path?, ctrl_instance.view_prefix?)
 
     o
-    o "--- Generating #{name} view ---"
+    o '--- Generating "%s" view ---' % name
     if File.exists?(path)
       File.directory?(path) ||
         fail("#{unrootify path} should be a directory")
@@ -183,7 +183,7 @@ class EspressoProjectGenerator
     File.exists?(path) && fail("#{name} model already exists")
     
     o
-    o "--- Generating #{name} model ---"
+    o '--- Generating "%s" model ---' % name
     o "Creating #{unrootify path}/"
     FileUtils.mkdir(path)
     file = path + '.rb'

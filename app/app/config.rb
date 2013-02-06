@@ -2,14 +2,14 @@ class AppConfig
 
   include EspressoUtils
 
-  DEFAULT_ENV = 'dev'.freeze
   ENVIRONMENTS = [:dev, :test, :prod].freeze
+  DEFAULT_ENV  = ENVIRONMENTS.first
 
   attr_reader :path, :db, :env
 
   def initialize
     env = ENV['RACK_ENV'] || DEFAULT_ENV
-    env = env.to_sym unless env.is_a?(Symbol)
+    env = env.to_s.to_sym
     ENVIRONMENTS.include?(env) ||
       raise("#{env} environment not supported. Please use one of #{ENVIRONMENTS.join ', '}")
 

@@ -123,6 +123,7 @@ class EspressoApp
     self
   end
   alias to_app! to_app
+  alias boot!   to_app
 
   private
   def call! env

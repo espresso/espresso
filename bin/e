@@ -9,7 +9,7 @@ require 'e-more/generator'
 if op = $*[0]
   if op =~ /\Ag/i
     generator = EspressoProjectGenerator.new(Dir.pwd)
-    unit = op.sub(/\Ag\W/i, '')
+    unit = op.sub(/\Ag\W?/i, '')
 
     if unit =~ /\Ap/i
       generator.generate_project $*[1], $*[2]
