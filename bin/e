@@ -21,7 +21,7 @@ if op = $*[0]
       end
 
       if op =~ /r/i
-        generator.generate_route $*[1], $*[2], *$*[2..-1]
+        generator.generate_route $*[1], $*[2], *$*[3..-1]
         puts %x["#{$0}" g:v #{$*[1]} #{$*[2]}]
       end
 

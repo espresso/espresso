@@ -81,7 +81,8 @@ class EspressoProjectGenerator
     before.each {|s| source_code << s}
     source_code << "#{i}class #{ctrl_name}"
 
-    source_code << (i + INDENTATION + "def #{action}")
+    args = args.any? ? ' ' + args.map {|a| a.sub(/\,\Z/, '')}.join(', ') : ''
+    source_code << (i + INDENTATION + "def #{action + args}")
     action_source_code = [INDENTATION]
     if block_given?
       action_source_code = yield
