@@ -3,10 +3,9 @@ require 'logger'
 
 class EspressoGenerator
 
-  include EspressoConstants
   include EspressoUtils
 
-  INDENTATION = (" " * 2).freeze
+  INDENTATION  = (" " * 2).freeze
 
   attr_reader :dst_root, :boot_file
   attr_accessor :logger
@@ -16,8 +15,8 @@ class EspressoGenerator
     @src_base = (src_root + 'base/').freeze
     @src_gemfiles = (src_root + 'Gemfiles/').freeze
 
-    @dst_root  = (dst_root + '/').freeze
-    @boot_file = (@dst_root + 'app/boot.rb').freeze
+    @dst_root  = (dst_root  + '/').freeze
+    @boot_file = (@dst_root + 'base/boot.rb').freeze
     @logger    = logger || logger == false ? logger : Logger.new(STDOUT)
   end
 
@@ -32,12 +31,12 @@ class EspressoGenerator
     opts = args.last.is_a?(Hash) ? args.pop : {}
     root = dst_root + opts[:append].to_s + '/'
     paths = {
-      :root   => root,
-      :app    => File.join(root, 'app/'),
+      :root => root,
+      :base => File.join(root, 'base/'),
       :config => File.join(root, 'config/')
     }
     [:controllers, :models, :views].each do |u|
-      paths[u] = File.join(paths[:app], u.to_s, '')
+      paths[u] = File.join(paths[:base], u.to_s, '')
     end
     unit = paths[args.first] ? args.shift : nil
     unit ? File.join(paths[unit], *args) : paths
@@ -58,6 +57,7 @@ class EspressoGenerator
     project_path = dst_path(:append => name)
     File.exists?(project_path[:root]) && fail("#{name} already exists")
 
+    o
     o '--- Generating "%s" project ---' % name
 
     folders, files = Dir[@src_base + '**/*'].partition do |entry|
@@ -94,7 +94,7 @@ class EspressoGenerator
       source_code << INDENTATION
     end
 
-    ["def index", INDENTATION, "end"].each do |line|
+    ["def index", INDENTATION + "render", "end"].each do |line|
       source_code << (i + INDENTATION + line.to_s)
     end
 
@@ -104,7 +104,6 @@ class EspressoGenerator
     
     path = dst_path[:controllers] + class_name_to_route(name)
     File.exists?(path) && fail("#{name} controller already exists")
-    
     o
     o '--- Generating "%s" controller ---' % name
     o "Creating #{unrootify path}/"
@@ -112,7 +111,6 @@ class EspressoGenerator
     file = path + '.rb'
     o "Writing  #{unrootify file}"
     o source_code
-    o
     File.open(file, 'w') {|f| f << source_code}
   end
 
@@ -130,7 +128,7 @@ class EspressoGenerator
 
     args = args.any? ? ' ' + args.map {|a| a.sub(/\,\Z/, '')}.join(', ') : ''
     source_code << (i + INDENTATION + "def #{action + args}")
-    action_source_code = [INDENTATION]
+    action_source_code = ["render"]
     if block_given?
       action_source_code = yield
       action_source_code.is_a?(Array) || action_source_code = [action_source_code]
@@ -143,7 +141,6 @@ class EspressoGenerator
     source_code << "#{i}end"
     after.each  {|s| source_code << s}
     source_code = source_code.join("\n")
-
     o
     o '--- Generating "%s" route ---' % name
     o "Writing #{unrootify action_file}"
@@ -154,23 +151,19 @@ class EspressoGenerator
   def generate_view ctrl_name, name
 
     action_file, action = valid_action?(ctrl_name, name)
-    File.exists?(action_file) ||
-      fail("#{name} action/route does not exists. Please create it first")
 
     _, ctrl = valid_controller?(ctrl_name)
 
     App.boot!
     ctrl_instance = ctrl.new
     ctrl_instance.respond_to?(action.to_sym) ||
-      fail("#{unrootify action_file} exists but #{action} action not defined.
-        Please define it manually or delete #{unrootify action_file} and start over.")
+      fail("#{action} action does not exists. Please create it first")
     
     action_name, request_method = deRESTify_action(action)
     ctrl_instance.action_setup  = ctrl.action_setup[action_name][request_method]
     ctrl_instance.call_setups!
     path = File.join(ctrl_instance.view_path?, ctrl_instance.view_prefix?)
 
-    o
     o '--- Generating "%s" view ---' % name
     if File.exists?(path)
       File.directory?(path) ||
@@ -233,7 +226,7 @@ class EspressoGenerator
   def unrootify path, root = nil
     root = (root || dst_path[:root]).gsub(/\/+/, '/')
     regexp = /\A#{Regexp.escape(root)}/
-    path.sub(regexp, '')
+    path.gsub(/\/+/, '/').sub(regexp, '')
   end
 
   def insert_orm orm, project_path
@@ -246,9 +239,9 @@ class EspressoGenerator
     end
     if orm_gem
       file = project_path[:config] + 'database.yml'
-      cfg = YAML.load(File.read(file))
-      %w[dev prod test].each do |env|
-        env_cfg = cfg[env] || cfg[env.to_sym]
+      cfg  = YAML.load(File.read(file))
+      E__ENVIRONMENTS.each do |env|
+        env_cfg = cfg[env] || cfg[env.to_s]
         env_cfg.update 'orm' => orm_gem
       end
 

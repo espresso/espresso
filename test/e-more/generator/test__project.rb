@@ -27,15 +27,18 @@ module EGeneratorTest__Project
 
         status = G.generate :project, project, project
         is(status).true?
-        
+        project_path = G.dst_path(:append => project)
+
         Ensure 'database.yml updated' do
-          cfg = File.read(G.dst_path(:config, 'database.yml'))
-          expect(cfg) =~ /orm\W+#{project}/m
+          expect {
+            File.read(project_path[:config] + 'database.yml')
+          } =~ /orm\W+#{project}/m
         end
         
         Ensure 'Gemfile updated' do
-          gems = File.read(G.dst_path(:root, 'Gemfile'))
-          expect(gems) =~ /gem\W+#{project}/m
+          expect {
+            File.read(project_path[:root] + 'Gemfile')
+          } =~ /gem\W+#{project}/m
         end
       end
       cleanup project

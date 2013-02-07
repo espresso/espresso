@@ -1,6 +1,6 @@
 source :rubygems
 
-group :dev do
+group :development do
   # development environment gems
 end
 
@@ -8,7 +8,7 @@ group :test do
   # testing environment gems
 end
 
-group :prod do
+group :production do
   # production environment gems
 end
 

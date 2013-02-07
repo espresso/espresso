@@ -9,11 +9,11 @@ Cfg = AppConfig.new
 
 Bundler.require(Cfg.env)
 
-require Cfg.app_path('database.rb')
+require Cfg.base_path('database.rb')
 
 App = EspressoApp.new(:automount)
 App.controllers_setup do
-  view_path 'app/views'
+  view_path 'base/views'
 end
 
 App.assets_url 'assets'

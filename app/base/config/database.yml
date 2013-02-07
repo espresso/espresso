@@ -1,5 +1,5 @@
 ---
-dev:
+development:
   type:
   name:
   host:
@@ -13,7 +13,7 @@ test:
   port:
   orm:
 
-prod:
+production:
   type:
   name:
   host:

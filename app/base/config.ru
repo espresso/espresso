@@ -1,3 +1,4 @@
-require File.expand_path('../app/boot', __FILE__)
+require File.expand_path('../base/boot', __FILE__)
 
+puts App.urlmap
 run App

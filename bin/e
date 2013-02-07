@@ -22,12 +22,23 @@ if operation =~ /\Ag/i
     require generator.boot_file
 
     if unit =~ /\Ac/i
-      generator.generate :controller, $*[1], $*[2]
+      if unit =~ /s\Z/i # generate multiple controllers
+        $*[1..-1].each {|u| puts %x["#{$0}" g:c #{u}]}
+      else
+        if generator.generate(:controller, $*[1], $*[2])
+          puts %x["#{$0}" g:v #{$*[1]} index]
+        end
+      end
     end
 
     if unit =~ /\Ar/i
-      generator.generate :route, $*[1], $*[2], *$*[3..-1]
-      puts %x["#{$0}" g:v #{$*[1]} #{$*[2]}]
+      if unit =~ /s\Z/i # generate multiple routes
+        $*[2..-1].each {|u| puts %x["#{$0}" g:r #{$*[1]} #{u}]}
+      else
+        if generator.generate(:route, $*[1], $*[2], *$*[3..-1])
+          puts %x["#{$0}" g:v #{$*[1]} #{$*[2]}]
+        end
+      end
     end
 
     if unit =~ /\Av/i
@@ -35,9 +46,11 @@ if operation =~ /\Ag/i
     end
 
     if unit =~ /\Am/i
-      generator.generate :model, $*[1], $*[2]
+      if unit =~ /s\Z/i # generate multiple models
+        $*[1..-1].each {|u| puts %x["#{$0}" g:m #{u}]}
+      else
+        generator.generate :model, $*[1], $*[2]
+      end
     end
   end
-
-  exit 0
 end

@@ -2,18 +2,17 @@ class AppConfig
 
   include EspressoUtils
 
-  ENVIRONMENTS = [:development, :test, :production].freeze
-  DEFAULT_ENV  = ENVIRONMENTS.first
+  DEFAULT_ENV = E__ENVIRONMENTS.first
 
   attr_reader :path, :db, :env
 
   def initialize
     env = ENV['RACK_ENV'] || DEFAULT_ENV
     env = env.to_s.to_sym
-    ENVIRONMENTS.include?(env) ||
-      raise("#{env} environment not supported. Please use one of #{ENVIRONMENTS.join ', '}")
+    E__ENVIRONMENTS.include?(env) ||
+      raise("#{env} environment not supported. Please use one of #{E__ENVIRONMENTS.join ', '}")
 
-    set_paths Dir.pwd + '/'
+    set_paths Dir.pwd
     set_env env
     load_config
     load_db_config
@@ -22,8 +21,8 @@ class AppConfig
 
   def self.paths
     {
-      :root   => [:config, :app, :public, :var, :tmp],
-      :app    => [:models, :views, :controllers, :helpers, :specs],
+      :root   => [:config, :base, :public, :var, :tmp],
+      :base   => [:models, :views, :controllers, :helpers, :specs],
       :var    => [:pid, :log],
       :public => [:assets],
     }
@@ -61,7 +60,7 @@ class AppConfig
   private
 
   def set_paths root
-    path = {:root => root}
+    path = {:root => (root.to_s + '/').gsub(/\/+/, '/')}
     self.class.paths.each_pair do |ns,paths|
       paths.each do |p|
         path[p] = path[ns] + p.to_s + '/'
