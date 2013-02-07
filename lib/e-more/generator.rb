@@ -185,7 +185,7 @@ class EspressoProjectGenerator
     o
     o '--- Generating "%s" model ---' % name
     o "Creating #{unrootify path}/"
-    FileUtils.mkdir(path)
+    FileUtils.mkdir_p(path)
     file = path + '.rb'
     o "Writing  #{unrootify file}"
     o source_code
