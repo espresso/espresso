@@ -1,42 +1,79 @@
-class EspressoProjectGenerator
+require 'yaml'
+require 'logger'
+
+class EspressoGenerator
 
   include EspressoConstants
   include EspressoUtils
 
   INDENTATION = (" " * 2).freeze
 
-  attr_reader :src_root, :dst_root, :boot_file
+  attr_reader :dst_root, :boot_file
+  attr_accessor :logger
 
-  def initialize dst_root
-    @src_root = (File.expand_path('../../../app', __FILE__) + '/').freeze
-    @dst_root = (dst_root + '/').freeze
+  def initialize dst_root, logger = nil
+    src_root  = File.expand_path('../../../app', __FILE__) + '/'
+    @src_base = (src_root + 'base/').freeze
+    @src_gemfiles = (src_root + 'Gemfiles/').freeze
+
+    @dst_root  = (dst_root + '/').freeze
     @boot_file = (@dst_root + 'app/boot.rb').freeze
+    @logger    = logger || logger == false ? logger : Logger.new(STDOUT)
   end
+
+  def generate unit, *args
+    catch :exception_catching_symbol do
+      self.send "generate_%s" % unit, *args
+      true
+    end
+  end
+
+  def dst_path *args
+    opts = args.last.is_a?(Hash) ? args.pop : {}
+    root = dst_root + opts[:append].to_s + '/'
+    paths = {
+      :root   => root,
+      :app    => File.join(root, 'app/'),
+      :config => File.join(root, 'config/')
+    }
+    [:controllers, :models, :views].each do |u|
+      paths[u] = File.join(paths[:app], u.to_s, '')
+    end
+    unit = paths[args.first] ? args.shift : nil
+    unit ? File.join(paths[unit], *args) : paths
+  end
+
+  def in_app_folder?
+    File.exists?(dst_path[:controllers]) ||
+      fail("Current folder does not seem to contain a Espresso application")
+  end
+
+  private
 
   def generate_project name, orm = nil
 
     name.nil? || name.empty? && fail("Please provide project name via second argument")
     name =~ /\.\.|\// && fail("Project name can not contain slashes nor ..")
 
-    project_path = dst_path(name)
+    project_path = dst_path(:append => name)
     File.exists?(project_path[:root]) && fail("#{name} already exists")
 
     o '--- Generating "%s" project ---' % name
 
-    folders, files = Dir[src_root + '**/*'].partition do |entry|
+    folders, files = Dir[@src_base + '**/*'].partition do |entry|
       File.directory?(entry)
     end
 
     FileUtils.mkdir(project_path[:root])
     o "  #{name}/"
     folders.each do |folder|
-      path = unrootify(folder, src_root)
+      path = unrootify(folder, @src_base)
       o "  `- #{path}"
       FileUtils.mkdir(project_path[:root] + path)
     end
 
-    files.reject {|f| File.basename(f) =~ /\AGemfile\./}.each do |file|
-      path = unrootify(file, src_root)
+    files.each do |file|
+      path = unrootify(file, @src_base)
       o "  Writing #{path}"
       FileUtils.cp(file, project_path[:root] + path)
     end
@@ -185,7 +222,7 @@ class EspressoProjectGenerator
     o
     o '--- Generating "%s" model ---' % name
     o "Creating #{unrootify path}/"
-    FileUtils.mkdir_p(path)
+    FileUtils.mkdir(path)
     file = path + '.rb'
     o "Writing  #{unrootify file}"
     o source_code
@@ -193,47 +230,42 @@ class EspressoProjectGenerator
     File.open(file, 'w') {|f| f << source_code}
   end
 
-  def in_app_folder?
-    File.exists?(dst_path[:controllers]) ||
-      fail("Current folder does not seem to contain a Espresso application")
-  end
-
-  private
-
   def unrootify path, root = nil
-    path.sub(root || dst_path[:root], '')
+    root = (root || dst_path[:root]).gsub(/\/+/, '/')
+    regexp = /\A#{Regexp.escape(root)}/
+    path.sub(regexp, '')
   end
 
   def insert_orm orm, project_path
-    orm_class, orm_ext = if orm =~ /\Aa/i
-      [:ActiveRecord, '.ar']
+    orm_gem = if orm =~ /\Aa/i
+      'activerecord'
     elsif orm =~ /\Ad/i
-      [:DataMapper, '.dm']
+      'data_mapper'
     elsif orm =~ /\As/i
-      [:Sequel, '.sq']
+      'sequel'
     end
-    if orm_class
+    if orm_gem
       file = project_path[:config] + 'database.yml'
       cfg = YAML.load(File.read(file))
       %w[dev prod test].each do |env|
         env_cfg = cfg[env] || cfg[env.to_sym]
-        env_cfg.update 'orm' => orm_class
+        env_cfg.update 'orm' => orm_gem
       end
 
       o
       o "Updating #{unrootify file}"
-      o "orm: :#{orm_class}"
+      o "+ orm: #{orm_gem}"
       o
       File.open(file, 'w') {|f| f << YAML.dump(cfg)}
 
-      gems = File.read(src_root  + 'Gemfile' + orm_ext)
+      gems = File.readlines(@src_gemfiles + orm_gem)
       file = project_path[:root] + 'Gemfile'
       o "Updating #{unrootify file}"
-      o gems
+      gems.each {|g| o "+ #{g}"}
       o
       File.open(file, 'a') do |f|
         f << "\n"
-        f << gems
+        gems.each {|g| f << g}
       end
     else
       o "Unknown ORM #{orm}"
@@ -268,21 +300,14 @@ class EspressoProjectGenerator
     [action_file, action]
   end
 
-  def dst_path path = '.'
-    root = File.expand_path(path, dst_root) + '/'
-    paths = {:root => root, :config => File.join(root, 'config/')}
-    [:controllers, :models, :views].inject(paths) do |map,p|
-      map.merge p => File.join(root, 'app', p.to_s, '')
-    end
-  end
-
   def fail msg
-    puts msg
-    exit 1
+    o msg
+    throw :exception_catching_symbol, false
   end
 
   def o msg = ''
-    puts msg
+    return unless @logger
+    @logger << "%s\n" % msg
   end
 
   def validate_constant_name constant

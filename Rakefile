@@ -45,6 +45,10 @@ namespace :test do
     run_test(/EMoreTest/, "e-more")
   end
 
+  task :generator do
+    run_test(/EGeneratorTest/, :Generator)
+  end
+
   task :view do
     run_test(/EMoreTest__View/, :ViewAPI)
   end

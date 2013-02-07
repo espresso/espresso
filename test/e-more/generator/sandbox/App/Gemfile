@@ -1,0 +1,17 @@
+source :rubygems
+
+group :dev do
+  # development environment gems
+end
+
+group :test do
+  # testing environment gems
+end
+
+group :prod do
+  # production environment gems
+end
+
+gem 'e'
+gem 'thin'
+gem 'sprockets'

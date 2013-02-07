@@ -1,43 +1,43 @@
 #!/usr/bin/env ruby
 require 'fileutils'
-require 'yaml'
 
 $:.unshift File.expand_path('../../lib', __FILE__)
 require 'e'
 require 'e-more/generator'
 
-if op = $*[0]
-  if op =~ /\Ag/i
-    generator = EspressoProjectGenerator.new(Dir.pwd)
-    unit = op.sub(/\Ag\W?/i, '')
-
-    if unit =~ /\Ap/i
-      generator.generate_project $*[1], $*[2]
-    else
-      generator.in_app_folder?
-      require generator.boot_file
-
-      if unit =~ /\Ac/i
-        generator.generate_controller $*[1], $*[2]
-      end
-
-      if unit =~ /\Ar/i
-        generator.generate_route $*[1], $*[2], *$*[3..-1]
-        puts %x["#{$0}" g:v #{$*[1]} #{$*[2]}]
-      end
-
-      if unit =~ /\Av/i
-        generator.generate_view $*[1], $*[2]
-      end
-
-      if unit =~ /\Am/i
-        generator.generate_model $*[1], $*[2]
-      end
-    end
-
-    exit 0
-  end
+if $*.empty?
+  Rack::Server.start
+  exit 0 # exiting when server stopped/killed
 end
 
-require "rack"
-Rack::Server.start
+operation = $*[0]
+if operation =~ /\Ag/i
+  generator  = EspressoGenerator.new(Dir.pwd)
+  unit = operation.sub(/\Ag\W?/i, '')
+
+  if unit =~ /\Ap/i
+    generator.generate :project, $*[1], $*[2]
+  else
+    generator.in_app_folder?
+    require generator.boot_file
+
+    if unit =~ /\Ac/i
+      generator.generate :controller, $*[1], $*[2]
+    end
+
+    if unit =~ /\Ar/i
+      generator.generate :route, $*[1], $*[2], *$*[3..-1]
+      puts %x["#{$0}" g:v #{$*[1]} #{$*[2]}]
+    end
+
+    if unit =~ /\Av/i
+      generator.generate :view, $*[1], $*[2]
+    end
+
+    if unit =~ /\Am/i
+      generator.generate :model, $*[1], $*[2]
+    end
+  end
+
+  exit 0
+end

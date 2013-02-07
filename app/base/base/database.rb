@@ -5,13 +5,13 @@ if Cfg.db[:type] && Cfg.db[:name]
   connection_string = '%s://%s:%s@%s/%s' % values
 
   case Cfg.db[:orm]
-  when :ActiveRecord
+  when 'activerecord'
     ActiveRecord::Base.establish_connection connection_string
 
-  when :DataMapper
+  when 'data_mapper'
     DataMapper.setup :default, connection_string
 
-  when :Sequel
+  when 'sequel'
     Sequel.connect connection_string
 
   end
