@@ -55,10 +55,10 @@ class EspressoGenerator
       fail("Current folder does not seem to contain a Espresso application")
   end
 
-  def extract_setups *args
+  def parse_input *input
     catch :exception_catching_symbol do
-      setups, string_setups = {}, []
-      args.flatten.each do |a|
+      args, setups, string_setups = [], {}, []
+      input.flatten.each do |a|
         case
         when a =~ /\Ao:/i, a =~ /\Am:/i
           orm = extract_setup(a)
@@ -85,9 +85,11 @@ class EspressoGenerator
             setups[:format] = format
             string_setups << a
           end
+        else
+          args << a
         end
       end
-      [setups, string_setups.join(' ')]
+      [args, setups, string_setups.join(' ')]
     end
   end
 
@@ -141,8 +143,14 @@ class EspressoGenerator
     source_code << "#{i}class #{ctrl_name} < E"
     if route
       source_code << "#{i + INDENTATION}map '#{route}'"
-      source_code << INDENTATION
     end
+    if engine = setups[:engine]
+      source_code << "#{i + INDENTATION}engine :#{engine}"
+    end
+    if format = setups[:format]
+      source_code << "#{i + INDENTATION}format '#{format}'"
+    end
+    source_code << INDENTATION
 
     ["def index", INDENTATION + "render", "end"].each do |line|
       source_code << (i + INDENTATION + line.to_s)

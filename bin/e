@@ -7,18 +7,22 @@ require 'e-more/generator'
 
 if $*.empty?
   Rack::Server.start
-  exit 0 # exiting when server stopped/killed
+  # exiting when server stopped/killed
+  exit 0
 end
 
 operation = $*[0]
 if operation =~ /\Ag/i
-  generator = EspressoGenerator.new(Dir.pwd)
   unit = operation.sub(/\Ag\W?/i, '')
-  setups, string_setups = generator.extract_setups(*$*)
-  if setups
+  generator = EspressoGenerator.new(Dir.pwd)
+  args, setups, string_setups = generator.parse_input(*$*[1..-1])
+
+  if args
     if unit =~ /\Ap/i
-      if generator.generate(:project, $*[1], setups)
-        puts %x[cd #{generator.dst_root + $*[1]} && e g:c Index]
+      # generating project
+      if generator.generate(:project, args[0], setups)
+        # generating Index controller
+        puts %x[cd "#{generator.dst_root + args[0]}" && e g:c Index]
       end
     else
       generator.in_app_folder?
@@ -26,33 +30,35 @@ if operation =~ /\Ag/i
 
       if unit =~ /\Ac/i
         if unit =~ /s\Z/i # generate multiple controllers
-          $*[1..-1].each {|u| puts %x["#{$0}" g:c #{u} #{string_setups}]}
+          args.each {|u| puts %x["#{$0}" g:c #{u} #{string_setups}]}
         else
-          if generator.generate(:controller, $*[1], $*[2], setups)
-            puts %x["#{$0}" g:v #{$*[1]} index]
+          # generating controller
+          if generator.generate(:controller, args[0], args[1], setups)
+            # generating index view(index route are generated automatically)
+            puts %x["#{$0}" g:v #{args[0]} index]
           end
         end
       end
 
       if unit =~ /\Ar/i
         if unit =~ /s\Z/i # generate multiple routes
-          $*[2..-1].each {|u| puts %x["#{$0}" g:r #{$*[1]} #{u}]}
+          args[1..-1].each {|u| puts %x["#{$0}" g:r #{args[0]} #{u}]}
         else
-          if generator.generate(:route, $*[1], $*[2], *$*[3..-1])
-            puts %x["#{$0}" g:v #{$*[1]} #{$*[2]}]
+          if generator.generate(:route, args[0], args[1], *args[2..-1])
+            puts %x["#{$0}" g:v #{args[0]} #{args[1]}]
           end
         end
       end
 
       if unit =~ /\Av/i
-        generator.generate :view, $*[1], $*[2]
+        generator.generate :view, args[0], args[1]
       end
 
       if unit =~ /\Am/i
         if unit =~ /s\Z/i # generate multiple models
-          $*[1..-1].each {|u| puts %x["#{$0}" g:m #{u}]}
+          args.each {|u| puts %x["#{$0}" g:m #{u}]}
         else
-          generator.generate :model, $*[1], $*[2]
+          generator.generate :model, args[0], args[1]
         end
       end
     end
