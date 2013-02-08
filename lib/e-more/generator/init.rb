@@ -33,7 +33,7 @@ class EspressoGenerator
 
   def in_app_folder?
     File.directory?(dst_path[:controllers]) ||
-      fail("Current folder does not seem to contain a Espresso application")
+      fail("Seems current folder is not a generated Espresso application")
   end
 
   def parse_input *input

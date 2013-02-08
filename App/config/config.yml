@@ -1,0 +1,13 @@
+# any keys defied here will be available as Cfg[key]
+:development:
+  :server: Thin
+  :port:   5252
+
+:test:
+  :server: Thin
+  :port:   5252
+
+:production:
+  :server: Thin
+  :port:   5252
+

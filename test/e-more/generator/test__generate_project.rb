@@ -1,7 +1,7 @@
 module EGeneratorTest__Project
   Spec.new self do
     include GeneratorSpecHelper
-    
+
     cleanup
 
     Dir.chdir GENERATOR__DST_ROOT do
@@ -13,7 +13,7 @@ module EGeneratorTest__Project
         Should 'fail cause project already exists' do
           output = %x[#{GENERATOR__BIN} g:p App]
           check {$?.exitstatus} > 0
-          expect(output) =~ /already\W+exists/
+          expect(output) =~ /already exists/
         end
       end
       cleanup
