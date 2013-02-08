@@ -178,7 +178,7 @@ class EspressoGenerator
 
     File.exists?(action_file) && fail("#{name} action/route already exists")
 
-    before, ctrl_name, after = namespace_to_source_code(ctrl_name)
+    before, ctrl_name, after = namespace_to_source_code(ctrl_name, false)
 
     source_code, i = [], '  ' * before.size
     before.each {|s| source_code << s}
@@ -366,7 +366,11 @@ class EspressoGenerator
   end
 
   def fail msg = nil
-    o(msg) if msg
+    if msg
+      o
+      o '!!! %s !!!' % msg
+      o
+    end
     throw :exception_catching_symbol, false
   end
 
@@ -387,8 +391,13 @@ class EspressoGenerator
     action
   end
 
-  def namespace_to_source_code name
+  def namespace_to_source_code name, ensure_uninitialized = true
     namespace = name.split('::').map {|c| validate_constant_name c}
+    if ensure_uninitialized
+      namespace.inject(Object) do |o,c|
+        o.const_defined?(c) ? o.const_get(c) : break
+      end && fail("#{name} constant already in use")
+    end
     ctrl_name = namespace.pop
     before, after = [], []
     namespace.each do |c|
