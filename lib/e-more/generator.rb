@@ -392,12 +392,9 @@ class EspressoGenerator
   end
 
   def namespace_to_source_code name, ensure_uninitialized = true
+    ensure_uninitialized && constant_in_use?(name) && fail("#{name} constant already in use")
+    
     namespace = name.split('::').map {|c| validate_constant_name c}
-    if ensure_uninitialized
-      namespace.inject(Object) do |o,c|
-        o.const_defined?(c) ? o.const_get(c) : break
-      end && fail("#{name} constant already in use")
-    end
     ctrl_name = namespace.pop
     before, after = [], []
     namespace.each do |c|
@@ -406,5 +403,12 @@ class EspressoGenerator
       after  << "#{i}end"
     end
     [before, ctrl_name, after.reverse << ""]
+  end
+
+  def constant_in_use? name
+    namespace = name.split('::').map {|c| validate_constant_name c}
+    namespace.inject(Object) do |o,c|
+      o.const_defined?(c) ? o.const_get(c) : break
+    end
   end
 end
