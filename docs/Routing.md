@@ -368,8 +368,7 @@ class App < E
 end
 ```
 
-Voila, now App will respond to any of "/pages", "/pages.html" and "/pages.xml"<br>
-but not "/news.html" nor "/news.xml", cause `format` was set for `pages` action only.
+Now App will respond to any of "/pages", "/pages.html", "/pages.xml" and "/news" but not "/news.html" nor "/news.xml", cause format was set for `pages` action only.
 
 It is also possible to disable format for specific actions by using `disable_format_for`:
 

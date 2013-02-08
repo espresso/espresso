@@ -160,6 +160,46 @@ class App < E
 end
 ```
 
+**Worth to note** that `format` will act on all actions.
+
+To set format(s) only for specific actions, use `format_for`.
+
+**Example:** - only `pages` action will respond to URLs ending in .html and .xml
+
+```ruby
+class App < E
+  map '/'
+
+  format_for :pages, '.xml', '.html'
+
+  def pages
+    # ...
+  end
+
+  def news
+    # ...
+  end
+
+  # ...
+end
+```
+
+Now App will respond to any of "/pages", "/pages.html", "/pages.xml" and "/news" but not "/news.html" nor "/news.xml", cause format was set for `pages` action only.
+
+It is also possible to disable format for specific actions by using `disable_format_for`:
+
+```ruby
+class App < E
+  map '/'
+
+  format '.xml' # this will enable .xml format for all actions
+  
+  disable_format_for :news, :pages # disabling format for :pages and :news actions
+
+  # ...
+end
+```
+
 
 **[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 

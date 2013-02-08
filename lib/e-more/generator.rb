@@ -146,6 +146,7 @@ class EspressoGenerator
     end
     if engine = setups[:engine]
       source_code << "#{i + INDENTATION}engine :#{engine}"
+      update_gemfile :engine => engine
     end
     if format = setups[:format]
       source_code << "#{i + INDENTATION}format '#{format}'"
@@ -172,7 +173,7 @@ class EspressoGenerator
     File.open(file, 'w') {|f| f << source_code}
   end
 
-  def generate_route ctrl_name, name, *args
+  def generate_route ctrl_name, name, args, setups = {}
 
     action_file, action = valid_action?(ctrl_name, name)
 
@@ -183,6 +184,19 @@ class EspressoGenerator
     source_code, i = [], '  ' * before.size
     before.each {|s| source_code << s}
     source_code << "#{i}class #{ctrl_name}"
+
+    if format = setups[:format]
+      source_code << "#{i + INDENTATION}format_for :#{action}, '#{format}'"
+    end
+    if setups.any?
+      source_code << "#{i + INDENTATION}before :#{action} do"
+      if engine = setups[:engine]
+        source_code << "#{i + INDENTATION*2}engine :#{engine}"
+        update_gemfile :engine => engine
+      end
+      source_code << "#{i + INDENTATION}end"
+      source_code << ""
+    end
 
     args = args.any? ? ' ' + args.map {|a| a.sub(/\,\Z/, '')}.join(', ') : ''
     source_code << (i + INDENTATION + "def #{action + args}")
@@ -304,20 +318,39 @@ class EspressoGenerator
     File.open(file, 'w') {|f| f << YAML.dump(cfg)}
   end
 
-  def update_gemfile data, project_path
+  def update_gemfile data, project_path = nil
     return if data.empty?
+    project_path ||= dst_path
+    
     file = project_path[:root] + 'Gemfile'
+    gems, existing_gems = [], extract_gems(file)
+
+    [data[:orm], data[:engine]].compact.each do |gem|
+      gemfile = @src_gemfiles + gem.to_s
+      if File.file?(gemfile)
+        extract_gems(gemfile).each_pair do |g,d|
+          gems << d unless existing_gems[g]
+        end
+      else
+        gem = underscore(gem.to_s)
+        gems << ("gem '%s'" % gem) unless existing_gems[gem]
+      end
+    end
+    return if gems.empty?
+
     o "Updating #{unrootify file}"
     File.open(file, 'a') do |f|
-      [data[:orm], data[:engine]].compact.each do |gem|
-        gemfile = @src_gemfiles + gem.to_s
-        if File.file?(gemfile)
-          gems = File.readlines(gemfile)
-        else
-          gems = ["gem '%s'" % (CLASS_TO_GEM[gem] || underscore(gem.to_s))]
-        end
-        gems.each {|g| f << g; o "+ #{g}"}
+      gems.each do |g|
+        o "+ %s" % g
+        f << g
+        f << "\n"
       end
+    end
+  end
+
+  def extract_gems file
+    File.readlines(file).select {|l| l.strip =~ /\Agem/}.inject({}) do |map,l|
+      map.merge l.scan(/gem\W+([\w|\-]+)\W+/).flatten.first => l.strip
     end
   end
 
