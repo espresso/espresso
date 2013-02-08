@@ -13,6 +13,7 @@ module EspressoConstants
   # Slim adapter not shipped with Tilt,
   # so adding Slim to map to be sure adhoc methods are defined at loadtime
   VIEW__ENGINE_BY_EXT['.slim'] = nil unless VIEW__ENGINE_BY_EXT.has_key?('.slim')
+  VIEW__ENGINE_BY_SYM[:Slim]   = nil unless VIEW__ENGINE_BY_SYM.has_key?(:Slim)
 
   VIEW__EXT_BY_ENGINE = Tilt.mappings.sort { |a, b| b.first.size <=> a.first.size }.
     inject({}) { |m, i| i.last.each { |e| m.update e => ('.' + i.first).freeze }; m }

@@ -5,7 +5,15 @@ class EspressoGenerator
 
   include EspressoUtils
 
-  INDENTATION  = (" " * 2).freeze
+  INDENTATION = (" " * 2).freeze
+  # classes which underscored name does not result in gem name
+  CLASS_TO_GEM = {
+    :RDiscount => 'rdiscount',
+    :BlueCloth => 'bluecloth',
+    :RedCloth  => 'redcloth',
+    :WikiCloth => 'wikicloth',
+    :RDoc      => 'rdoc',
+  }
 
   attr_reader :dst_root, :boot_file
   attr_accessor :logger
@@ -47,9 +55,49 @@ class EspressoGenerator
       fail("Current folder does not seem to contain a Espresso application")
   end
 
+  def extract_setups *args
+    catch :exception_catching_symbol do
+      setups, string_setups = {}, []
+      args.flatten.each do |a|
+        case
+        when a =~ /\Ao:/i, a =~ /\Am:/i
+          orm = extract_setup(a)
+          if valid_orm = valid_orm?(orm)
+            setups[:orm] = valid_orm
+            string_setups << a
+          else
+            o 'WARN: invalid ORM provided - "%s"' % orm
+            o 'Supported ORMs: activerecord, data_mapper, sequel'
+            fail
+          end
+        when a =~ /\Ae:\w+/i
+          engine = extract_setup(a).to_s.to_sym
+          if valid_engine?(engine)
+            setups[:engine] = engine
+            string_setups << a
+          else
+            o 'WARN: invalid engine provided - "%s"' % engine
+            o 'Supported engines(Case Sensitive): %s' % VIEW__ENGINE_BY_SYM.keys.join(', ')
+            fail
+          end
+        when a =~ /\Af:/
+          if format = extract_setup(a)
+            setups[:format] = format
+            string_setups << a
+          end
+        end
+      end
+      [setups, string_setups.join(' ')]
+    end
+  end
+
   private
 
-  def generate_project name, orm = nil
+  def extract_setup input
+    input.scan(/:(.+)/).flatten.last
+  end
+
+  def generate_project name, setups = {}
 
     name.nil? || name.empty? && fail("Please provide project name via second argument")
     name =~ /\.\.|\// && fail("Project name can not contain slashes nor ..")
@@ -78,10 +126,12 @@ class EspressoGenerator
       FileUtils.cp(file, project_path[:root] + path)
     end
 
-    insert_orm(orm, project_path) if orm
+    update_config  setups, project_path
+    update_gemfile setups, project_path
   end
 
-  def generate_controller name, route = nil
+  def generate_controller name, route = nil, setups = {}
+    route.is_a?(Hash) && (setups = route) && (route = nil)
 
     name.nil? || name.empty? && fail("Please provide controller name via second argument")
     before, ctrl_name, after = namespace_to_source_code(name)
@@ -183,7 +233,7 @@ class EspressoGenerator
     name.nil? || name.empty? && fail("Please provide model name via second argument")
     before, model_name, after = namespace_to_source_code(name)
     
-    orm ||= Cfg.db[:orm]
+    orm ||= Cfg[:orm]
 
     superclass = ''
     orm && orm =~ /\Aa/i && superclass = ' < ActiveRecord::Base'
@@ -229,40 +279,54 @@ class EspressoGenerator
     path.gsub(/\/+/, '/').sub(regexp, '')
   end
 
-  def insert_orm orm, project_path
-    orm_gem = if orm =~ /\Aa/i
+  def update_config data, project_path
+    return if data.empty?
+
+    file = project_path[:config] + 'config.yml'
+    cfg  = YAML.load(File.read(file))
+    E__ENVIRONMENTS.each do |env|
+      env_cfg = cfg[env] || cfg[env.to_s] || next
+      env_cfg.update data
+    end
+
+    o
+    o "Updating #{unrootify file}"
+    o YAML.dump(data)
+    o
+    File.open(file, 'w') {|f| f << YAML.dump(cfg)}
+  end
+
+  def update_gemfile data, project_path
+    return if data.empty?
+    file = project_path[:root] + 'Gemfile'
+    o "Updating #{unrootify file}"
+    File.open(file, 'a') do |f|
+      [data[:orm], data[:engine]].compact.each do |gem|
+        gemfile = @src_gemfiles + gem.to_s
+        if File.file?(gemfile)
+          gems = File.readlines(gemfile)
+        else
+          gems = ["gem '%s'" % (CLASS_TO_GEM[gem] || underscore(gem.to_s))]
+        end
+        gems.each {|g| f << g; o "+ #{g}"}
+      end
+    end
+  end
+
+  def valid_orm? orm
+    return unless orm.is_a?(String)
+    case
+    when orm =~ /\Aa/i
       'activerecord'
-    elsif orm =~ /\Ad/i
+    when orm =~ /\Ad/i
       'data_mapper'
-    elsif orm =~ /\As/i
+    when orm =~ /\As/i
       'sequel'
     end
-    if orm_gem
-      file = project_path[:config] + 'database.yml'
-      cfg  = YAML.load(File.read(file))
-      E__ENVIRONMENTS.each do |env|
-        env_cfg = cfg[env] || cfg[env.to_s]
-        env_cfg.update 'orm' => orm_gem
-      end
+  end
 
-      o
-      o "Updating #{unrootify file}"
-      o "+ orm: #{orm_gem}"
-      o
-      File.open(file, 'w') {|f| f << YAML.dump(cfg)}
-
-      gems = File.readlines(@src_gemfiles + orm_gem)
-      file = project_path[:root] + 'Gemfile'
-      o "Updating #{unrootify file}"
-      gems.each {|g| o "+ #{g}"}
-      o
-      File.open(file, 'a') do |f|
-        f << "\n"
-        gems.each {|g| f << g}
-      end
-    else
-      o "Unknown ORM #{orm}"
-    end
+  def valid_engine? engine
+    VIEW__ENGINE_BY_SYM.has_key? engine
   end
 
   def valid_controller? name
@@ -293,8 +357,8 @@ class EspressoGenerator
     [action_file, action]
   end
 
-  def fail msg
-    o msg
+  def fail msg = nil
+    o(msg) if msg
     throw :exception_catching_symbol, false
   end
 

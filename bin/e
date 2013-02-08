@@ -14,42 +14,44 @@ operation = $*[0]
 if operation =~ /\Ag/i
   generator  = EspressoGenerator.new(Dir.pwd)
   unit = operation.sub(/\Ag\W?/i, '')
+  setups, string_setups = generator.extract_setups(*$*)
+  if setups
+    if unit =~ /\Ap/i
+      generator.generate :project, $*[1], setups
+    else
+      generator.in_app_folder?
+      require generator.boot_file
 
-  if unit =~ /\Ap/i
-    generator.generate :project, $*[1], $*[2]
-  else
-    generator.in_app_folder?
-    require generator.boot_file
-
-    if unit =~ /\Ac/i
-      if unit =~ /s\Z/i # generate multiple controllers
-        $*[1..-1].each {|u| puts %x["#{$0}" g:c #{u}]}
-      else
-        if generator.generate(:controller, $*[1], $*[2])
-          puts %x["#{$0}" g:v #{$*[1]} index]
+      if unit =~ /\Ac/i
+        if unit =~ /s\Z/i # generate multiple controllers
+          $*[1..-1].each {|u| puts %x["#{$0}" g:c #{u} #{string_setups}]}
+        else
+          if generator.generate(:controller, $*[1], $*[2], setups)
+            puts %x["#{$0}" g:v #{$*[1]} index]
+          end
         end
       end
-    end
 
-    if unit =~ /\Ar/i
-      if unit =~ /s\Z/i # generate multiple routes
-        $*[2..-1].each {|u| puts %x["#{$0}" g:r #{$*[1]} #{u}]}
-      else
-        if generator.generate(:route, $*[1], $*[2], *$*[3..-1])
-          puts %x["#{$0}" g:v #{$*[1]} #{$*[2]}]
+      if unit =~ /\Ar/i
+        if unit =~ /s\Z/i # generate multiple routes
+          $*[2..-1].each {|u| puts %x["#{$0}" g:r #{$*[1]} #{u}]}
+        else
+          if generator.generate(:route, $*[1], $*[2], *$*[3..-1])
+            puts %x["#{$0}" g:v #{$*[1]} #{$*[2]}]
+          end
         end
       end
-    end
 
-    if unit =~ /\Av/i
-      generator.generate :view, $*[1], $*[2]
-    end
+      if unit =~ /\Av/i
+        generator.generate :view, $*[1], $*[2]
+      end
 
-    if unit =~ /\Am/i
-      if unit =~ /s\Z/i # generate multiple models
-        $*[1..-1].each {|u| puts %x["#{$0}" g:m #{u}]}
-      else
-        generator.generate :model, $*[1], $*[2]
+      if unit =~ /\Am/i
+        if unit =~ /s\Z/i # generate multiple models
+          $*[1..-1].each {|u| puts %x["#{$0}" g:m #{u}]}
+        else
+          generator.generate :model, $*[1], $*[2]
+        end
       end
     end
   end

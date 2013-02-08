@@ -14,6 +14,8 @@ require Cfg.base_path('database.rb')
 App = EspressoApp.new(:automount)
 App.controllers_setup do
   view_path 'base/views'
+  engine(Cfg[:engine]) if Cfg[:engine]
+  format(Cfg[:format]) if Cfg[:format]
 end
 
 App.assets_url 'assets'
