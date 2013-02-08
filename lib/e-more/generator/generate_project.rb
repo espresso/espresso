@@ -1,7 +1,5 @@
 class EspressoGenerator
 
-  private
-
   def generate_project name, setups = {}
 
     name.nil? || name.empty? && fail("Please provide project name via second argument")

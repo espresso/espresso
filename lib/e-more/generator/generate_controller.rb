@@ -1,6 +1,5 @@
 class EspressoGenerator
 
-  private
   def generate_controller name, route = nil, setups = {}
     route.is_a?(Hash) && (setups = route) && (route = nil)
 

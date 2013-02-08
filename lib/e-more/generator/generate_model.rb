@@ -1,6 +1,5 @@
 class EspressoGenerator
 
-  private
   def generate_model name, orm = nil
 
     name.nil? || name.empty? && fail("Please provide model name via second argument")

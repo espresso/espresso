@@ -1,6 +1,5 @@
 class EspressoGenerator
 
-  private
   def generate_route ctrl_name, name, args, setups = {}
 
     action_file, action = valid_action?(ctrl_name, name)

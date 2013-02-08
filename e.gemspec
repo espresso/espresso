@@ -17,7 +17,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'tilt', '~> 1.3'
 
   s.require_paths = ['lib']
-  s.files = Dir['**/*'].reject {|e| e =~ /\.(gem|lock)\Z/}
+  s.files = Dir['**/{*,.[a-z]*}'].reject {|e| e =~ /\.(gem|lock)\Z/}
   s.executables = ['e']
   
 end

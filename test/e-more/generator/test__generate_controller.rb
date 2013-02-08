@@ -1,5 +1,5 @@
 module EGeneratorTest__Ctrl
-  Spec.new self do
+  Spec.new self, :skip => true do
 
     project = 'App'
 

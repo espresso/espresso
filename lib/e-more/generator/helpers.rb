@@ -114,7 +114,7 @@ class EspressoGenerator
       o '!!! %s !!!' % msg
       o
     end
-    throw :exception_catching_symbol, false
+    exit 1
   end
 
   def o msg = ''

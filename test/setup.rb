@@ -10,6 +10,8 @@ $:.unshift File.expand_path('../../lib', __FILE__)
 require 'e'
 require 'e-ext'
 require 'e-more/generator'
-require './test/support/http_spec_helper'
+
+Dir['./test/support/*.rb'].each {|f| require f}
 
 GENERATOR__DST_ROOT = File.expand_path('../e-more/generator/sandbox', __FILE__) + '/'
+GENERATOR__BIN = File.expand_path('../../bin/e', __FILE__)

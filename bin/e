@@ -20,7 +20,7 @@ if operation =~ /\Ag/i
   if args
     if unit =~ /\Ap/i
       # generating project
-      if generator.generate(:project, args[0], setups)
+      if generator.generate_project(args[0], setups)
         # generating Index controller
         puts %x[cd "#{generator.dst_root + args[0]}" && e g:c Index]
       end
@@ -33,7 +33,7 @@ if operation =~ /\Ag/i
           args.each {|u| puts %x["#{$0}" g:c #{u} #{string_setups}]}
         else
           # generating controller
-          if generator.generate(:controller, args[0], args[1], setups)
+          if generator.generate_controller(args[0], args[1], setups)
             # generating index view(index route are generated automatically)
             puts %x["#{$0}" g:v #{args[0]} index]
           end
@@ -44,23 +44,24 @@ if operation =~ /\Ag/i
         if unit =~ /s\Z/i # generate multiple routes
           args[1..-1].each {|u| puts %x["#{$0}" g:r #{args[0]} #{u} #{string_setups}]}
         else
-          if generator.generate(:route, args[0], args[1], args[2..-1], setups)
+          if generator.generate_route(args[0], args[1], args[2..-1], setups)
             puts %x["#{$0}" g:v #{args[0]} #{args[1]}]
           end
         end
       end
 
       if unit =~ /\Av/i
-        generator.generate :view, args[0], args[1]
+        generator.generate_view(args[0], args[1])
       end
 
       if unit =~ /\Am/i
         if unit =~ /s\Z/i # generate multiple models
           args.each {|u| puts %x["#{$0}" g:m #{u}]}
         else
-          generator.generate :model, args[0], args[1]
+          generator.generate_model(args[0], args[1])
         end
       end
+
     end
   end
 end

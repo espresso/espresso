@@ -1,7 +1,5 @@
 class EspressoGenerator
 
-  private
-
   def generate_view ctrl_name, name
 
     action_file, action = valid_action?(ctrl_name, name)
