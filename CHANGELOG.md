@@ -1,6 +1,7 @@
 
 + 0.4 [not released yet] - First Stable Release
 
+  - Created a handy generator to easily generate projects, controllers, routes etc.
   - Path to templates are now resolved by controller name, not by base URL
   - Verbified actions has priority over verbless ones, regardless defining order
   - Removing Appetite dependency

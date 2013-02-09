@@ -9,6 +9,7 @@ module EGeneratorTest__Project
       Should 'create a basic project, without any setups' do
         %x[#{GENERATOR__BIN} g:p App]
         check {$?.exitstatus} == 0
+        is(File).directory? 'App'
 
         Should 'fail cause project already exists' do
           output = %x[#{GENERATOR__BIN} g:p App]
@@ -18,24 +19,35 @@ module EGeneratorTest__Project
       end
       cleanup
 
-      %w[activerecord data_mapper sequel].each do |orm|
-        Testing orm do
+      [
+        ['ActiveRecord', 'activerecord'],
+        ['DataMapper', 'data_mapper'],
+        ['Sequel', 'sequel']
+      ].each do |(o,g)|
+        Testing o do
 
-          %x[#{GENERATOR__BIN} g:p App orm:#{orm}]
+          %x[#{GENERATOR__BIN} g:p App orm:#{o}]
           check {$?.exitstatus} == 0
 
-          Ensure 'config.yml updated' do
-            expect {
-              File.read 'App/config/config.yml'
-            } =~ /orm\W+#{orm}/i
-          end
-          
-          Ensure 'Gemfile updated' do
-            expect {
-              File.read 'App/Gemfile'
-            } =~ /gem\W+#{orm}/i
-          end
+          Dir.chdir 'App' do
+            Ensure 'config.yml updated' do
+              expect {
+                File.read 'config/config.yml'
+              } =~ /orm\W+#{o}/i
+            end
+            
+            Ensure 'Gemfile updated' do
+              expect {
+                File.read 'Gemfile'
+              } =~ /gem\W+#{g}/i
+            end
 
+            Ensure 'database.rb updated' do
+              expect {
+                File.read 'base/database.rb'
+              } =~ /#{o}/
+            end
+          end
         end
         cleanup
       end
@@ -46,18 +58,20 @@ module EGeneratorTest__Project
           %x[#{GENERATOR__BIN} g:p App engine:#{engine} format:#{engine}]
           check {$?.exitstatus} == 0
 
-          Ensure 'config.yml updated' do
-            cfg = nil
-            expect {
-              cfg = File.read('App/config/config.yml')
-            } =~ /engine\W+#{engine}/i
-            expect { cfg } =~ /format\W+#{engine}/
-          end
-          
-          Ensure 'Gemfile updated' do
-            expect {
-              File.read('App/Gemfile')
-            } =~ /gem\W+#{engine}/im
+          Dir.chdir 'App' do
+            Ensure 'config.yml updated' do
+              cfg = nil
+              expect {
+                cfg = File.read 'config/config.yml'
+              } =~ /engine\W+#{engine}/i
+              expect { cfg } =~ /format\W+#{engine}/
+            end
+            
+            Ensure 'Gemfile updated' do
+              expect {
+                File.read 'Gemfile'
+              } =~ /gem\W+#{engine}/im
+            end
           end
 
         end

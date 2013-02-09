@@ -1,6 +1,7 @@
 class EspressoGenerator
 
   private
+
   def extract_setup input
     input.scan(/:(.+)/).flatten.last
   end
@@ -23,7 +24,7 @@ class EspressoGenerator
 
     o
     o "Updating #{unrootify file}"
-    o YAML.dump(data)
+    YAML.dump(data).split("\n").each {|l| o "+ " + l}
     o
     File.open(file, 'w') {|f| f << YAML.dump(cfg)}
   end
@@ -36,7 +37,7 @@ class EspressoGenerator
     gems, existing_gems = [], extract_gems(file)
 
     [data[:orm], data[:engine]].compact.each do |gem|
-      gemfile = @src_gemfiles + gem.to_s
+      gemfile = @src_path[:gemfiles] + gem.to_s
       if File.file?(gemfile)
         extract_gems(gemfile).each_pair do |g,d|
           gems << d unless existing_gems[g]
@@ -58,6 +59,17 @@ class EspressoGenerator
     end
   end
 
+  def update_db_setup_file setups, project_path
+    if orm = setups[:orm]
+      src = @src_path[:database] + orm.to_s + '.rb'
+      dst = project_path[:base]  + 'database.rb'
+      o
+      o "Writing #{unrootify dst}"
+      File.readlines(src).each {|l| o "+ " + l.chomp}
+      FileUtils.cp src, dst
+    end
+  end
+
   def extract_gems file
     File.readlines(file).select {|l| l.strip =~ /\Agem/}.inject({}) do |map,l|
       map.merge l.scan(/gem\W+([\w|\-]+)\W+/).flatten.first => l.strip
@@ -68,11 +80,11 @@ class EspressoGenerator
     return unless orm.is_a?(String)
     case
     when orm =~ /\Aa/i
-      'activerecord'
+      :ActiveRecord
     when orm =~ /\Ad/i
-      'data_mapper'
+      :DataMapper
     when orm =~ /\As/i
-      'sequel'
+      :Sequel
     end
   end
 

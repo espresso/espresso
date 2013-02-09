@@ -31,4 +31,4 @@ Dir[Cfg.helpers_path + '*.rb'].each {|file| require file}
   extra.each {|f| require f}
 end
 
-DataMapper.finalize if Cfg.db[:orm] == :DataMapper
+DataMapper.finalize if Cfg[:orm] == :DataMapper

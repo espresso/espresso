@@ -2,23 +2,23 @@ class EspressoGenerator
   include EspressoUtils
 
   INDENT = (" " * 2).freeze
-
-  attr_reader :dst_root, :boot_file
+  attr_reader :boot_file
   attr_accessor :logger
 
   def initialize dst_root, logger = nil
     src_root  = File.expand_path('../../../../app', __FILE__) + '/'
-    @src_base = (src_root + 'base/').freeze
-    @src_gemfiles = (src_root + 'Gemfiles/').freeze
+    @src_path = %w[base gemfiles database].inject({}) do |map,path|
+      map.merge path.to_sym => (src_root + path + '/').freeze
+    end.freeze
 
-    @dst_root  = (dst_root  + '/').freeze
+    @dst_root  = (dst_root  + '/').gsub(/\/+/, '/').freeze
     @boot_file = (@dst_root + 'base/boot.rb').freeze
     @logger    = logger || logger == false ? logger : Logger.new(STDOUT)
   end
 
   def dst_path *args
     opts = args.last.is_a?(Hash) ? args.pop : {}
-    root = dst_root + opts[:append].to_s + '/'
+    root = @dst_root + opts[:append].to_s + '/'
     paths = {
       :root => root,
       :base => File.join(root, 'base/'),
@@ -47,7 +47,7 @@ class EspressoGenerator
           string_setups << a
         else
           o 'WARN: invalid ORM provided - "%s"' % orm
-          o 'Supported ORMs: activerecord, data_mapper, sequel'
+          o 'Supported ORMs: ActiveRecord, DataMapper, Sequel'
           fail
         end
       when a =~ /\Ae(\w+)?:\w+/i
@@ -69,7 +69,7 @@ class EspressoGenerator
         args << a
       end
     end
-    [args, setups, string_setups.join(' ')]
+    [args.freeze, setups.freeze, string_setups.join(' ').freeze]
   end
 
 end

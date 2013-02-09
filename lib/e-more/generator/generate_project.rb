@@ -11,25 +11,26 @@ class EspressoGenerator
     o
     o '--- Generating "%s" project ---' % name
 
-    folders, files = Dir[@src_base + '**/*'].partition do |entry|
+    folders, files = Dir[@src_path[:base] + '**/*'].partition do |entry|
       File.directory?(entry)
     end
 
     FileUtils.mkdir(project_path[:root])
     o "  #{name}/"
     folders.each do |folder|
-      path = unrootify(folder, @src_base)
+      path = unrootify(folder, @src_path[:base])
       o "  `- #{path}"
       FileUtils.mkdir(project_path[:root] + path)
     end
 
     files.each do |file|
-      path = unrootify(file, @src_base)
+      path = unrootify(file, @src_path[:base])
       o "  Writing #{path}"
       FileUtils.cp(file, project_path[:root] + path)
     end
 
     update_config  setups, project_path
     update_gemfile setups, project_path
+    update_db_setup_file setups, project_path
   end
 end
