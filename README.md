@@ -186,10 +186,10 @@ To run tests on your hardware, clone Espresso Framework repository and execute `
 Test results:
 
     ---
-          Speed  Overhead  1ms-app  5ms-app  10ms-app  20ms-app  50ms-app  100ms-app
-      espresso  5518   0.18ms  847    193    98    49    19    9
-       sinatra  3629   0.28ms  783    189    97    49    19    9
-       rails  792  1.26ms  442    159    88    47    19    9
+             Speed    Overhead   1ms-app  5ms-app   10ms-app  20ms-app  50ms-app  100ms-app
+    espresso  5518      0.18ms   847      193       98        49        19        9
+     sinatra  3629      0.28ms   783      189       97        49        19        9
+       rails   792      1.26ms   442      159       88        47        19        9
     ---
 
 **1ms-app** shows your app speed when your actions takes **1ms** to run.<br>
