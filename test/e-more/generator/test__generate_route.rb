@@ -69,6 +69,22 @@ module EGeneratorTest__Route
             expect(code) =~ /def\s+seturgs\s+a\,\s+b\,\s+c=nil/m
           end
 
+          Should 'correctly convert route into file and method names' do
+            {
+              'bar/baz' => 'bar__baz',
+              'bar-baz' => 'bar___baz',
+              'bar.baz' => 'bar____baz',
+            }.each_pair do |route, meth|
+              Testing "#{route} to #{meth}" do
+                %x[#{GENERATOR__BIN} g:r Foo #{route}]
+                check {$?.exitstatus} == 0
+                file = "base/controllers/foo/#{meth}.rb"
+                is(File).file? file
+                expect(File.read file) =~ /def\s+#{meth}/
+              end
+            end
+          end
+
           Should 'inherit engine defined at controller generation' do
             %x[#{GENERATOR__BIN} g:c Pages e:Slim]
             check {$?.exitstatus} == 0
