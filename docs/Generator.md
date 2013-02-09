@@ -15,37 +15,36 @@ Or just omit that symbol, ex: `e gp ProjectName` to generate a project, `e gc Fo
 ## Basic project structure
 
 ```
-` - base/
-    ` - controllers/
-    ` - helpers/
-    ` - models/
-    ` - specs/
-    ` - views/
-    ` - boot.rb
-    ` - config.rb
-    ` - database.rb
+- base/
+  | - controllers/
+  | - helpers/
+  | - models/
+  | - specs/
+  | - views/
+  | - boot.rb
+  | - config.rb
+  ` - database.rb
 
-` - config/
-    ` - config.yml
-    ` - database.yml
+- config/
+  | - config.yml
+  ` - database.yml
 
-` - public/
-    ` - assets/
-        ` - app.css
-        ` - app.js
+- public/
+  | - assets/
+      | - app.css
+      ` - app.js
 
-` - tmp/
+- tmp/
 
-` - var/
-    ` - db/
-    ` - log/
-    ` - pid/
+- var/
+  | - db/
+  | - log/
+  ` - pid/
 
-` - Gemfile
-` - app.rb
-` - config.ru
+- Gemfile
+- app.rb
+- config.ru
 ```
-
 
 
 ## Generating Projects
@@ -58,9 +57,9 @@ $ e g:p App
 
 This will create `./App` folder with a ready-to-use application inside.
 
-Generated application will use `ERB` engine and wont be setup to use any `ORM`.
+Generated application will use `ERB` engine and wont be set to use any `ORM`.
 
-To generate an project that will use a custom engine, pass `engine` option:
+To generate an project that will use a custom engine, use `engine` option followed by a semicolon and the full, case sensitive name of desired engine:
 
 ```
 $ e g:p App engine:Slim
@@ -73,5 +72,69 @@ $ e g:p App e:Slim
 ```
 
 This will update your `Gemfile` by adding `slim` gem and also will update `config.yml` by adding `engine: :Slim`.
+
+
+If your project will use an `ORM`, use `orm` option followed by a semicolon and the name of desired `ORM`:
+
+```
+$ e g:p App orm:ActiveRecord
+```
+
+**Worth to note** that `ORM` name is case insensitive. You can even use only first letter.
+
+**Also** `orm` option can be shortened to first letter only:
+
+project using ActiveRecord:
+```
+$ e g:p App orm:a
+# or e g:p App orm:ar
+# or just e g:p App o:a
+```
+
+project using DataMapper:
+```
+$ e g:p App o:dm
+# or just e g:p App o:d
+```
+
+project using Sequel:
+```
+$ e g:p App o:sequel
+# or just e g:p App o:s
+```
+
+Generator also allow to specify [format](https://github.com/espresso/espresso/blob/master/docs/Routing.md#format) to be used by all controllers and actions.
+
+Ex: to make all actions to serve URLs ending in `.html`, use `format:html`:
+
+```
+$ e g:p App format:html
+```
+
+And of course as per other options, `format` can be shortened to first letter only:
+
+```
+$ e g:p App f:html
+```
+
+And of course you can pass multiple options:
+
+```
+$ e g:p App o:ar e:Slim f:html
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
