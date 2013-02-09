@@ -159,11 +159,16 @@ app.run
 ## MVC?
 
 
-Though you can create MVC applications by using Espresso Framework,
-it does not actually impose any design patterns.
+**Espresso does not impose any design patterns.**
 
-You are the creator and you are free to choose how to develop your app.
+You are free to create projects of any types using any design patterns.<br>
+Espresso wont stay in your way nor bombarding you with conventions.
 
+However, if you want to simplify the routine, you can use built-in generator.
+
+It will build a ready-to-use application and will to easily generate controllers, routes, models etc. from command line.
+
+**[More on Generator](https://github.com/espresso/espresso/blob/master/docs/Generator.md)**
 
 **[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
