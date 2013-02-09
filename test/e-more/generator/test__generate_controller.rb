@@ -18,7 +18,7 @@ module EGeneratorTest__Ctrl
         Dir.chdir 'App' do
           Context 'creating controllers' do
 
-            Should 'create a controller without route' do
+            Should 'create an unmapped controller' do
               %x[#{GENERATOR__BIN} g:c Foo]
               check {$?.exitstatus} == 0
               
@@ -29,7 +29,7 @@ module EGeneratorTest__Ctrl
               expect(File.read file) =~ /class\s+Foo\s+<\s+E[\n|\s]+def/m
             end
 
-            Should 'create a controller with route' do
+            Should 'create a mapped controller' do
               %x[#{GENERATOR__BIN} g:c Bar bar]
               check {$?.exitstatus} == 0
               
@@ -62,8 +62,21 @@ module EGeneratorTest__Ctrl
           end
         end
       end
+      cleanup
+
+      Should 'inherit engine defined at project generation' do
+        %x[#{GENERATOR__BIN} g:p App e:Slim]
+        check {$?.exitstatus} == 0
+        
+        Dir.chdir 'App' do
+          %x[#{GENERATOR__BIN} g:c Foo]
+          check {$?.exitstatus} == 0
+
+          is(File).file? 'base/views/foo/index.slim'
+        end
+      end
+      cleanup
     end
-    cleanup
 
   end
 end

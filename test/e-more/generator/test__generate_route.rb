@@ -61,6 +61,21 @@ module EGeneratorTest__Route
             expect(code) =~ /def\s+seturgs\s+a\,\s+b\,\s+c=nil/m
           end
 
+          Should 'inherit engine defined at controller generation' do
+            %x[#{GENERATOR__BIN} g:c Pages e:Slim]
+            check {$?.exitstatus} == 0
+
+            %x[#{GENERATOR__BIN} g:r Pages edit]
+            check {$?.exitstatus} == 0
+            is(File).file? 'base/views/pages/edit.slim'
+
+            And 'override it when explicitly given' do
+              %x[#{GENERATOR__BIN} g:r Pages create e:Haml]
+              check {$?.exitstatus} == 0
+              is(File).file? 'base/views/pages/create.haml'
+            end
+          end
+
         end
       end
       cleanup
