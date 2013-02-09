@@ -12,10 +12,18 @@ module EGeneratorTest__Route
     Dir.chdir GENERATOR__DST_ROOT do
       Testing do
 
+
         %x[#{GENERATOR__BIN} g:p App]
         check {$?.exitstatus} == 0
 
         Dir.chdir 'App' do
+          
+          Should 'fail with "controller does not exists"' do
+            output = %x[#{GENERATOR__BIN} g:r Foo bar]
+            check {$?.exitstatus} > 0
+            expect(output) =~ /controller does not exists/
+          end
+
           %x[#{GENERATOR__BIN} g:c Foo]
           check {$?.exitstatus} == 0
 
