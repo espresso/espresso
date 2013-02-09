@@ -37,7 +37,7 @@ class EspressoGenerator
     gems, existing_gems = [], extract_gems(file)
 
     [data[:orm], data[:engine]].compact.each do |gem|
-      gemfile = @src_path[:gemfiles] + gem.to_s
+      gemfile = @src_path[:gemfiles] + gem.to_s + '.rb'
       if File.file?(gemfile)
         extract_gems(gemfile).each_pair do |g,d|
           gems << d unless existing_gems[g]
