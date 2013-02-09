@@ -79,6 +79,22 @@ module EGeneratorTest__Route
         end
       end
       cleanup
+
+      Should 'inherit engine defined at project generation' do
+        %x[#{GENERATOR__BIN} g:p App e:Slim]
+        check {$?.exitstatus} == 0
+        
+        Dir.chdir 'App' do
+          %x[#{GENERATOR__BIN} g:c Foo]
+          check {$?.exitstatus} == 0
+
+          %x[#{GENERATOR__BIN} g:r Foo bar]
+          check {$?.exitstatus} == 0
+
+          is(File).file? 'base/views/foo/bar.slim'
+        end
+      end
+      cleanup
     end
   end
 end
