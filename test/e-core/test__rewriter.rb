@@ -149,14 +149,9 @@ module ECoreTest__Rewriter
     Testing :pass do
       name = rand(100000).to_s
       response = get '/pass_test_I/%s' % name
-      if RUBY_VERSION.to_f > 1.8
-        is([name, {'name' => name}].inspect).ok_body?
-      else
-        #returns 404 cause splat params does not work on E running on ruby1.8' do
-        is(last_response).not_found?
-        is('max params accepted: 0; params given: 1').current_body?
-      end
-
+      
+      is([name, {'name' => name}].inspect).ok_body?
+      
       name = rand(100000).to_s
       response = get '/pass_test_II/%s' % name
       is([name, {'name' => name}].to_s).ok_body?

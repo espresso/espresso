@@ -37,6 +37,12 @@ module EGeneratorTest__View
             check {$?.exitstatus} == 0
             is(File).file? 'base/views/foo/bar.erb'
           end
+
+          Should 'correctly convert route to template name' do
+            %x[#{GENERATOR__BIN} g:r Foo bar/baz]
+            check {$?.exitstatus} == 0
+            is(File).file? 'base/views/foo/bar__baz.erb'
+          end
         end
       end
       cleanup

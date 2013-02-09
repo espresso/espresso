@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.summary = 'e-%s' % version
   s.description = 'Scalable Framework aimed at Speed and Simplicity'
 
-  s.required_ruby_version = '>= 1.8.7'
+  s.required_ruby_version = '>= 1.9.2'
 
   s.add_dependency 'rack', '~> 1.5'
   s.add_dependency 'tilt', '~> 1.3'

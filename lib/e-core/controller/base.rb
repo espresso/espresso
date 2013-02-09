@@ -299,7 +299,7 @@ class << E
 
         container_setups.each_pair do |position, setups|
 
-          action_setups = setups.select do |(m,_)| # |(m)| does not work on 1.8
+          action_setups = setups.select do |(m)|
             m == :* || m == action ||
               (m.is_a?(Regexp) && action.to_s =~ m) ||
               (m.is_a?(String) && action_formats.include?(m)) ||

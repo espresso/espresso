@@ -81,12 +81,7 @@ module ECoreTest__Router
 
         r = get :one_or_two, :a1, :a2
 
-        if is_ruby19?
-          is(['a1', 'a2'].to_s).ok_body?
-        else
-          is(last_response).not_found?
-          is('max params accepted: 1; params given: 2').current_body?
-        end
+        is(['a1', 'a2'].to_s).ok_body?
       end
 
       It 'returns 404 cause no args provided' do
@@ -105,13 +100,9 @@ module ECoreTest__Router
       is(['a1'].to_s).ok_body?
 
       r = get :one_or_more, :a1, :a2, :a3, :etc
-      if is_ruby19?
-        is(['a1', 'a2', 'a3', 'etc'].to_s).ok_body?
-      else
-        #'return 404 cause trailing default params does not work on Appetite running on ruby1.8'
-        is(last_response).not_found?
-        is('max params accepted: 1; params given: 4').current_body?
-      end
+      
+      is(['a1', 'a2', 'a3', 'etc'].to_s).ok_body?
+      
     end
 
     Testing 'with any number of args' do
@@ -119,13 +110,9 @@ module ECoreTest__Router
       is([].to_s).ok_body?
 
       r = get :any, :number, :of, :args
-      if is_ruby19?
-        is(['number', 'of', 'args'].to_s).ok_body?
-      else
-        #'return 404 cause splat params does not work on Appetite running on ruby1.8' do
-        is(last_response).not_found?
-        is('max params accepted: 0; params given: 3').current_body?
-      end
+      
+      is(['number', 'of', 'args'].to_s).ok_body?
+
     end
 
     Ensure '`[]` and `route` works properly' do

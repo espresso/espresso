@@ -184,8 +184,7 @@ class EspressoApp
   def path_ok? path
     # comparing fixnums are much faster than comparing strings
     path.hash == (@empty_string_hash  ||= ''.hash ) || # replaces path.empty?
-      path[0..0].hash == (@slash_hash ||= '/'.hash)    # replaces path =~ /\A\//
-      # using path[0..0] instead of just path[0] for compatibility with ruby 1.8
+      path[0].hash == (@slash_hash ||= '/'.hash)       # replaces path =~ /\A\//
   end
 
   def mount_controllers!

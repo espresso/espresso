@@ -81,7 +81,7 @@ class << E
         (self.public_instance_methods(false)) +
         (@__e__alias_actions    || {}).keys   +
         (@__e__included_actions || [])
-      ).uniq.map(&:to_sym) # to_sym needed on 1.8
+      ).uniq
       
       if actions.empty?
         define_method :index do |*|
@@ -123,39 +123,30 @@ class << E
     action_name_to_route(action_name, path_rules).freeze
   end
 
-  if RESPOND_TO__PARAMETERS # ruby 1.9
-    # returning required parameters calculated by arity,
-    # and, if available, parameters list.
-    def action_parameters action
-      method = self.instance_method(action)
+  # returning required parameters calculated by arity
+  def action_parameters action
+    method = self.instance_method(action)
 
-      parameters = method.parameters
-      min, max = 0, parameters.size
+    parameters = method.parameters
+    min, max = 0, parameters.size
 
-      unlimited = false
-      parameters.each_with_index do |param, i|
+    unlimited = false
+    parameters.each_with_index do |param, i|
 
-        increment = param.first == :req
+      increment = param.first == :req
 
-        if (next_param = parameters.values_at(i+1).first)
-          increment = true if next_param[0] == :req
-        end
-
-        if param.first == :rest
-          increment = false
-          unlimited = true
-        end
-        min += 1 if increment
+      if (next_param = parameters.values_at(i+1).first)
+        increment = true if next_param[0] == :req
       end
-      max = nil if unlimited
-      [parameters.freeze, [min, max].freeze]
+
+      if param.first == :rest
+        increment = false
+        unlimited = true
+      end
+      min += 1 if increment
     end
-  else # ruby 1.8
-    def action_parameters action
-      method = self.instance_method(action)
-      min = max = (method.arity < 0 ? -method.arity - 1 : method.arity)
-      [nil, [min, max].freeze]
-    end
+    max = nil if unlimited
+    [parameters.freeze, [min, max].freeze]
   end
   
 end

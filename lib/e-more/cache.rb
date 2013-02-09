@@ -25,18 +25,11 @@ class EspressoApp
   # @note
   #   value is not stored if block returns false or nil
   #
-  if RUBY_VERSION.to_f >= 1.9
-    def cache key = nil, &proc
-      key = key ? (key.respond_to?(:join) ? key.join : key.to_s) : proc.source_location
-      cache_pool[key] || ( (val = proc.call) && (cache_pool[key] = val) )
-    end
-  else # ruby1.8
-    def cache key = nil, &proc
-      key = key ? (key.respond_to?(:join) ? key.join : key.to_s) : proc.to_s.split('@').last
-      cache_pool[key] || ( (val = proc.call) && (cache_pool[key] = val) )
-    end
+  def cache key = nil, &proc
+    key = key ? (key.respond_to?(:join) ? key.join : key.to_s) : proc.source_location
+    cache_pool[key] || ( (val = proc.call) && (cache_pool[key] = val) )
   end
-
+  
   # a simple way to manage stored cache.
   # any number of arguments(actually matchers) accepted.
   # matchers can be of String, Symbol or Regexp type. any other arguments ignored

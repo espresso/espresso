@@ -129,39 +129,31 @@ class E
         env[ENV__PATH_INFO]).to_s.split('/').reject(&:empty?).freeze
   end
 
-  if RESPOND_TO__PARAMETERS
-    # @example ruby 1.9+
-    #    def index id, status
-    #      action_params
-    #    end
-    #    # /100/active
-    #    #> {:id => '100', :status => 'active'}
-    def action_params
-      return @__e__action_params if @__e__action_params
+  # @example
+  #   def index id, status
+  #     action_params
+  #   end
+  #   # GET /100/active
+  #   # => {:id => '100', :status => 'active'}
+  #
+  def action_params
+    return @__e__action_params if @__e__action_params
 
-      action_params, given_params = {}, Array.new(action_params__array) # faster than dup
-      action_setup[:action_arguments].each_with_index do |type_name, index|
-        type, name = type_name
-        if type == :rest
-          action_params[name] = []
-          until given_params.size < (action_setup[:action_arguments].size - index)
-            action_params[name] << given_params.shift
-          end
-        else
-          action_params[name] = given_params.shift
+    action_params, given_params = {}, Array.new(action_params__array) # faster than dup
+    action_setup[:action_arguments].each_with_index do |type_name, index|
+      type, name = type_name
+      if type == :rest
+        action_params[name] = []
+        until given_params.size < (action_setup[:action_arguments].size - index)
+          action_params[name] << given_params.shift
         end
+      else
+        action_params[name] = given_params.shift
       end
-      @__e__action_params = EspressoUtils.indifferent_params(action_params).freeze
     end
-  else
-    # @example ruby 1.8
-    #    def index id, status
-    #      action_params
-    #    end
-    #    # /100/active
-    #    #> ['100', 'active']
-    alias action_params action_params__array
+    @__e__action_params = EspressoUtils.indifferent_params(action_params).freeze
   end
+
 
   # following methods are delegated to class
   %w[
