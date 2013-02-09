@@ -18,9 +18,6 @@ module EspressoConstants
   CONTENT_TYPE__DEFAULT      = 'text/html'.freeze
   CONTENT_TYPE__EVENT_STREAM = 'text/event-stream'.freeze
 
-  RESPOND_TO__PARAMETERS = method(methods.first).respond_to?(:parameters)
-  RESPOND_TO__SOURCE_LOCATION = proc {}.respond_to?(:source_location)
-
   STATUS__OK = 200
   STATUS__PERMANENT_REDIRECT = 301
   STATUS__REDIRECT = 302
