@@ -73,6 +73,7 @@ module EGeneratorTest__View
 
         end
       end
+      cleanup
     end
 
   end
