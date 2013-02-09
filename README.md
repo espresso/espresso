@@ -430,3 +430,14 @@ simply put them inside `cache` block.
 The result will be cached and returned on consequent requests.
 
 To clear cache, simply call `clear_cache!`
+
+## Contributing
+
+  - Fork Espresso repository
+  - optionally create a new branch
+  - make your changes
+  - submit a pull request
+
+
+### Author - [Silviu Rusu](https://github.com/slivu).  License - [MIT](https://github.com/espresso/espresso/blob/master/LICENSE).
+
