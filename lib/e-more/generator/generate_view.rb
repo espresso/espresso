@@ -18,11 +18,10 @@ class EspressoGenerator
 
     o '--- Generating "%s" view ---' % name
     if File.exists?(path)
-      File.directory?(path) ||
-        fail("#{unrootify path} should be a directory")
+      File.directory?(path) || fail("#{unrootify path} should be a directory")
     else
       o "Creating #{unrootify path}/"
-      FileUtils.mkdir(path)
+      FileUtils.mkdir_p(path)
     end
     file = File.join(path, action + ctrl_instance.engine_ext?)
     o "Touching #{unrootify file}"

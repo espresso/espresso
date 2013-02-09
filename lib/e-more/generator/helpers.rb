@@ -99,7 +99,7 @@ class EspressoGenerator
     File.directory?(ctrl_path) ||
       fail("#{name} controller does not exists. Please create it first")
 
-    ctrl = name.split('::').inject(Object) do |ns,c|
+    ctrl = name.split('::').map(&:to_sym).inject(Object) do |ns,c|
       ctrl_folder = unrootify(ctrl_path).sub(/\/+\Z/, '*')
       ns.const_defined?(c) || fail("#{ctrl_folder} exists but #{name} controller not defined.
         Please define it manually or delete #{ctrl_folder} and start over.")
@@ -116,7 +116,7 @@ class EspressoGenerator
     end
     action = action_name_to_route(name, path_rules)
     validate_action_name(action)
-    action_file = ctrl_path + action + '.rb'
+    action_file = ctrl_path + action + '_action.rb'
     [action_file, action]
   end
 

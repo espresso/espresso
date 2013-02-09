@@ -24,9 +24,9 @@ module EGeneratorTest__Ctrl
               
               dir = 'base/controllers/foo'
               is(File).directory? dir
-              file = dir + '.rb'
+              file = dir + '_controller.rb'
               is(File).file? file
-              expect(File.read file) =~ /class\s+Foo\s+<\s+E[\n|\s]+def/m
+              expect(File.read file) =~ /class\s+Foo\s+<\s+E\n/
             end
 
             Should 'create a mapped controller' do
@@ -35,9 +35,9 @@ module EGeneratorTest__Ctrl
               
               dir = 'base/controllers/bar'
               is(File).directory? dir
-              file = dir + '.rb'
+              file = dir + '_controller.rb'
               is(File).file? file
-              expect(File.read file) =~ /class\s+Bar\s+<\s+E[\n|\s]+map\s+\Wbar/m
+              expect(File.read file) =~ /map\s+\Wbar/m
             end
 
             Should 'create a controller with setups' do
@@ -46,17 +46,30 @@ module EGeneratorTest__Ctrl
               
               dir = 'base/controllers/baz'
               is(File).directory? dir
-              file = dir + '.rb'
+              file = dir + '_controller.rb'
               is(File).file? file
               code = File.read(file)
               expect(code) =~ /format\s+\Whtml/m
               expect(code) =~ /engine\s+:Slim/m
             end
 
-            Should 'fail with "already in use"' do
+            Should 'fail with "constant already in use"' do
               output = %x[#{GENERATOR__BIN} g:c Baz]
               check {$?.exitstatus} > 0
               expect(output) =~ /already in use/i
+            end
+
+            Should 'correctly handle namespaces' do
+              %x[#{GENERATOR__BIN} g:c A::B::C]
+              check {$?.exitstatus} == 0
+              dir = 'base/controllers/a/b/c'
+              is(File).directory? dir
+              file = dir + '_controller.rb'
+              is(File).file? file
+              code = File.read(file)
+              expect(code) =~ /module A/
+              expect(code) =~ /module B/
+              expect(code) =~ /class C < E/
             end
 
           end
@@ -73,6 +86,35 @@ module EGeneratorTest__Ctrl
           check {$?.exitstatus} == 0
 
           is(File).file? 'base/views/foo/index.slim'
+        end
+      end
+      cleanup
+
+      Should 'create multiple controllers' do
+        %x[#{GENERATOR__BIN} g:p App]
+        check {$?.exitstatus} == 0
+        
+        Dir.chdir 'App' do
+          %x[#{GENERATOR__BIN} g:cs A B C  X::Y::Z  e:Slim]
+          check {$?.exitstatus} == 0
+
+          %w[a b c].each do |c|
+            dir = "base/controllers/#{c}"
+            is(File).directory? dir
+            file = dir + "_controller.rb"
+            is(File).file? file
+            expect {File.read file} =~ /class #{c} < E/i
+            is(File).file? "base/views/#{c}/index.slim"
+          end
+
+          And 'yet behave well with namespaces' do
+            dir = "base/controllers/x/y/z"
+            is(File).directory? dir
+            file = dir + "_controller.rb"
+            is(File).file? file
+            is(File).file? "base/views/x/y/z/index.slim"
+          end
+
         end
       end
       cleanup

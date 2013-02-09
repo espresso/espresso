@@ -21,14 +21,12 @@ end
 App.assets_url 'assets'
 App.assets.prepend_path Cfg.assets_path
 
-Dir[Cfg.helpers_path + '*.rb'].each {|file| require file}
+[Cfg.helpers_path, Cfg.models_path].each do |path|
+  Dir[path + '**/*.rb'].each {|f| require f}
+end
 
-[Cfg.models_path, Cfg.controllers_path].each do |path|
-  extra = Dir[path + '*.rb'].inject([]) do |files,file|
-    require file
-    files.concat Dir[file.sub(/(\.rb)\Z/, '/*\1')]
-  end
-  extra.each {|f| require f}
+%w[**/*_controller.rb **/*_action.rb].each do |matcher|
+  Dir[Cfg.controllers_path + matcher].each {|f| require f}
 end
 
 DataMapper.finalize if Cfg[:orm] == :DataMapper

@@ -124,11 +124,39 @@ $ e g:p App o:ar e:Slim f:html
 ```
 
 
+## Generating Controllers
+
+As simple as:
+
+```
+$ e g:c Foo
+```
+
+This will create "base/controllers/foo/" folder and "base/controllers/foo.rb" file.
+
+The file will contain any controller's setups and the `index` action.
+
+The folder is meant to hold any other actions.
+
+By default the controller will be mapped to its underscored name: Foo to /foo, FooBar to /foo_bar, Foo::Bar to /foo/bar etc.
 
 
 
+When generating a controller without any setups, it will use project-wide ones(passed at project generation), if any.
 
+To generate a controller with custom setups, pass them as options:
 
+```
+$ e g:c Foo e:Haml
+```
+
+This will create a controller that will use `Haml` engine.
+
+Another option is [format](https://github.com/espresso/espresso/blob/master/docs/Routing.md#format):
+
+```
+$ e g:c Foo f:html
+```
 
 
 

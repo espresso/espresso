@@ -1,23 +1,22 @@
 class EspressoGenerator
 
-  def generate_model name, orm = nil
+  def generate_model name, setups = {}
 
     name.nil? || name.empty? && fail("Please provide model name via second argument")
     before, model_name, after = namespace_to_source_code(name)
     
-    orm ||= Cfg[:orm]
-
-    superclass = ''
-    orm && orm =~ /\Aa/i && superclass = ' < ActiveRecord::Base'
-    orm && orm =~ /\As/i && superclass = ' < Sequel::Model'
-
-    insertions = []
-    if orm && orm =~ /\Ad/i
-      insertions << 'include DataMapper::Resource'
-      insertions << INDENT
-      insertions <<'property :id, Serial'
+    superclass, insertions = '', []
+    if orm = setups[:orm] || Cfg[:orm]
+      update_gemfile :orm => orm
+      orm =~ /\Aa/i && superclass = ' < ActiveRecord::Base'
+      orm =~ /\As/i && superclass = ' < Sequel::Model'
+      if orm =~ /\Ad/i
+        insertions << 'include DataMapper::Resource'
+        insertions << ''
+        insertions <<'property :id, Serial'
+      end
     end
-    insertions << INDENT
+    insertions << ''
 
     source_code, i = [], INDENT * before.size
     before.each {|s| source_code << s}
@@ -36,8 +35,13 @@ class EspressoGenerator
     
     o
     o '--- Generating "%s" model ---' % name
-    o "Creating #{unrootify path}/"
-    FileUtils.mkdir(path)
+    dir = File.dirname(path)
+    if File.exists?(dir)
+      File.directory?(dir) || fail("#{unrootify dir} should be a directory")
+    else
+      o "Creating #{unrootify dir}/"
+      FileUtils.mkdir_p(dir)
+    end
     file = path + '.rb'
     o "Writing  #{unrootify file}"
     o source_code

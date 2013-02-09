@@ -9,6 +9,8 @@ class EspressoGenerator
     source_code, i = [], INDENT * before.size
     before.each {|s| source_code << s}
     source_code << "#{i}class #{ctrl_name} < E"
+    source_code << "#{i + INDENT}# put here controller-wide setups"
+
     if route
       source_code << "#{i + INDENT}map '#{route}'"
     end
@@ -20,11 +22,7 @@ class EspressoGenerator
       source_code << "#{i + INDENT}format '#{format}'"
     end
     source_code << INDENT
-
-    ["def index", INDENT + "render", "end"].each do |line|
-      source_code << (i + INDENT + line.to_s)
-    end
-
+    
     source_code << "#{i}end"
     after.each  {|s| source_code << s}
     source_code = source_code.join("\n")
@@ -34,8 +32,8 @@ class EspressoGenerator
     o
     o '--- Generating "%s" controller ---' % name
     o "Creating #{unrootify path}/"
-    FileUtils.mkdir(path)
-    file = path + '.rb'
+    FileUtils.mkdir_p(path)
+    file = path + '_controller.rb'
     o "Writing  #{unrootify file}"
     o source_code
     File.open(file, 'w') {|f| f << source_code}

@@ -34,8 +34,8 @@ if operation =~ /\Ag/i
         else
           # generating controller
           if generator.generate_controller(args[0], args[1], setups)
-            # generating index view(index route are generated automatically)
-            puts %x["#{$0}" g:v #{args[0]} index]
+            # generating index route
+            puts %x["#{$0}" g:r #{args[0]} index]
           end
         end
       end
@@ -56,9 +56,9 @@ if operation =~ /\Ag/i
 
       if unit =~ /\Am/i
         if unit =~ /s\Z/i # generate multiple models
-          args.each {|u| puts %x["#{$0}" g:m #{u}]}
+          args.each {|u| puts %x["#{$0}" g:m #{u} #{string_setups}]}
         else
-          generator.generate_model(args[0], args[1])
+          generator.generate_model(args[0], setups)
         end
       end
 

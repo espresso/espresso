@@ -11,6 +11,7 @@ class EspressoGenerator
     source_code, i = [], '  ' * before.size
     before.each {|s| source_code << s}
     source_code << "#{i}class #{ctrl_name}"
+    source_code << "#{i + INDENT}# put here action-specific setups"
 
     if format = setups[:format]
       source_code << "#{i + INDENT}format_for :#{action}, '#{format}'"

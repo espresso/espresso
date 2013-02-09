@@ -31,25 +31,25 @@ module EGeneratorTest__Route
             %x[#{GENERATOR__BIN} g:r Foo bar]
             check {$?.exitstatus} == 0
 
-            file = 'base/controllers/foo/bar.rb'
+            file = 'base/controllers/foo/bar_action.rb'
             is(File).file? file
-            expect(File.read file) =~ /class\s+Foo[\n|\s]+def\s+bar\n/m
+            expect(File.read file) =~ /def\s+bar\n/
           end
 
           Should 'create a route with args' do
             %x[#{GENERATOR__BIN} g:r Foo argued a, b, c=nil]
             check {$?.exitstatus} == 0
 
-            file = 'base/controllers/foo/argued.rb'
+            file = 'base/controllers/foo/argued_action.rb'
             is(File).file? file
-            expect(File.read file) =~ /class\s+Foo[\n|\s]+def\s+argued\s+a\,\s+b\,\s+c=nil/m
+            expect(File.read file) =~ /def\s+argued\s+a\,\s+b\,\s+c=nil\n/
           end
           
           Should 'create a route with setups' do
             %x[#{GENERATOR__BIN} g:r Foo setuped engine:Slim format:html]
             check {$?.exitstatus} == 0
 
-            file = 'base/controllers/foo/setuped.rb'
+            file = 'base/controllers/foo/setuped_action.rb'
             is(File).file? file
             code = File.read file
             expect(code) =~ /format_for\s+:setuped\,\s+\Whtml/
@@ -61,7 +61,7 @@ module EGeneratorTest__Route
             %x[#{GENERATOR__BIN} g:r Foo seturgs a, b, c=nil engine:Slim format:html]
             check {$?.exitstatus} == 0
 
-            file = 'base/controllers/foo/seturgs.rb'
+            file = 'base/controllers/foo/seturgs_action.rb'
             is(File).file? file
             code = File.read file
             expect(code) =~ /format_for\s+:seturgs\,\s+\Whtml/
@@ -78,7 +78,7 @@ module EGeneratorTest__Route
               Testing "#{route} to #{meth}" do
                 %x[#{GENERATOR__BIN} g:r Foo #{route}]
                 check {$?.exitstatus} == 0
-                file = "base/controllers/foo/#{meth}.rb"
+                file = "base/controllers/foo/#{meth}_action.rb"
                 is(File).file? file
                 expect(File.read file) =~ /def\s+#{meth}/
               end
@@ -116,6 +116,28 @@ module EGeneratorTest__Route
           check {$?.exitstatus} == 0
 
           is(File).file? 'base/views/foo/bar.slim'
+        end
+      end
+      cleanup
+
+      Should 'create multiple routes' do
+        %x[#{GENERATOR__BIN} g:p App]
+        check {$?.exitstatus} == 0
+        
+        Dir.chdir 'App' do
+          %x[#{GENERATOR__BIN} g:c Foo]
+          check {$?.exitstatus} == 0
+          
+          %x[#{GENERATOR__BIN} g:rs Foo a b c e:Slim]
+          check {$?.exitstatus} == 0
+
+          %w[a b c].each do |c|
+            file = "base/controllers/foo/#{c}_action.rb"
+            is(File).file? file
+            code = File.read file
+            expect {code} =~ /class Foo\n/i
+            is(File).file? "base/views/foo/#{c}.slim"
+          end
         end
       end
       cleanup

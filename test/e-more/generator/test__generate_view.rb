@@ -43,6 +43,15 @@ module EGeneratorTest__View
             check {$?.exitstatus} == 0
             is(File).file? 'base/views/foo/bar__baz.erb'
           end
+
+          Should 'correctly handle namespaces' do
+            %x[#{GENERATOR__BIN} g:c A::B::C]
+            check {$?.exitstatus} == 0
+            dir = 'base/views/a/b/c'
+            is(File).directory? dir
+            file = dir + '/index.erb'
+            is(File).file? file
+          end
         end
       end
       cleanup
