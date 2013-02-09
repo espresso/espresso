@@ -46,7 +46,7 @@ namespace :test do
   end
 
   task :generator do
-    run_test(/EGeneratorTest__Mod/, :Generator)
+    run_test(/EGeneratorTest/, :Generator)
   end
 
   task :view do
