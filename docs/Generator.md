@@ -80,7 +80,7 @@ If your project will use an `ORM`, use `orm` option followed by a semicolon and 
 $ e g:p App orm:ActiveRecord
 ```
 
-**Worth to note** that `ORM` name is case insensitive. You can even use only first letter.
+**Worth to note** that `ORM` name are case insensitive. You can even use only first letter.
 
 **Also** `orm` option can be shortened to first letter only:
 
@@ -107,7 +107,7 @@ $ e g:p App o:sequel
 $ e g:p App o:s
 ```
 
-Generator also allow to specify [format](https://github.com/espresso/espresso/blob/master/docs/Routing.md#format) to be used by all controllers and actions.
+Generator also allow to specify [format](https://github.com/espresso/espresso/blob/master/docs/Routing.md#format) to be used by all controllers / actions.
 
 Ex: to make all actions to serve URLs ending in `.html`, use `format:html`:
 
