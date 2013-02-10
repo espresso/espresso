@@ -87,20 +87,24 @@ $ e g:p App orm:ActiveRecord
 project using ActiveRecord:
 ```
 $ e g:p App orm:a
-# or e g:p App orm:ar
-# or just e g:p App o:a
+# or
+$ e g:p App orm:ar
+# or just
+$ e g:p App o:a
 ```
 
 project using DataMapper:
 ```
 $ e g:p App o:dm
-# or just e g:p App o:d
+# or just
+$ e g:p App o:d
 ```
 
 project using Sequel:
 ```
 $ e g:p App o:sequel
-# or just e g:p App o:s
+# or just
+$ e g:p App o:s
 ```
 
 Generator also allow to specify [format](https://github.com/espresso/espresso/blob/master/docs/Routing.md#format) to be used by all controllers and actions.
@@ -136,14 +140,19 @@ This will create "base/controllers/foo/" folder and "base/controllers/foo_contro
 
 The file will contain controller's setups and the folder will contain controller's actions.
 
+### Map
+
 By default the controller will be mapped to its underscored name, that's it, "Foo" to "/foo", "FooBar" to "/foo_bar", "Foo::Bar" to "/foo/bar" etc.
 
 To generate a controller mapped to a custom location, pass the route using the `route` option:
 
-```ruby
-$ e g:c Foo route:bar
-# of just e g:c Foo r:bar
 ```
+$ e g:c Foo route:bar
+# or just
+$ e g:c Foo r:bar
+```
+
+### Setups
 
 When generating a controller without any setups, it will use project-wide ones(passed at project generation), if any.
 
@@ -160,6 +169,58 @@ Another option is [format](https://github.com/espresso/espresso/blob/master/docs
 ```
 $ e g:c Foo f:html
 ```
+
+### Multiple
+
+When you need to generate multiple controllers at once, use `controllers`(or `cs`) notation:
+
+```
+$ e g:controllers A B C
+# or just
+$ e g:cs A B C
+```
+
+This will generate 3 controllers without any setups.
+
+Any passed setups will apply to all generated controllers:
+
+```
+$ e g:cs A B C e:Haml 
+```
+
+### Namespaces
+
+When you need a namespaced controller, pass its name as is:
+
+```
+$ e g:c Foo::Bar
+```
+
+This will generate `Foo` module with `Bar` class inside:
+
+```ruby
+module Foo
+  class Bar
+    # ...
+  end
+end
+``` 
+
+**Worth to note** that `Bar` controller will be mapped to "/foo/bar" URL.<br>
+To map it to another url, use `route` option as shown above.
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
