@@ -41,6 +41,16 @@ App.run
 
 # Tutorial
 
+<h3>
+Use 
+<a href="Generator.md">Generator</a>
+to generate: 
+<a href="https://github.com/espresso/espresso/blob/master/docs/Generator.md#generating-projects">Projects</a> / 
+<a href="https://github.com/espresso/espresso/blob/master/docs/Generator.md#generating-controllers">Controllers</a> / 
+<a href="https://github.com/espresso/espresso/blob/master/docs/Generator.md#generating-routes">Routes</a> / 
+<a href="https://github.com/espresso/espresso/blob/master/docs/Generator.md#generating-models">Models</a>
+</h3>
+
 ### Intro
 
 [Actions](https://github.com/espresso/espresso/blob/master/docs/Intro.md#actions) |
@@ -48,10 +58,6 @@ App.run
 [Slices](https://github.com/espresso/espresso/blob/master/docs/Intro.md#slices) |
 [MVC?](https://github.com/espresso/espresso/blob/master/docs/Intro.md#mvc) |
 [Models?](https://github.com/espresso/espresso/blob/master/docs/Intro.md#models)
-
-### Generator
-
-
 
 ### Routing
 
