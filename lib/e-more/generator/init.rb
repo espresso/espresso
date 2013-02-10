@@ -65,6 +65,11 @@ class EspressoGenerator
           setups[:format] = format
           string_setups << a
         end
+      when a =~ /\Ar(\w+)?:/
+        if route = extract_setup(a)
+          setups[:route] = route
+          string_setups << a
+        end
       else
         args << a
       end

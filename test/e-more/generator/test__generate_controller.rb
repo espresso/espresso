@@ -30,7 +30,7 @@ module EGeneratorTest__Ctrl
             end
 
             Should 'create a mapped controller' do
-              %x[#{GENERATOR__BIN} g:c Bar bar]
+              %x[#{GENERATOR__BIN} g:c Bar r:bar]
               check {$?.exitstatus} == 0
               
               dir = 'base/controllers/bar'

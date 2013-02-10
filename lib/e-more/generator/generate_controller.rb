@@ -1,7 +1,6 @@
 class EspressoGenerator
 
-  def generate_controller name, route = nil, setups = {}
-    route.is_a?(Hash) && (setups = route) && (route = nil)
+  def generate_controller name, setups = {}
 
     name.nil? || name.empty? && fail("Please provide controller name via second argument")
     before, ctrl_name, after = namespace_to_source_code(name)
@@ -11,7 +10,7 @@ class EspressoGenerator
     source_code << "#{i}class #{ctrl_name} < E"
     source_code << "#{i + INDENT}# put here controller-wide setups"
 
-    if route
+    if route = setups[:route]
       source_code << "#{i + INDENT}map '#{route}'"
     end
     if engine = setups[:engine]

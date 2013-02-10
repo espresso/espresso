@@ -132,15 +132,18 @@ As simple as:
 $ e g:c Foo
 ```
 
-This will create "base/controllers/foo/" folder and "base/controllers/foo.rb" file.
+This will create "base/controllers/foo/" folder and "base/controllers/foo_controller.rb" file.
 
-The file will contain any controller's setups and the `index` action.
+The file will contain controller's setups and the folder will contain controller's actions.
 
-The folder is meant to hold any other actions.
+By default the controller will be mapped to its underscored name, that's it, "Foo" to "/foo", "FooBar" to "/foo_bar", "Foo::Bar" to "/foo/bar" etc.
 
-By default the controller will be mapped to its underscored name: Foo to /foo, FooBar to /foo_bar, Foo::Bar to /foo/bar etc.
+To generate a controller mapped to a custom location, pass the route using the `route` option:
 
-
+```ruby
+$ e g:c Foo route:bar
+# of just e g:c Foo r:bar
+```
 
 When generating a controller without any setups, it will use project-wide ones(passed at project generation), if any.
 

@@ -33,7 +33,7 @@ if operation =~ /\Ag/i
           args.each {|u| puts %x["#{$0}" g:c #{u} #{string_setups}]}
         else
           # generating controller
-          if generator.generate_controller(args[0], args[1], setups)
+          if generator.generate_controller(args[0], setups)
             # generating index route
             puts %x["#{$0}" g:r #{args[0]} index]
           end
