@@ -207,11 +207,96 @@ end
 ``` 
 
 **Worth to note** that `Bar` controller will be mapped to "/foo/bar" URL.<br>
-To map it to another url, use `route` option as shown above.
+To map it to another location, use `route` option as shown above.
 
+## Generating Routes
 
+As simple as:
 
+```
+$ e g:route Foo bar
+# or just
+$ e g:r Foo bar
+```
 
+where `Foo` is the controller name and `bar` is the route.
+
+This will create "base/controllers/foo/bar_action.rb" and "base/views/foo/bar.erb" files.
+
+### Mapping
+
+You can provide method names or the route itself:
+
+```
+$ e g:r Forum posts/latest
+```
+
+This will create `posts__latest` method in "base/controllers/forum/posts__latest_action.rb" file and the "base/views/forum/posts__latest.erb" template file.
+
+See [more details on actions mapping](https://github.com/espresso/espresso/blob/master/docs/Routing.md#action-mapping).
+
+### Setups
+
+Setups provided at route generation will be effective only on generated route:
+
+```
+$ e g:c Foo e:Haml
+$ e g:r Foo bar e:Slim
+```
+
+All actions of `Foo` controller, except `bar`, will use `Haml` engine.<br>
+`bar` action will use `Slim` engine instead.
+
+### Arguments
+
+If generated route are supposed to accept some arguments, simply pass them after route name:
+
+```
+$ e g:r Foo bar a b=nil
+```
+
+will result in:
+
+```ruby
+class Foo
+
+  def bar a, b=nil
+  end
+end
+```
+
+**Worth to note** that any setups can be provided alongside arguments, they wont clash:
+
+```
+$ e g:r Foo bar a b=nil e:Haml f:html
+```
+
+will result in:
+
+```ruby
+class Foo
+  
+  format_for :bar, 'html'
+  before :bar do
+    engine :Haml
+  end
+
+  def bar a, b=nil
+  end
+end
+```
+
+### Multiple
+
+To generate multiple routes at once use `routes` or `rs` notation:
+
+```
+$ e g:rs Foo a b c
+```
+
+this will create 3 routes and 3 views.
+
+**Worth to note** that any provided setups will apply on all generated actions. **Not** the same about arguments, they will be interpreted just like action names, so do not pass any arguments when generating multiple routes.
 
 
 
