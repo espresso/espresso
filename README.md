@@ -43,7 +43,7 @@ App.run
 
 <h3>
 Use 
-<a href="Generator.md">Generator</a>
+<a href="docs/Generator.md">Generator</a>
 to generate: 
 <a href="https://github.com/espresso/espresso/blob/master/docs/Generator.md#generating-projects">Projects</a> / 
 <a href="https://github.com/espresso/espresso/blob/master/docs/Generator.md#generating-controllers">Controllers</a> / 
