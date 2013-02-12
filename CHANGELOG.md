@@ -1,5 +1,5 @@
 
-+ 0.4 [not released yet] - First Stable Release
++ 0.4 [Feb 11 2013] - First Stable Release
 
   - Created a handy generator to easily generate projects, controllers, routes etc.
   - Path to templates are now resolved by controller name, not by base URL
