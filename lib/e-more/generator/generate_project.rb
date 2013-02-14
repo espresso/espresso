@@ -11,7 +11,7 @@ class EspressoGenerator
     o
     o '--- Generating "%s" project ---' % name
 
-    folders, files = Dir[@src_path[:base] + '**/*'].partition do |entry|
+    folders, files = Dir.glob(@src_path[:base] + '**/{*,.pryrc}').partition do |entry|
       File.directory?(entry)
     end
 
