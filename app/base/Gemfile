@@ -2,6 +2,7 @@ source :rubygems
 
 group :development do
   # development environment gems
+  gem 'pry'
 end
 
 group :test do
