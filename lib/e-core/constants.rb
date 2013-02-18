@@ -50,6 +50,7 @@ module EspressoConstants
   HEADER__EXPIRES       = 'Expires'.freeze
   HEADER__CONTENT_DISPOSITION = 'Content-Disposition'.freeze
   HEADER__LOCATION      = 'Location'.freeze
+  HEADER__TRANSFER_ENCODING = 'Transfer-Encoding'.freeze
 
   RACK__WEBSOCKET = 'rack.websocket'.freeze
 end

@@ -43,6 +43,10 @@ class E
   end
   define_setup_method :charset
 
+  def transfer_encoding encoding
+    response[HEADER__TRANSFER_ENCODING] = encoding
+  end
+
   begin # authorization related methods
 
     # @example restricting all actions by using Basic authorization:

@@ -40,7 +40,7 @@ module ECoreTest__Pass
 
       def get_invoke action, key, val
         s,h,b = invoke(InnerApp, action.to_sym, key, val)
-        [s, b.body].join('/')
+        [s, b.first].join('/')
       end
 
       def get_fetch action, key, val
