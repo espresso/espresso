@@ -1,5 +1,11 @@
 
-+ 0.4 [Feb 11 2013] - First Stable Release
++ 0.4.1 [Feb 18 2013]
+
+  - support for various streaming backends - [#bd844acf](https://github.com/espresso/espresso/commit/bd844acf)
+  - view_prefix are now defaulted to base_url rather than to controller's name - [#63b516f2](https://github.com/espresso/espresso/commit/63b516f2b7060aa1df566bf6137dc4de2700bdc3)
+  - added transfer_encoding setup - [#e6f4805f4](https://github.com/espresso/espresso/commit/e6f4805f478050df9a7a1206e7ed8ae9b94da039)
+
++ 0.4.0 [Feb 11 2013] - First Stable Release
 
   - Created a handy generator to easily generate projects, controllers, routes etc.
   - Path to templates are now resolved by controller name, not by base URL

@@ -1,4 +1,17 @@
-#### Note: Streaming in Espresso is working only with [Reel](https://github.com/celluloid/reel) web server of version 0.3 and up
+#### Note: Streaming in Espresso is working only with Thin, Rainbows! and [Reel(0.3 and up)](https://github.com/celluloid/reel) web-servers.
+
+By default Espresso will use `EventMachine` for streaming.
+
+If you are using Reel web server, you should instruct Espresso to use `Celluloid` backend.
+
+This is done via `streaming_backend` method at app level:
+
+```ruby
+app = EspressoApp.new do
+  streaming_backend :Celluloid
+  # ...
+end
+```
 
 ## Server-Sent Events
 
@@ -18,19 +31,12 @@ class App < E
   map '/'
   
   def subscribe
-    event_stream do |stream|
-      stream.data 'some string' # will set #wall's HTML to 'some string'
+    stream :keep_open do |stream|
+      stream << "data: some string\n\n" # will set #wall's HTML to 'some string'
     end
   end
 end
 ```
-
-Other stream helpers:
-
-  - event
-  - retry
-  - id
-
 
 <pre lang="html">
 &lt;script type=&quot;text/javascript&quot;&gt;
@@ -43,39 +49,22 @@ evs.addEventListener('time', function(e) {
 
 ```ruby
 def subscribe
-  event_stream do |stream|
-    stream.event 'time'
-    stream.data  Time.now.to_s # will set #time's HTML to current time
-  end
-end
-```
-
-Writing to stream directly:
-
-```ruby
-def some_action
-  event_stream do |stream|
+  stream :keep_open do |stream|
     stream << "event: time\n"
-    stream << "data:  #{Time.now}\n\n"
+    stream << "data: #{Time.now}\n\n" # will set #time's HTML to current time
   end
 end
 ```
 
-Using it without `event_stream` helper:
+### [Real-world Example #1](https://github.com/espresso/espresso-examples/tree/master/eventsource-chat)
 
-
-```ruby
-def some_action
-  response.body = Reel::EventStream.new do |stream|
-    # write to stream directly or via stream helpers
-  end
-end
-```
+### [Real-world Example #2](https://github.com/espresso/espresso-examples/tree/master/calendar/app)
 
 **[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
-
 ## WebSockets
+
+For now, WebSockets works out-of-the-box with Reel web-server only.
 
 As easy as:
 
@@ -105,8 +94,9 @@ def subscribe
 end
 ```
 
-**[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
+### [Real-world Example](https://github.com/espresso/espresso-examples/tree/master/websocket-chat)
 
+**[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
 ## Chunked Responses
 
@@ -121,20 +111,18 @@ for the recipient to verify that it has received the full message.
 
 So, this is useful when your body is not yet ready in full and you want to start sending it by chunks.
 
-You should not worry about data size/encoding, everything is done under-the-hood by Espresso.
-
 Here is an example that will release the response instantly and then send body by chunks:
 
 ```ruby
 def some_heavy_action
-  chunked_stream do |socket|
+  stream do |socket|
     ExtractDataFromDBOrSomePresumablySlowAPI.each do |data|
-      socket << data.to_s
+      socket << data.bytesize.to_s(16) + "\r\n"
+      socket << data + "\r\n"
     end
-    socket.finish # close it, otherwise the browser will waiting for data forever
+    socket << "0\r\n\r\n" # close it, otherwise the browser will wait for data forever
   end
 end
 ```
 
-Please make sure to do `socket.finish` after all your data sent.
-
+### [Real-world Example](https://github.com/espresso/espresso-examples/blob/master/chunked-stream.rb)
