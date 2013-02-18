@@ -212,4 +212,20 @@ class EspressoApp
   end
   alias rewrite_rule rewrite
 
+  # by default Espresso will use EventMachine for streaming,
+  # but it also supports Celluloid, when Reel web-server used.
+  # use this method to set Celluloid as streaming backend.
+  #
+  # @example
+  #   app = EspressoApp.new do
+  #     streaming_backend :Celluloid
+  #   end
+  #
+  def streaming_backend backend = nil
+    @streaming_backend = backend
+    def streaming_backend
+      @streaming_backend
+    end
+  end
+
 end
