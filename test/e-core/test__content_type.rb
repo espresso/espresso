@@ -15,7 +15,7 @@ module ECoreTest__ContentType
     format '.json'
 
     def index
-      content_type('Blah!') if format == '.json'
+      content_type('Blah!') if json?
     end
 
     def xml

@@ -46,6 +46,7 @@ class E
   def transfer_encoding encoding
     response[HEADER__TRANSFER_ENCODING] = encoding
   end
+  define_setup_method :transfer_encoding
 
   begin # authorization related methods
 
