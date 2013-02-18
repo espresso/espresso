@@ -1,10 +1,10 @@
 class << E
 
-  def app; @__e__app end
-  def routes; @__e__routes end
-  def action_setup; @__e__action_setup end
+  def app;           @__e__app end
+  def routes;        @__e__routes end
+  def action_setup;  @__e__action_setup end
   def rewrite_rules; @__e__rewrite_rules || [] end
-  def mounted?; @__e__mounted end
+  def mounted?;      @__e__mounted end
 
   # build URL from given action name(or path) and consequent params
   # @return [String]

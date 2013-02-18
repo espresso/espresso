@@ -16,7 +16,6 @@ module EGeneratorTest__View
         check {$?.exitstatus} == 0
 
         Dir.chdir 'App' do
-          
           Should 'fail with "controller does not exists"' do
             output = %x[#{GENERATOR__BIN} g:v Foo bar]
             check {$?.exitstatus} > 0
@@ -42,6 +41,13 @@ module EGeneratorTest__View
             %x[#{GENERATOR__BIN} g:r Foo bar/baz]
             check {$?.exitstatus} == 0
             is(File).file? 'base/views/foo/bar__baz.erb'
+          end
+
+          Should "use controller's base_url for path to templates" do
+            %x[#{GENERATOR__BIN} g:c Bar r:bars_base_addr]
+            %x[#{GENERATOR__BIN} g:r Bar some_route]
+            check {$?.exitstatus} == 0
+            is(File).file? 'base/views/bars_base_addr/some_route.erb'
           end
 
           Should 'correctly handle namespaces' do
