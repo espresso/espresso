@@ -56,9 +56,9 @@ def subscribe
 end
 ```
 
-### [Real-world Example #1](https://github.com/espresso/espresso-examples/tree/master/eventsource-chat)
+**[Real-world Example #1](https://github.com/espresso/espresso-examples/tree/master/eventsource-chat)**
 
-### [Real-world Example #2](https://github.com/espresso/espresso-examples/tree/master/calendar/app)
+**[Real-world Example #2](https://github.com/espresso/espresso-examples/tree/master/calendar/app)**
 
 **[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
@@ -94,7 +94,7 @@ def subscribe
 end
 ```
 
-### [Real-world Example](https://github.com/espresso/espresso-examples/tree/master/websocket-chat)
+**[Real-world Example](https://github.com/espresso/espresso-examples/tree/master/websocket-chat)**
 
 **[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
@@ -125,4 +125,4 @@ def some_heavy_action
 end
 ```
 
-### [Real-world Example](https://github.com/espresso/espresso-examples/blob/master/chunked-stream.rb)
+**[Real-world Example](https://github.com/espresso/espresso-examples/blob/master/chunked-stream.rb)**
