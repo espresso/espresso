@@ -446,6 +446,20 @@ To clear cache, simply call `clear_cache!`
   - make your changes
   - submit a pull request
 
+<hr>
+
+<p>
+  Issues/Bugs:
+  <a href="https://github.com/espresso/espresso/issues">
+    github.com/espresso/espresso/issues</a>
+</p>
+<p>
+  Mailing List: <a href="https://groups.google.com/forum/?fromgroups#!forum/espresso-framework">
+  groups.google.com/.../espresso-framework</a>
+</p>
+<p>
+  IRC channel: #espressorb on irc.freenode.net
+</p>
 
 ### Author - [Silviu Rusu](https://github.com/slivu).  License - [MIT](https://github.com/espresso/espresso/blob/master/LICENSE).
 
