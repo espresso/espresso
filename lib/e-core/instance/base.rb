@@ -165,7 +165,7 @@ class E
     middleware
   ].each do |meth|
     define_method meth do
-      self.class.send __method__
+      self.class.send meth
     end
   end
   alias baseurl base_url

@@ -50,14 +50,14 @@ class E
   def invoke *args
 
     if args.empty?
-      body = '`%s` expects an action(or a Controller and some action) to be provided' % __method__
+      body = '`invoke` expects some action(or a Controller and some action) to be provided'
       return [STATUS__BAD_REQUEST, {}, [body]]
     end
 
     controller = EspressoUtils.is_app?(args.first) ? args.shift : self.class
 
     if args.empty?
-      body = 'Beside Controller, `%s` expects some action to be provided' % __method__
+      body = 'Beside Controller, `invoke` expects some action to be provided'
       return [STATUS__BAD_REQUEST, {}, [body]]
     end
 
