@@ -9,7 +9,6 @@ module EMoreTest__Cache
     end
 
     def index
-
     end
 
     def heavy_io
@@ -19,10 +18,10 @@ module EMoreTest__Cache
     end
 
     def heavy_render
-      banners = cache :banners do
+      banners = cache 'banners' do
         params[:banners] || content
       end
-      items = cache :items do
+      items = cache 'items' do
         params[:items] || content
       end
       [banners, items].join '/'

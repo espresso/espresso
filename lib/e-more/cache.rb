@@ -26,7 +26,7 @@ class EspressoApp
   #   value is not stored if block returns false or nil
   #
   def cache key = nil, &proc
-    key = key ? (key.respond_to?(:join) ? key.join : key.to_s) : proc.source_location
+    key ||= proc.source_location
     cache_pool[key] || ( (val = proc.call) && (cache_pool[key] = val) )
   end
   
