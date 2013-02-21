@@ -165,6 +165,8 @@ class E
     middleware
   ].each do |meth|
     define_method meth do
+      # somehow sometimes __method__ is nil in this context
+      # TODO: find out how/why
       self.class.send meth
     end
   end
