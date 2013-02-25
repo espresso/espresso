@@ -20,4 +20,5 @@ Gem::Specification.new do |s|
   s.files = Dir['**/{*,.[a-z]*}'].reject {|e| e =~ /\.(gem|lock)\Z/}
   s.executables = ['e']
   
+  s.licenses = ['MIT']
 end

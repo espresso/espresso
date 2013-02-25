@@ -13,7 +13,7 @@ class EspressoGenerator
       if orm =~ /\Ad/i
         insertions << 'include DataMapper::Resource'
         insertions << ''
-        insertions <<'property :id, Serial'
+        insertions << 'property :id, Serial'
       end
     end
     insertions << ''
