@@ -82,6 +82,14 @@ class << E
     @__e__mounted = true
   end
 
+  # use this when you do not want some controller(s) to be automounted
+  def reject_automount!
+    @reject_automount = true
+  end
+  def accept_automount?
+    true unless @reject_automount
+  end
+
   # remap served root(s) by prepend given path to controller's root.
   # if some canonicals given they will be appended to existing controller's canonicals.
   #

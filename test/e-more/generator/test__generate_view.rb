@@ -43,11 +43,11 @@ module EGeneratorTest__View
             is(File).file? 'base/views/foo/bar__baz.erb'
           end
 
-          Should "use controller's base_url for path to templates" do
+          Should "use controller name for path to templates" do
             %x[#{GENERATOR__BIN} g:c Bar r:bars_base_addr]
             %x[#{GENERATOR__BIN} g:r Bar some_route]
             check {$?.exitstatus} == 0
-            is(File).file? 'base/views/bars_base_addr/some_route.erb'
+            is(File).file? 'base/views/bar/some_route.erb'
           end
 
           Should 'correctly handle namespaces' do

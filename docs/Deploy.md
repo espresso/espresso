@@ -77,6 +77,87 @@ app.run
 
 **[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
+## Automount
+
+By using automount you do not need to mount controllers manually.
+
+To make newly created app to automount all found controllers, pass `true` as first argument:
+
+```ruby
+app = EspressoApp.new(true)
+```
+
+If you want to automount only controllers contained into some namespace, use that namespace as first argument:
+
+```ruby
+module Frontend
+  class Pages < E
+    # ...
+  end
+
+  class News < E
+    # ...
+  end
+end
+
+module Admin
+  class Pages < E
+    # ...
+  end
+
+  class News < E
+    # ...
+  end
+end
+app = EspressoApp.new(Frontend)
+```
+
+this will automount only controllers under `Frontend` module, leaving you to mount `Admin` controllers manually.
+
+Namespace can also be provided as a regular expression:
+
+```ruby
+module Frontend
+  class Pages < E
+    # ...
+  end
+
+  class News < E
+    # ...
+  end
+end
+
+module Admin
+  class Pages < E
+    # ...
+  end
+
+  class News < E
+    # ...
+  end
+end
+app = EspressoApp.new(/Pages/)
+```
+
+this will automount `Frontend::Pages` and `Admin::Pages`
+
+If you need some controller(s) to not be automounted, use `reject_automount!` method inside controller class:
+
+```ruby
+class Pages < E
+  # ...
+end
+
+class News < E
+  reject_automount!
+  # ...
+end
+
+app = EspressoApp.new(true)
+```
+
+this will automount `Pages` controller but not `News`
+
 
 ## Roots
 

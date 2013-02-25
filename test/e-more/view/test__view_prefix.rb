@@ -11,6 +11,11 @@ module EMoreTest__View__ViewPrefix
     end
   end
 
+  Spec.new App do
+    get
+    expect(last_response.body) == 'HEADER/index.erb'
+  end
+
   class CanonicalTest < E
     map '/canonical_test', '/canonical-url'
     view_prefix base_url
@@ -21,17 +26,51 @@ module EMoreTest__View__ViewPrefix
     end
   end
 
-  Spec.new App do
-    get
-    expect(last_response.body) == 'HEADER/index.erb'
-  end
-
   Spec.new CanonicalTest do
     get
     expect(last_response.body) == 'Hello!'
 
     get '/canonical-url'
     expect(last_response.body) == 'Hello!'
+  end
+
+  VIEW_PATH = File.expand_path('../templates', __FILE__)
+  class Default < E
+    view_fullpath VIEW_PATH
+
+    def index
+      render
+    end
+  end
+
+  Spec.new self do
+    app EspressoApp.new.mount(Default)
+    map Default.base_url
+
+    get
+    is(last_response).ok?
+    expect(last_response.body) == 
+      VIEW_PATH + "/e_more_test__view__view_prefix/default/index.erb"
+  end
+
+  class Nested
+    class App < E
+      view_fullpath VIEW_PATH
+
+      def index
+        render
+      end
+    end
+  end
+
+  Spec.new self do
+    app EspressoApp.new.mount(Nested::App)
+    map Nested::App.base_url
+
+    get
+    is(last_response).ok?
+    expect(last_response.body) ==
+      VIEW_PATH + "/e_more_test__view__view_prefix/nested/app/index.erb"
   end
 
 end

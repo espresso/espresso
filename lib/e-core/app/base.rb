@@ -4,6 +4,14 @@ class EspressoApp
     new(:automount).call(env)
   end
 
+  # creates new Espresso app.
+  # 
+  # @param automount  if set to any positive value(except Class, Module or Regexp),
+  #                   all found controllers will be mounted,
+  #                   if set to a Class, Module or Regexp,
+  #                   only controllers under given namespace will be mounted.
+  # @param [Proc] proc if block given, it will be executed inside newly created app
+  #
   def initialize automount = false, &proc
     @routes, @controllers = {}, {}
     @automount = automount
@@ -42,7 +50,10 @@ class EspressoApp
   # call this only after all controllers defined and app ready to start!
   # leaving it in public zone for better control over mounting.
   def automount!
-    mount discovered_controllers
+    controllers = [Class, Module, Regexp].include?(@automount.class) ?
+      extract_controllers(@automount) :
+      discover_controllers
+    mount controllers.select {|c| c.accept_automount?}
   end
 
   # proc given here will be executed inside all controllers.

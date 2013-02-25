@@ -154,7 +154,6 @@ class E
     @__e__action_params = EspressoUtils.indifferent_params(action_params).freeze
   end
 
-
   # following methods are delegated to class
   %w[
     default_route
