@@ -1,7 +1,7 @@
 + 0.4.2 [Feb ? 2013]
   
-  - Added `reject_automount!` for controllers that should not be mounted at automount
-  - Fixed RDoc generation on Ruby 2.0.0
+  - Added `reject_automount!` for controllers that should not be mounted at automount [f5ce4723a](https://github.com/espresso/espresso/commit/f5ce4723a)
+  - Fixed RDoc generation on Ruby 2.0.0 - [0ad4bbe951](https://github.com/espresso/espresso/commit/0ad4bbe951)
 
 + 0.4.1 [Feb 18 2013]
 
