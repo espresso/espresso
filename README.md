@@ -18,7 +18,7 @@ Quick Start
 $ [sudo] gem install e
 ```
 
-or add **`gem 'e'`** in `Gemfile`
+or add `gem 'e'` in `Gemfile`
 
 **Set**
 
