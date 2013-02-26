@@ -18,17 +18,18 @@ Quick Start
 $ [sudo] gem install e
 ```
 
+or `gem 'e'` in `Gemfile`
+
 **Set**
 
 ```ruby
 require 'e'
 
 class App < E
-
   map '/'
 
   def index
-  # ...
+    # ...
   end
 end
 ```
