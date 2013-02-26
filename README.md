@@ -29,7 +29,7 @@ class App < E
   map '/'
 
   def index
-    # ...
+    "Hello Espresso World!"
   end
 end
 ```
