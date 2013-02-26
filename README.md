@@ -23,7 +23,7 @@ or add `gem 'e'` in `Gemfile`
 **Set**
 
 ```ruby
-require 'e'
+require 'e' # or Bundler.require
 
 class App < E
   map '/'
