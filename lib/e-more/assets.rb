@@ -15,9 +15,10 @@ module EspressoAssetsMixin
     else
       opted_src = opts.delete(:src)
       src ||= opted_src || raise('Please provide script URL as first argument or via :src option')
-      "<script src=\"%s%s\" %s></script>\n" % [
+      "<script src=\"%s%s%s\" %s></script>\n" % [
         opted_src ? opted_src : assets_url(src),
         opts.delete(:ext),
+        opts.delete(:suffix) || __e__assets__opts[:suffix],
         __e__assets__opts_to_s(opts)
       ]
     end
@@ -38,9 +39,10 @@ module EspressoAssetsMixin
       opts[:rel] = 'stylesheet'
       opted_src = opts.delete(:href) || opts.delete(:src)
       src ||= opted_src || raise('Please URL as first argument or :href option')
-      "<link href=\"%s%s\" %s>\n" % [
+      "<link href=\"%s%s%s\" %s>\n" % [
         opted_src ? opted_src : assets_url(src),
         opts.delete(:ext),
+        opts.delete(:suffix) || __e__assets__opts[:suffix],
         __e__assets__opts_to_s(opts)
       ]
     end
@@ -58,9 +60,10 @@ module EspressoAssetsMixin
     opted_src = opts.delete(:src)
     src ||= opted_src || raise('Please provide image URL as first argument or :src option')
     opts[:alt] ||= ::File.basename(src, ::File.extname(src))
-    "<img src=\"%s%s\" %s>\n" % [
+    "<img src=\"%s%s%s\" %s>\n" % [
       opted_src ? opted_src : assets_url(src),
       opts.delete(:ext),
+      opts.delete(:suffix) || __e__assets__opts[:suffix],
       __e__assets__opts_to_s(opts)
     ]
   end
@@ -80,6 +83,10 @@ module EspressoAssetsMixin
     (@__e__assets__opts_to_s ||= {})[opts.hash] = opts.keys.inject([]) do |f, k|
       f << '%s="%s"' % [k, ::CGI.escapeHTML(opts[k])]
     end.join(' ')
+  end
+
+  def __e__assets__opts
+    @__e__assets__opts ||= {}
   end
 end
 
@@ -109,9 +116,9 @@ class EspressoAssetsMapper
   #   #=> <script src="/vendor/bootstrap/js/bootstrap.min.js" ...
   #   #=> <link href="/vendor/bootstrap/css/bootstrap.css" ...
   #
-  def initialize baseurl, &proc
-    @tags, @to_s = [], ''
-    baseurl = baseurl.to_s.strip
+  def initialize baseurl, opts = {}, &proc
+    @opts = opts.freeze
+    baseurl = baseurl.to_s.dup.strip
     if baseurl.size > 0
       baseurl << '/' unless baseurl =~ /\/\Z/
     end
@@ -144,6 +151,9 @@ class EspressoAssetsMapper
     baseurl + wd.to_s + path.to_s
   end
 
+  def __e__assets__opts
+    @opts
+  end
 end
 
 class E
@@ -190,7 +200,7 @@ class EspressoApp
   #
   def assets_url url = nil, server = true
     return @assets_url unless url
-    url = url.to_s.strip
+    url = url.to_s.dup.strip
     url = url =~ /\A[\w|\d]+\:\/\//i ? url : rootify_url(url)
     @assets_url = (url =~ /\/\Z/ ? url : String.new(url) << '/').freeze
     if server

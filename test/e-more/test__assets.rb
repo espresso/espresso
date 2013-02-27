@@ -7,7 +7,11 @@ module EMoreTest__Assets
     end
 
     def image_with_src src
-      image_tag :src => src
+      image_tag src: src
+    end
+    
+    def image_with_suffix url, suffix
+      image_tag url, suffix: suffix
     end
 
     def script_with_url url
@@ -16,6 +20,10 @@ module EMoreTest__Assets
 
     def script_with_src src
       script_tag :src => src
+    end
+
+    def script_with_suffix url, suffix
+      script_tag url, suffix: suffix
     end
 
     def script_with_block
@@ -29,7 +37,11 @@ module EMoreTest__Assets
     end
 
     def style_with_src src
-      style_tag :src => src
+      style_tag src: src
+    end
+
+    def style_with_suffix src, suffix
+      style_tag src: src, suffix: suffix
     end
 
     def style_with_block
@@ -60,6 +72,9 @@ module EMoreTest__Assets
 
       get :image_with_src, 'image.jpg'
       does(last_response).match? '<img src="image.jpg" alt="image">'
+
+      get :image_with_suffix, 'image.jpg', '-aloha'
+      does(last_response).match? '<img src="/assets/image.jpg-aloha" alt="image">'
     end
 
     Testing :script_tag do
@@ -76,6 +91,9 @@ module EMoreTest__Assets
       check(lines[0]) =~ /type="text\/javascript"/
       check(lines[1]) == '{"some"=>"param"}'
       check(lines[2]) == '</script>'
+
+      get :script_with_suffix, 'url.js', '-aloha'
+      does(last_response).match?  '<script src="/assets/url.js-aloha" type="text/javascript"></script>'
     end
 
     Testing :style_tag do
@@ -92,6 +110,9 @@ module EMoreTest__Assets
       check(lines[0]) =~ /type="text\/css"/
       check(lines[1]) == '{"some"=>"param"}'
       check(lines[2]) == '</style>'
+
+      get :style_with_suffix, 'url.css', '-aloha'
+      does(last_response).match? '<link href="url.css-aloha" rel="stylesheet">'
     end
 
   end
@@ -102,12 +123,24 @@ module EMoreTest__Assets
       js_tag params[:asset]
     end
 
+    def js_with_suffix suffix
+      js_tag params[:asset], suffix: suffix
+    end
+
     def css
       css_tag params[:asset]
     end
 
+    def css_with_suffix suffix
+      css_tag params[:asset], suffix: suffix
+    end
+
     def png
       png_tag params[:asset]
+    end
+
+    def png_with_suffix suffix
+      png_tag params[:asset], suffix: suffix
     end
   end
 
@@ -122,11 +155,20 @@ module EMoreTest__Assets
     get :js, :asset => :master
     does(/src="\/assets\/master\.js"/).match_body?
 
+    get :js_with_suffix, '-sfx', :asset => :master
+    does(/src="\/assets\/master\.js\-sfx"/).match_body?
+
     get :css, :asset => :master
     does(/href="\/assets\/master\.css"/).match_body?
 
+    get :css_with_suffix, '-sfx', :asset => :master
+    does(/href="\/assets\/master\.css\-sfx"/).match_body?
+
     get :png, :asset => :master
     does(/src="\/assets\/master\.png"/).match_body?
+
+    get :png_with_suffix, '-sfx', :asset => :master
+    does(/src="\/assets\/master\.png\-sfx"/).match_body?
   end
 
   class SprocketsApp < E
@@ -205,26 +247,26 @@ module EMoreTest__Assets
 
     def get_assets_mapper type
       html = ''
-      loader = assets_mapper params[:baseurl]
+      mapper = assets_mapper params[:baseurl]
       if src = params[:src]
-        html << loader.send(type, :src => src)
+        html << mapper.send(type, :src => src)
       else
-        html << loader.send(type, params[:url])
+        html << mapper.send(type, params[:url])
       end
       html
     end
 
     def assets_mapper_chdir type
       html = ''
-      loader = assets_mapper params[:baseurl]
+      mapper = assets_mapper params[:baseurl]
       params[:scenario].each do |scenario|
         path, file = scenario.split
         if file.nil?
           file = path
           path = nil
         end
-        loader.cd path
-        html << loader.send(type, file)
+        mapper.cd path
+        html << mapper.send(type, file)
       end
       html
     end
@@ -233,6 +275,14 @@ module EMoreTest__Assets
       html, url = '', params[:url]
       assets_mapper params[:baseurl] do
         html << send(type, url)
+      end
+      html
+    end
+
+    def assets_mapper_with_suffix type, suffix
+      html, url = '', params[:url]
+      assets_mapper params[:baseurl] do
+        html << send(type, url, suffix: suffix)
       end
       html
     end
@@ -292,7 +342,6 @@ module EMoreTest__Assets
         does(last_response).match? 'src="master.png"'
       end
     end
-    
 
     Testing :AssetsLoaderWithBlock do
       get :assets_mapper_with_block, :js_tag, :url => 'master'
@@ -306,6 +355,17 @@ module EMoreTest__Assets
 
       get :assets_mapper_with_block, :png_tag, :url => 'master', :baseurl => 'http://some.cdn'
       does(last_response).match? 'src="http://some.cdn/master.png"'
+    end
+
+    Testing :AssetsLoaderWithSuffix do
+      get :assets_mapper_with_suffix, :js_tag, '-sfx', :url => 'master'
+      does(last_response).match? 'src="master.js-sfx"'
+      
+      get :assets_mapper_with_suffix, :css_tag, '-sfx', :url => 'master', :baseurl => '/'
+      does(last_response).match? 'href="/master.css-sfx"'
+
+      get :assets_mapper_with_suffix, :png_tag, '-sfx', :url => 'master', :baseurl => 'http://some.cdn'
+      does(last_response).match? 'src="http://some.cdn/master.png-sfx"'
     end
 
     Testing :AssetsLoaderChdir do
