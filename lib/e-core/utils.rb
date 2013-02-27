@@ -113,12 +113,18 @@ module EspressoUtils
   end
   module_function :class_name_to_route
 
-  def action_name_to_route action_name, path_rules = EspressoConstants::E__PATH_RULES
+  def action_to_route action_name, path_rules = EspressoConstants::E__PATH_RULES
     action_name = action_name.to_s.dup
     path_rules.each_pair {|from, to| action_name = action_name.gsub(from, to)}
     action_name
   end
-  module_function :action_name_to_route
+  module_function :action_to_route
+
+  def canonical_to_route canonical, action_setup
+    args = [canonical]
+    args << action_setup[:action_path] unless action_setup[:action_name] == E__INDEX_ACTION
+    rootify_url(*args).freeze
+  end
 
   def deRESTify_action action
     action_name, request_method = action.to_s.dup, :*

@@ -96,31 +96,29 @@ class << E
   def generate_action_setup action
     action_name, request_method = deRESTify_action(action)
     
-    action_path = apply_path_rules(action_name)
+    action_path = action_to_route(action_name, path_rules).freeze
     path = rootify_url(base_url, action_path).freeze
-    path = '' if path == '/'
 
     action_arguments, required_arguments = action_parameters(action)
 
-    format_regexp = formats(action).any? ?
-      /(?:\A(?:\/{0,})?#{action})?(#{formats(action).map {|f| Regexp.escape f}.join("|")})\Z/ : nil
+    format_regexp = if formats(action).any?
+      regexp = formats(action).map {|f| Regexp.escape f}.join('|')
+      /(?:\A(?:\/{0,})?#{action})?(#{regexp})\Z/
+    else
+      nil
+    end
 
     {
-              :controller => self,
-                  :action => action,
-             :action_name => action_name,
-             :action_path => action_path,
-        :action_arguments => action_arguments,
-      :required_arguments => required_arguments,
-                    :path => path.freeze,
-           :format_regexp => format_regexp,
-          :request_method => request_method
+              controller: self,
+                  action: action,
+             action_name: action_name,
+             action_path: action_path,
+        action_arguments: action_arguments,
+      required_arguments: required_arguments,
+                    path: path.freeze,
+           format_regexp: format_regexp,
+          request_method: request_method,
     }.freeze
-  end
-
-  def apply_path_rules action_name
-    return ''.freeze if action_name == E__INDEX_ACTION
-    action_name_to_route(action_name, path_rules).freeze
   end
 
   # returning required parameters calculated by arity

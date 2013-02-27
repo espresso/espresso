@@ -9,11 +9,9 @@ module ECoreTest__Alias
 
     alias :news____html :news
     alias :headlines__recent____html :news
-
   end
 
   Spec.new AliasApp do
-
     Testing do
       get :news
       is('[:news, :news]').ok_body?

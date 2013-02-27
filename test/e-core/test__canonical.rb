@@ -24,11 +24,11 @@ module ECoreTest__Canonical
     Testing 'without remap' do
       get
       is(last_response).ok?
-      expect(last_response.body) == ['/root/', nil].inspect
+      expect(last_response.body) == ['/root/index/', nil].inspect
 
       get '/cms'
       is(last_response).ok?
-      expect(last_response.body) == ["/cms", "/root"].inspect
+      expect(last_response.body) == ["/cms", "/root/index"].inspect
 
       post '/cms/eatme'
       is(last_response).ok?
@@ -36,7 +36,7 @@ module ECoreTest__Canonical
 
       get '/pages'
       is(last_response).ok?
-      expect(last_response.body) == ["/pages", "/root"].inspect
+      expect(last_response.body) == ["/pages", "/root/index"].inspect
 
       post '/pages/eatme'
       is(last_response).ok?
@@ -51,11 +51,11 @@ module ECoreTest__Canonical
     Testing 'with remap' do
       get
       is(last_response).ok?
-      expect(last_response.body) == ['/new-root/root/', nil].inspect
+      expect(last_response.body) == ['/new-root/root/index/', nil].inspect
 
       get '/cms'
       is(last_response).ok?
-      expect(last_response.body) == ["/cms", "/new-root/root"].inspect
+      expect(last_response.body) == ["/cms", "/new-root/root/index"].inspect
 
       post '/cms/eatme'
       is(last_response).ok?
@@ -63,7 +63,7 @@ module ECoreTest__Canonical
 
       get '/pages'
       is(last_response).ok?
-      expect(last_response.body) == ["/pages", "/new-root/root"].inspect
+      expect(last_response.body) == ["/pages", "/new-root/root/index"].inspect
 
       post '/pages/eatme'
       is(last_response).ok?

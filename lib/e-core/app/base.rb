@@ -192,10 +192,11 @@ class EspressoApp
     @sorted_routes ||= @routes.keys.sort {|a,b| b.source.size <=> a.source.size}
   end
 
+  # checking whether path is empty or starts with a slash
   def path_ok? path
     # comparing fixnums are much faster than comparing strings
-    path.hash == (@empty_string_hash  ||= ''.hash ) || # replaces path.empty?
-      path[0].hash == (@slash_hash ||= '/'.hash)       # replaces path =~ /\A\//
+    path.hash == (@empty_string_hash ||= '' .hash) || # faster than path.empty?
+      path[0].hash == (@slash_hash   ||= '/'.hash)    # faster than path =~ /^\//
   end
 
   def mount_controllers!

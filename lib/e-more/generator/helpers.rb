@@ -114,7 +114,7 @@ class EspressoGenerator
     path_rules = ctrl.path_rules.inject({}) do |map,(r,s)|
       map.merge /#{Regexp.escape s}/ => r.source
     end
-    action = action_name_to_route(name, path_rules)
+    action = action_to_route(name, path_rules)
     validate_action_name(action)
     action_file = ctrl_path + action + '_action.rb'
     [action_file, action]

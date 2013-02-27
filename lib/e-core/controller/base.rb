@@ -155,7 +155,7 @@ class << E
     
     public_actions.each do |action|
       @__e__action_setup[action].each_pair do |request_method, setup|
-        set_action_route(setup)
+        set_action_routes(setup)
         set_canonical_routes(setup)
         set_alias_routes(setup)
       end
@@ -176,15 +176,16 @@ class << E
     end
   end
 
-  def set_action_route action_setup
+  def set_action_routes action_setup
     set_route(action_setup[:path], action_setup)
+    set_route(base_url, action_setup) if action_setup[:action_name] == E__INDEX_ACTION
   end
 
   def set_canonical_routes action_setup
     canonicals.each do |c|
-      c_path  = rootify_url(c, action_setup[:action_path])
-      c_setup = action_setup.merge(:path => c_path, :canonical => action_setup[:path])
-      set_route(c_path, c_setup)
+      c_route = canonical_to_route(c, action_setup)
+      c_setup = action_setup.merge(:path => c_route, :canonical => action_setup[:path])
+      set_route(c_route, c_setup)
     end
   end
 
@@ -192,17 +193,16 @@ class << E
     aliases = alias_actions[action_setup[:action]] || []
 
     aliases.each do |a|
-      a_path  = rootify_url(base_url, a)
-      a_setup = action_setup.merge(:path => a_path)
-      set_route(a_path, a_setup)
+      a_route = rootify_url(base_url, a)
+      a_setup = action_setup.merge(:path => a_route)
+      set_route(a_route, a_setup)
     end
 
     canonicals.each do |c|
-      c_path = rootify_url(c, action_setup[:action_path])
-      aliases.each do |a|
-        a_path  = rootify_url(c, a)
-        a_setup = action_setup.merge(:path => a_path, :canonical => action_setup[:path])
-        set_route(a_path, a_setup)
+      aliases.each  do |a|
+        a_route = rootify_url(c, a)
+        a_setup = action_setup.merge(:path => a_route, :canonical => action_setup[:path])
+        set_route(a_route, a_setup)
       end
     end
   end

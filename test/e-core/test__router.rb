@@ -117,7 +117,7 @@ module ECoreTest__Router
 
     Ensure '`[]` and `route` works properly' do
       @map = {
-        :index      => '',
+        :index      => '/index',
         :exact      => '/exact',
         :post_exact => '/exact',
       }
