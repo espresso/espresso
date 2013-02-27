@@ -1,5 +1,8 @@
+
 + 0.4.2 [Feb ? 2013]
   
+  - `link_to` helper [#db51c839](https://github.com/espresso/espresso/commit/db51c839cf2e1165bceb5d394b3706e53c59f0b4)
+  - make index action to serve /index URL [#fb763c64](https://github.com/espresso/espresso/commit/fb763c644092577627321a0d672e3cc060f9c9cf)
   - Added `reject_automount!` for controllers that should not be mounted at automount [f5ce4723a](https://github.com/espresso/espresso/commit/f5ce4723a)
   - Fixed RDoc generation on Ruby 2.0.0 - [0ad4bbe951](https://github.com/espresso/espresso/commit/0ad4bbe951)
 

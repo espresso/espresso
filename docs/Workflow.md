@@ -1235,31 +1235,26 @@ end
 
 If `nil` passed as first argument, a void link will be created:
 
-```ruby
-link_to nil, 'something' #=> &lt;a href="javascript:void(null);"&gt;something&lt;/a&gt;
-```
+`link_to nil, 'something'` #=> &lt;a href="javascript:void(null);"&gt;something&lt;/a&gt;
 
 Anchor can be passed via second argument.
 
 If it is missing, the link will be used as anchor:
 
-```ruby
-link_to :something   #=> &lt;a href="/something"&gt;/something&lt;/a&gt;
-link_to :foo, 'bar'  #=> &lt;a href="/foo"&gt;bar&lt;/a&gt;
-```
+`link_to :something`   #=> &lt;a href="/something"&gt;/something&lt;/a&gt;
+
+`link_to :foo, 'bar'`  #=> &lt;a href="/foo"&gt;bar&lt;/a&gt;
+
 
 Anchor can also be passed as a block:
 
-```ruby
-link_to(:foo) { 'bar' }  #=> &lt;a href="/foo"&gt;bar&lt;/a&gt;
-```
+`link_to(:foo) { 'bar' }`  #=> &lt;a href="/foo"&gt;bar&lt;/a&gt;
 
 Attributes can be passed as a hash via last argument:
 
-```ruby
-link_to :foo, target: '_blank'        #=> &lt;a href="/foo" target="_blank"&gt;/foo&lt;/a&gt;
-link_to :foo, :bar, target: '_blank'  #=> &lt;a href="/foo" target="_blank"&gt;bar&lt;/a&gt;
-```
+`link_to :foo, target: '_blank'`        #=> &lt;a href="/foo" target="_blank"&gt;/foo&lt;/a&gt;
+
+`link_to :foo, :bar, target: '_blank'`  #=> &lt;a href="/foo" target="_blank"&gt;bar&lt;/a&gt;
 
 
 
