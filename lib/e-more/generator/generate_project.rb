@@ -31,6 +31,7 @@ class EspressoGenerator
 
     update_config  setups, project_path
     update_gemfile setups, project_path
+    update_rakefile setups, project_path
     update_db_setup_file setups, project_path
   end
 end

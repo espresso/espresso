@@ -59,6 +59,17 @@ class EspressoGenerator
     end
   end
 
+  def update_rakefile setups, project_path
+    if orm = setups[:orm]
+      src = @src_path[:rakefiles] + orm.to_s + '.rb'
+      dst = project_path[:root]   + 'Rakefile'
+      o
+      o "Writing #{unrootify dst}"
+      File.readlines(src).each {|l| o "+ " + l.chomp}
+      FileUtils.cp src, dst
+    end
+  end
+
   def update_db_setup_file setups, project_path
     if orm = setups[:orm]
       src = @src_path[:database] + orm.to_s + '.rb'

@@ -7,7 +7,7 @@ class EspressoGenerator
 
   def initialize dst_root, logger = nil
     src_root  = File.expand_path('../../../../app', __FILE__) + '/'
-    @src_path = %w[base gemfiles database].inject({}) do |map,path|
+    @src_path = %w[base gemfiles rakefiles database].inject({}) do |map,path|
       map.merge path.to_sym => (src_root + path + '/').freeze
     end.freeze
 
