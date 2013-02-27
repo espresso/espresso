@@ -29,9 +29,10 @@ class EspressoGenerator
       FileUtils.cp(file, project_path[:root] + path)
     end
 
-    update_config  setups, project_path
-    update_gemfile setups, project_path
-    update_rakefile setups, project_path
+    update_boot_file     setups, project_path
+    update_config        setups, project_path
+    update_gemfile       setups, project_path
+    update_rakefile      setups, project_path
     update_db_setup_file setups, project_path
   end
 end

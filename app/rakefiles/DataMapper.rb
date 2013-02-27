@@ -1,4 +1,3 @@
-require File.expand_path('../base/boot', __FILE__)
 
 namespace :db do
 

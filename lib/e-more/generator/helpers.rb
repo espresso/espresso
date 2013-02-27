@@ -60,13 +60,25 @@ class EspressoGenerator
   end
 
   def update_rakefile setups, project_path
+    lines = File.readlines(@src_path[:rakefiles] + 'Rakefile')
     if orm = setups[:orm]
-      src = @src_path[:rakefiles] + orm.to_s + '.rb'
-      dst = project_path[:root]   + 'Rakefile'
+      lines += File.readlines(@src_path[:rakefiles] + orm.to_s + '.rb')
+    end
+    dst = project_path[:root]   + 'Rakefile'
+    o
+    o "Writing #{unrootify dst}"
+    lines.each {|l| o "+ " + l.chomp}
+    File.open(dst, 'a+') {|f| f << lines.join("\n")}
+  end
+
+  def update_boot_file setups, project_path
+    if (orm = setups[:orm]) && orm == :DataMapper
+      dst = project_path[:base] + 'boot.rb'
+      lines = ['', 'DataMapper.finalize', '']
       o
-      o "Writing #{unrootify dst}"
-      File.readlines(src).each {|l| o "+ " + l.chomp}
-      FileUtils.cp src, dst
+      o "Updating #{unrootify dst}"
+      lines.each {|l| o "+ " + l.chomp}
+      File.open(dst, 'a+') {|f| f << lines.join("\n")}
     end
   end
 
@@ -177,4 +189,5 @@ class EspressoGenerator
       o.const_defined?(c) ? o.const_get(c) : break
     end
   end
+
 end
