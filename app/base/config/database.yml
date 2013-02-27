@@ -1,18 +1,21 @@
 ---
 development:
-  type:
-  name:
-  host:
-  port:
+  type: 
+  host: 
+  port: 
+  name: 
+  pass: 
 
 test:
-  type:
-  name:
-  host:
-  port:
+  type: 
+  host: 
+  port: 
+  name: 
+  pass: 
 
 production:
-  type:
-  name:
-  host:
-  port:
+  type: 
+  host: 
+  port: 
+  name: 
+  pass: 
