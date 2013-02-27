@@ -424,8 +424,7 @@ Beside trivial redirects rewriter can also pass the control to an arbitrary cont
 Views Compiler
 ---
 
-For most web sites, most time are spent at templates rendering.<br>
-When rendering templates, most time are spent at reading and compiling.
+For most web sites, most time are spent at templates rendering. When rendering templates, most time are spent at reading and compiling.
 
 Espresso allow to easily skip these expensive operations by keeping compiled templates in memory and just render them on consequent requests.
 

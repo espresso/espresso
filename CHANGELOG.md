@@ -3,10 +3,14 @@
   - Added `reject_automount!` for controllers that should not be mounted at automount [f5ce4723a](https://github.com/espresso/espresso/commit/f5ce4723a)
   - Fixed RDoc generation on Ruby 2.0.0 - [0ad4bbe951](https://github.com/espresso/espresso/commit/0ad4bbe951)
 
+<hr>
+
 + 0.4.1 [Feb 18 2013]
 
   - support for various streaming backends - [#bd844acf](https://github.com/espresso/espresso/commit/bd844acf)
   - added transfer_encoding setup - [#e6f4805f4](https://github.com/espresso/espresso/commit/e6f4805f478050df9a7a1206e7ed8ae9b94da039)
+
+<hr>
 
 + 0.4.0 [Feb 11 2013] - First Stable Release
 
