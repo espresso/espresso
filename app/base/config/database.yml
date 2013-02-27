@@ -4,18 +4,15 @@ development:
   name:
   host:
   port:
-  orm:
 
 test:
   type:
   name:
   host:
   port:
-  orm:
 
 production:
   type:
   name:
   host:
   port:
-  orm:
