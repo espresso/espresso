@@ -4,6 +4,7 @@ development:
   host: 
   port: 
   name: 
+  user: 
   pass: 
 
 test:
@@ -11,6 +12,7 @@ test:
   host: 
   port: 
   name: 
+  user: 
   pass: 
 
 production:
@@ -18,4 +20,5 @@ production:
   host: 
   port: 
   name: 
+  user: 
   pass: 
