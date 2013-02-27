@@ -105,7 +105,8 @@ to generate:
 [Send File](https://github.com/espresso/espresso/blob/master/docs/Workflow.md#send-file) |
 [Send Files](https://github.com/espresso/espresso/blob/master/docs/Workflow.md#send-files) |
 [Attachment](https://github.com/espresso/espresso/blob/master/docs/Workflow.md#attachment) |
-[Headers](https://github.com/espresso/espresso/blob/master/docs/Workflow.md#headers)
+[Headers](https://github.com/espresso/espresso/blob/master/docs/Workflow.md#headers) |
+[link_to](https://github.com/espresso/espresso/blob/master/docs/Workflow.md#link_to)
 
 
 ### View API

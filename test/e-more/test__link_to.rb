@@ -4,6 +4,9 @@ module EMoreTest__LinkTo
     format_for :foo, '.bar'
     format '.html'
 
+    def index
+    end
+
     def foo
     end
 
@@ -23,6 +26,9 @@ module EMoreTest__LinkTo
   
   Spec.new self do
     app = App.new
+
+    expect( app.link_to(:index) ) =~ %r[href="/index"]
+    expect( app.link_to('index.html') ) =~ %r[href="/index.html"]
 
     expect( app.link_to(:foo) ) =~ %r[href="/foo">/foo]
     expect( app.link_to(:foo, 'some-label') ) =~ %r[href="/foo">some-label]

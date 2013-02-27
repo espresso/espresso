@@ -1203,3 +1203,65 @@ response['Max-Forwards']
 ```
 
 **[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
+
+## link_to
+
+Build a HTML &lt;a&gt; tag.
+
+If first param is a valid action, the URL of given action will be used.
+
+Action accepted as a symbol or a string representing action name and format.
+
+Action can also be passed in deRESTified form, eg. `:read` instead of `:post_read`
+
+```ruby
+class App < E
+  format '.html'
+
+  def read
+    link_to :read        #=> /app/read
+    link_to 'read.html'  #=> /app/read.html
+    link_to 'read.xml'   #=> read.xml - not translated, used as is
+  end
+
+  def post_write
+    link_to :post_write  #=> /app/write - works but it is tedious, use :write instead
+    link_to :write       #=> /app/write
+    link_to 'write.html' #=> /app/write.html
+    link_to '/something' #=> /something - not translated, used as is
+  end
+end
+```
+
+If `nil` passed as first argument, a void link will be created:
+
+```ruby
+link_to nil, 'something' #=> &lt;a href="javascript:void(null);"&gt;something&lt;/a&gt;
+```
+
+Anchor can be passed via second argument.
+
+If it is missing, the link will be used as anchor:
+
+```ruby
+link_to :something   #=> &lt;a href="/something"&gt;/something&lt;/a&gt;
+link_to :foo, 'bar'  #=> &lt;a href="/foo"&gt;bar&lt;/a&gt;
+```
+
+Anchor can also be passed as a block:
+
+```ruby
+link_to(:foo) { 'bar' }  #=> &lt;a href="/foo"&gt;bar&lt;/a&gt;
+```
+
+Attributes can be passed as a hash via last argument:
+
+```ruby
+link_to :foo, target: '_blank'        #=> &lt;a href="/foo" target="_blank"&gt;/foo&lt;/a&gt;
+link_to :foo, :bar, target: '_blank'  #=> &lt;a href="/foo" target="_blank"&gt;bar&lt;/a&gt;
+```
+
+
+
+
+
