@@ -1256,7 +1256,6 @@ Attributes can be passed as a hash via last argument:
 
 `link_to :foo, :bar, target: '_blank'`  #=> &lt;a href="/foo" target="_blank"&gt;bar&lt;/a&gt;
 
-
-
+**[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
 
