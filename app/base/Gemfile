@@ -1,18 +1,18 @@
-source :rubygems
+source 'https://rubygems.org'
 
-group :development do
-  # development environment gems
+group :development do # gems used on development
+  gem 'rake'
   gem 'pry'
 end
 
-group :test do
-  # testing environment gems
+group :test do # gems used when testing
+  gem 'rake'
 end
 
-group :production do
-  # production environment gems
+group :production do # gems used on production
 end
 
+# gems used everywhere
 gem 'e'
 gem 'thin'
 gem 'sprockets'
