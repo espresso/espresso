@@ -1,6 +1,5 @@
 class << E
 
-  private
   # methods to be translated into HTTP paths.
   # if controller has no methods, defining #index with some placeholder text.
   #
@@ -77,11 +76,11 @@ class << E
   def public_actions
     @__e__public_actions ||= begin
 
-      actions = (
+      actions = begin
         (self.public_instance_methods(false)) +
         (@__e__alias_actions    || {}).keys   +
         (@__e__included_actions || [])
-      ).uniq
+      end.uniq
       
       if actions.empty?
         define_method :index do |*|
@@ -93,6 +92,7 @@ class << E
     end
   end
 
+  private
   def generate_action_setup action
     action_name, request_method = deRESTify_action(action)
     

@@ -1,1 +1,0 @@
-gem 'data_mapper'

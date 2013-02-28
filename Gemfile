@@ -1,4 +1,4 @@
-source :rubygems
+source 'https://rubygems.org'
 gemspec
 
 gem 'rake',     '~> 10'
@@ -8,7 +8,3 @@ gem 'sprockets'
 gem 'slim'
 gem 'haml'
 gem 'sass'
-
-gem 'activerecord', :require => 'active_record'
-gem 'datamapper'
-gem 'sequel'

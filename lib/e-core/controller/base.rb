@@ -25,7 +25,7 @@ class << E
   end
 
   def default_route
-    @__e__default_route ||= class_name_to_route(self.name).freeze
+    @__e__default_route ||= class_to_route(self.name).freeze
   end
 
   # @example

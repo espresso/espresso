@@ -4,6 +4,8 @@ class EspressoApp
     new(:automount).call(env)
   end
 
+  attr_reader :controllers, :mounted_controllers
+
   # creates new Espresso app.
   # 
   # @param automount  if set to any positive value(except Class, Module or Regexp),

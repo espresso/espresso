@@ -1,6 +1,6 @@
 require 'fileutils'
 require 'erb'
-require 'rubygems'
+
 require 'tilt'
 
 require 'e-more/init'

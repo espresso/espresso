@@ -12,7 +12,7 @@ module ECoreTest__Utils
       end
     end
 
-    Testing 'underscore' do
+    Testing :underscore do
       variations = [
         ["SuperClass", "super_class"],
         ["One1Two2", "one1_two2"]
@@ -22,7 +22,7 @@ module ECoreTest__Utils
       end
     end
 
-    Testing :class_name_to_route do
+    Testing :class_to_route do
       variations = [
         ["SuperClass", "/super_class"],
         ["Super::Class", "/super/class"],
@@ -30,11 +30,11 @@ module ECoreTest__Utils
         ["One1Two2", "/one1_two2"]
       ]
       variations.each do |variation|
-        check(EspressoUtils.class_name_to_route(variation[0])) == variation[1]
+        check(EspressoUtils.class_to_route(variation[0])) == variation[1]
       end
     end
 
-    Testing "build_path" do
+    Testing :build_path do
       variations = [
         [[:some, :page, {:and => :some_param}], "some/page?and"],
         [['another', 'page', {:with => {'nested' => 'params'}}], "another/page?with[nested]=params"],

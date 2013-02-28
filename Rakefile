@@ -1,6 +1,4 @@
-require 'rubygems'
 require 'rake'
-
 require './test/setup'
 Dir['./test/**/test__*.rb'].each { |f| require f }
 
@@ -43,10 +41,6 @@ namespace :test do
 
   task :more do
     run_test(/EMoreTest/, "e-more")
-  end
-
-  task :generator do
-    run_test(/EGeneratorTest/, :Generator)
   end
 
   task :view do

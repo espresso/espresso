@@ -108,10 +108,10 @@ module EspressoUtils
   # FooBar to foo_bar
   # Foo::Bar to foo/bar
   #
-  def class_name_to_route class_name
+  def class_to_route class_name
     '/' << class_name.to_s.split('::').map {|c| underscore(c)}.join('/')
   end
-  module_function :class_name_to_route
+  module_function :class_to_route
 
   def action_to_route action_name, path_rules = EspressoConstants::E__PATH_RULES
     action_name = action_name.to_s.dup
