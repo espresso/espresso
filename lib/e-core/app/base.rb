@@ -94,6 +94,10 @@ class EspressoApp
   end
   alias urlmap url_map
 
+  def environment
+    ENV['RACK_ENV'] || :development
+  end
+
   # by default, Espresso will use WEBrick server.
   # pass :server option and any option accepted by selected(or default) server:
   #
@@ -108,8 +112,8 @@ class EspressoApp
   # @option opts [String]  :host   (0.0.0.0)
   #
   def run opts = {}
-    server = opts.delete(:server)
-    (server && Rack::Handler.const_defined?(server)) || (server = HTTP__DEFAULT_SERVER)
+    handler = opts.delete(:server)
+    (handler && Rack::Handler.const_defined?(handler)) || (handler = HTTP__DEFAULT_SERVER)
 
     port = opts.delete(:port)
     opts[:Port] ||= port || HTTP__DEFAULT_PORT
@@ -117,7 +121,19 @@ class EspressoApp
     host = opts.delete(:host) || opts.delete(:bind)
     opts[:Host] = host if host
 
-    Rack::Handler.const_get(server).run app, opts
+    $stderr.puts "\n--- Starting Espresso for %s on %s port backed by %s server ---\n\n" % [
+      environment, opts[:Port], handler
+    ]
+    Rack::Handler.const_get(handler).run app, opts do |server|
+      %w[INT TERM].each do |sig|
+        Signal.trap(sig) do
+          $stderr.puts "\n--- Stopping Espresso... ---\n\n"
+          server.respond_to?(:stop!) ? server.stop! : server.stop
+        end
+      end
+      server.threaded = opts[:threaded] if server.respond_to? :threaded=
+      yield server if block_given?
+    end
   end
 
   def call env
