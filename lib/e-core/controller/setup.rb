@@ -307,4 +307,29 @@ class << E
   end
   alias rewrite_rule rewrite
 
+  # interface to include additional helper modules.
+  # sure, additional modules can be included via `include`
+  # but the downside of this is that all modules methods should be private/protected,
+  # otherwise they will be available via HTTP.
+  # indeed, `include` are used to share actions between controllers.
+  # resuming - use `helper` to include a helper and `include` to include actions.
+  #
+  # @example
+  # class App < E
+  #   helper  SomeHelperModule
+  #   include SomeSharedActions
+  #   # ...
+  # end
+  # 
+  # @param [Module] mdl
+  def helper mdl
+    include  mdl
+    (@__e__helper_methods ||= []).concat mdl.public_instance_methods(false)
+  end
+
+  # include multiple helpers at once
+  def helpers *mdls
+    mdls.each {|m| helper m}
+  end
+
 end

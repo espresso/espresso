@@ -57,6 +57,7 @@ App.run
 [Actions](https://github.com/espresso/espresso/blob/master/docs/Routing.md#actions) |
 [Action Mapping](https://github.com/espresso/espresso/blob/master/docs/Routing.md#action-mapping) |
 [Action Aliases](https://github.com/espresso/espresso/blob/master/docs/Routing.md#action-aliases) |
+[Shared Actions](https://github.com/espresso/espresso/blob/master/docs/Routing.md#shared-actions) |
 [Parametrization](https://github.com/espresso/espresso/blob/master/docs/Routing.md#parametrization) |
 [Format](https://github.com/espresso/espresso/blob/master/docs/Routing.md#format) |
 [RESTful Actions](https://github.com/espresso/espresso/blob/master/docs/Routing.md#restful-actions) |
@@ -96,6 +97,7 @@ App.run
 [Send Files](https://github.com/espresso/espresso/blob/master/docs/Workflow.md#send-files) |
 [Attachment](https://github.com/espresso/espresso/blob/master/docs/Workflow.md#attachment) |
 [Headers](https://github.com/espresso/espresso/blob/master/docs/Workflow.md#headers) |
+[Helpers](https://github.com/espresso/espresso/blob/master/docs/Workflow.md#helpers) |
 [link_to](https://github.com/espresso/espresso/blob/master/docs/Workflow.md#link_to)
 
 

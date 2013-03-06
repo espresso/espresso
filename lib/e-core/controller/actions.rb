@@ -80,7 +80,7 @@ class << E
         (self.public_instance_methods(false)) +
         (@__e__alias_actions    || {}).keys   +
         (@__e__included_actions || [])
-      end.uniq
+      end.uniq - (@__e__helper_methods || [])
       
       if actions.empty?
         define_method :index do |*|

@@ -1204,6 +1204,38 @@ response['Max-Forwards']
 
 **[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
+
+## Helpers
+
+`helper` method allows to include additional helper modules.
+
+Sure, any additional modules can be included via `include`.
+
+But all methods included this way will be available via HTTP cause `include` is used to [share actions between controllers](https://github.com/espresso/espresso/blob/master/docs/Routing.md#shared-actions).
+
+So use `helper` to include helper methods:
+
+```ruby
+class App < E
+  helper SomeHelperModule
+
+  # ...
+end
+```
+
+Also `helpers` can be used to include multiple helpers at once:
+
+```ruby
+class App < E
+  helpers StringHelpers, URLHelpers, EtcHelpers
+
+  # ...
+end
+```
+
+**[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
+
+
 ## link_to
 
 Build a HTML &lt;a&gt; tag.

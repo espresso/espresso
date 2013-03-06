@@ -5,6 +5,7 @@
   - make index action to serve /index URL [#fb763c64](https://github.com/espresso/espresso/commit/fb763c644092577627321a0d672e3cc060f9c9cf)
   - Added `reject_automount!` for controllers that should not be mounted at automount [f5ce4723a](https://github.com/espresso/espresso/commit/f5ce4723a)
   - Fixed RDoc generation on Ruby 2.0.0 - [0ad4bbe951](https://github.com/espresso/espresso/commit/0ad4bbe951)
+  - trap INT and TERM signals to gracefully stop web server - [#fcbebf974](https://github.com/espresso/espresso/commit/fcbebf9740a49065b31ad8d65dcc0d31cf80247b)
 
 <hr>
 

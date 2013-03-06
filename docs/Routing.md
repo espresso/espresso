@@ -230,6 +230,37 @@ use standard ruby `alias` or `alias_method` rather than `alias_action`.
 **[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
 
+## Shared Actions
+
+Sometimes you need some actions to perform on multiple controllers.
+
+To avoid repetitive typing, just put that actions into a module and include them in controllers:
+
+```ruby
+module MySharedActions
+  def foo
+    # ...
+  end
+
+  def bar :with, :some, args: 'etc.'
+    # ...
+  end
+end
+
+class App < E
+  map '/'
+  include MySharedActions
+
+  # ...
+end
+```
+
+`App` will respond to both '/foo' and '/bar' URL's
+
+
+**[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
+
+
 ## Parametrization
 
 

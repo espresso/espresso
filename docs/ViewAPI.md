@@ -115,7 +115,7 @@ class News < E
 end
 ```
 
-**IMPORTANT:** As of version 0.4 Espresso will use underscored controller name to resolve path to templates. Before 0.4 base URL were used for this:
+**IMPORTANT:** As of version 0.4.2 Espresso will use underscored controller name to resolve path to templates. Before 0.4.2, base URL were used for this:
 
 
 ```ruby
@@ -124,8 +124,8 @@ class Cms < E
 
   def index
     render
-    # on 0.4+ will render "view/cms/index.erb"
-    # before 0.4 - "view/pages/index.erb"
+    # starting with 0.4.2 will render "view/cms/index.erb"
+    # before 0.4.2 - "view/pages/index.erb"
   end
 end
 ```

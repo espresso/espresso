@@ -13,7 +13,6 @@ module EspressoConstants
   }.freeze
 
   E__INDEX_ACTION = :index
-  E__ENVIRONMENTS = [:development, :test, :production].freeze
 
   CONTENT_TYPE__DEFAULT      = 'text/html'.freeze
   CONTENT_TYPE__EVENT_STREAM = 'text/event-stream'.freeze

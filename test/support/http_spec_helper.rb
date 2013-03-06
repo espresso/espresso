@@ -1,15 +1,8 @@
 module HttpSpecHelper
-  def ok? response
-    check(response.status) == 200
-  end
 
   def ok_body?(val)
-    ok? last_response
+    is(last_response).ok?
     val.is_a?(Regexp) ? match_body?(val) : current_body?(val)
-  end
-
-  def not_found? response
-    check(response.status) == 404
   end
 
   def not_implemented? response

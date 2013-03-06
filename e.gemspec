@@ -18,7 +18,6 @@ Gem::Specification.new do |s|
 
   s.require_paths = ['lib']
   s.files = Dir['**/{*,.[a-z]*}'].reject {|e| e =~ /\.(gem|lock)\Z/}
-  s.executables = ['e']
   
   s.licenses = ['MIT']
 end

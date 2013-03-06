@@ -1,35 +1,24 @@
 module ECoreTest__Helpers
+  module SomeHelper
+    def foo
+      'helper_method'
+    end
+  end
+
   class App < E
+    helper SomeHelper
 
-    def get
-      [get?, post?].inspect
-    end
-
-    def post_post
-      [get?, post?].inspect
-    end
-
-    def xhr
-      [get?, xhr?].inspect
+    def index
+      foo
     end
   end
 
   Spec.new App do
-    Testing :request_method do
-      get :get
-      is([true, nil].inspect).current_body?
-      
-      post :post
-      is([nil, true].inspect).current_body?
-    end
+    get
+    is('helper_method').ok_body?
 
-    Testing :requested_with do
-      get_x :xhr
-      is([true, true].inspect).current_body?
-
-      get :xhr
-      is([true, nil].inspect).current_body?
-    end
+    get :foo
+    is(last_response).not_found?
   end
 
 end
