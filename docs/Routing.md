@@ -255,7 +255,7 @@ class App < E
 end
 ```
 
-`App` will respond to both '/foo' and '/bar' URL's
+`App` will now respond to both **/foo** and **/bar** URL's
 
 
 **[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**

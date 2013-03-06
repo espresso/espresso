@@ -57,7 +57,8 @@ App.run
 [Actions](https://github.com/espresso/espresso/blob/master/docs/Routing.md#actions) |
 [Action Mapping](https://github.com/espresso/espresso/blob/master/docs/Routing.md#action-mapping) |
 [Action Aliases](https://github.com/espresso/espresso/blob/master/docs/Routing.md#action-aliases) |
-[Shared Actions](https://github.com/espresso/espresso/blob/master/docs/Routing.md#shared-actions) |
+[Shared Actions](https://github.com/espresso/espresso/blob/master/docs/Routing.md#shared-actions)
+<br>
 [Parametrization](https://github.com/espresso/espresso/blob/master/docs/Routing.md#parametrization) |
 [Format](https://github.com/espresso/espresso/blob/master/docs/Routing.md#format) |
 [RESTful Actions](https://github.com/espresso/espresso/blob/master/docs/Routing.md#restful-actions) |
