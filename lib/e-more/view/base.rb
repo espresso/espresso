@@ -116,48 +116,45 @@ class E
   alias render_lf render_layout_file
 
   VIEW__ENGINE_BY_EXT.each_key do |ext|
-    suffix = ext.sub('.', '')
-    class_eval <<-RUBY
-
-    def render_#{suffix} *args, &proc
+    __e__adhoc_engine_ext = ext.sub('.', '')
+    
+    define_method 'render_%s' % __e__adhoc_engine_ext do |*args, &proc|
       template, scope, locals = __e__engine_arguments(args)
-      engine_args = proc ? [] : [__e__template(template, '#{ext}')]
-      output = __e__engine_instance(VIEW__ENGINE_BY_EXT['#{ext}'], *engine_args, &proc).render(scope, locals)
+      engine_args = proc ? [] : [__e__template(template, ext)]
+      output = __e__engine_instance(VIEW__ENGINE_BY_EXT[ext], *engine_args, &proc).render(scope, locals)
 
       layout, layout_proc = layout?
       return output unless layout || layout_proc
 
-      engine_args = layout_proc ? [] : [__e__layout_template(layout, '#{ext}')]
-      __e__engine_instance(VIEW__ENGINE_BY_EXT['#{ext}'], *engine_args, &layout_proc).render(scope, locals) { output }
+      engine_args = layout_proc ? [] : [__e__layout_template(layout, ext)]
+      __e__engine_instance(VIEW__ENGINE_BY_EXT[ext], *engine_args, &layout_proc).render(scope, locals) {output}
     end
 
-    def render_#{suffix}_partial *args, &proc
+    define_method 'render_%s_partial' % __e__adhoc_engine_ext do |*args, &proc|
       template, scope, locals = __e__engine_arguments(args)
-      engine_args = proc ? [] : [__e__template(template, '#{ext}')]
-      __e__engine_instance(VIEW__ENGINE_BY_EXT['#{ext}'], *engine_args, &proc).render(scope, locals)
+      engine_args = proc ? [] : [__e__template(template, ext)]
+      __e__engine_instance(VIEW__ENGINE_BY_EXT[ext], *engine_args, &proc).render(scope, locals)
     end
-    alias render_#{suffix}_p render_#{suffix}_partial
+    alias_method 'render_%s_p' % __e__adhoc_engine_ext, 'render_%s_partial' % __e__adhoc_engine_ext
 
-    def render_#{suffix}_layout *args, &proc
+    define_method 'render_%s_layout' % __e__adhoc_engine_ext do |*args, &proc|
       layout, scope, locals = __e__engine_arguments(args, nil)
       layout, layout_proc = layout ? layout : layout?
       layout || layout_proc || raise('No explicit layout given nor implicit layout found' % action)
-      engine_args = layout_proc ? [] : [__e__layout_template(layout, '#{ext}')]
-      __e__engine_instance(VIEW__ENGINE_BY_EXT['#{ext}'], *engine_args, &layout_proc).render(scope, locals, &(proc || Proc.new {''}))
+      engine_args = layout_proc ? [] : [__e__layout_template(layout, ext)]
+      __e__engine_instance(VIEW__ENGINE_BY_EXT[ext], *engine_args, &layout_proc).render(scope, locals, &(proc || Proc.new {''}))
     end
-    alias render_#{suffix}_l render_#{suffix}_layout
+    alias_method 'render_%s_l' % __e__adhoc_engine_ext, 'render_%s_layout' % __e__adhoc_engine_ext
 
-    def render_#{suffix}_file template, *args
-      render_#{suffix}_partial path_to_templates(template), *args
+    define_method 'render_%s_file' % __e__adhoc_engine_ext do |template, *args|
+      self.send 'render_%s_partial' % __e__adhoc_engine_ext, path_to_templates(template), *args
     end
-    alias render_#{suffix}_f render_#{suffix}_file
+    alias_method 'render_%s_f' % __e__adhoc_engine_ext, 'render_%s_file' % __e__adhoc_engine_ext
 
-    def render_#{suffix}_layout_file template, *args, &proc
-      render_#{suffix}_layout path_to_layouts(template), *args, &proc
+    define_method 'render_%s_layout_file' % __e__adhoc_engine_ext do |template, *args, &proc|
+      self.send 'render_%s_layout' % __e__adhoc_engine_ext, path_to_layouts(template), *args, &proc
     end
-    alias render_#{suffix}_lf render_#{suffix}_layout_file
-      
-    RUBY
+    alias_method 'render_%s_lf' % __e__adhoc_engine_ext, 'render_%s_layout_file' % __e__adhoc_engine_ext
 
   end
 
