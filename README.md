@@ -47,7 +47,7 @@ $ enginery g:c App route:/
 $ ruby app.rb
 ```
 
-# Tutorial
+## Tutorial
 
 ### Intro
 
