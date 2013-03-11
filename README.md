@@ -3,7 +3,8 @@
 
 # [Espresso](http://espresso.github.com)
 
-**Scalable Web Framework aimed at Speed and Simplicity**
+### Scalable Web Framework aimed at Speed and Simplicity
+
 <p>
 <a href="https://travis-ci.org/espresso/espresso">
 <img src="https://travis-ci.org/espresso/espresso.png"></a>
@@ -23,7 +24,7 @@ gem 'e'
 
 ## Quick Start
 
-### One-file App:
+**One-file App:**
 
 ```ruby
 require 'e' # or Bundler.require
@@ -39,7 +40,7 @@ end
 App.run
 ```
 
-### Full-fledged app using [Enginery](https://github.com/espresso/enginery)
+**Full-fledged app using [Enginery](https://github.com/espresso/enginery)**
 
 ```bash
 $ enginery g
