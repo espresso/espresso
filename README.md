@@ -9,18 +9,21 @@
 <img src="https://travis-ci.org/espresso/espresso.png"></a>
 </p>
 
-Quick Start
----
-
-**Ready**
+## Install
 
 ```bash
 $ [sudo] gem install e
 ```
 
-or add `gem 'e'` in `Gemfile`
+or update `Gemfile` by adding:
 
-**Set**
+```ruby
+gem 'e'
+```
+
+## Quick Start
+
+### One-file App:
 
 ```ruby
 require 'e' # or Bundler.require
@@ -32,12 +35,16 @@ class App < E
     "Hello Espresso World!"
   end
 end
+
+App.run
 ```
 
-**Go!**
+### Full-fledged app using [Enginery](https://github.com/espresso/enginery)
 
-```ruby
-App.run
+```bash
+$ enginery g
+$ enginery g:c App route:/
+$ ruby app.rb
 ```
 
 # Tutorial
