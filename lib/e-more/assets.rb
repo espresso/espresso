@@ -78,7 +78,7 @@ module EspressoAssetsMixin
   private
   def __e__assets__opts_to_s opts
     (@__e__assets__opts_to_s ||= {})[opts.hash] ||= opts.any? ? 
-      opts.keys.inject(['']) {|c,k| c << '%s="%s"' % [k, ::CGI.escapeHTML(opts[k])]}*' ' : ''
+      opts.keys.inject(' ') {|s,k| s << '%s="%s"' % [k, CGI.escapeHTML(opts[k].to_s)]} : ''
   end
 
   def __e__assets__opts
