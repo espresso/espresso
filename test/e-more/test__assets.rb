@@ -2,8 +2,8 @@ module EMoreTest__Assets
 
   class App < E
 
-    def image_with_url url
-      image_tag url
+    def image_with_url url = nil
+      image_tag url||params[:url]
     end
 
     def image_with_src src
@@ -14,8 +14,8 @@ module EMoreTest__Assets
       image_tag url, suffix: suffix
     end
 
-    def script_with_url url
-      script_tag url
+    def script_with_url url = nil
+      script_tag url||params[:url]
     end
 
     def script_with_src src
@@ -32,8 +32,8 @@ module EMoreTest__Assets
       end
     end
 
-    def style_with_url url
-      style_tag url
+    def style_with_url url = nil
+      style_tag url||params[:url]
     end
 
     def style_with_src src
@@ -68,13 +68,18 @@ module EMoreTest__Assets
     Testing :image_tag do
 
       get :image_with_url, 'image.jpg'
-      does(last_response).match? '<img src="/assets/image.jpg" alt="image">'
+      does(last_response).match? '<img src="/assets/image.jpg">'
 
       get :image_with_src, 'image.jpg'
-      does(last_response).match? '<img src="image.jpg" alt="image">'
+      does(last_response).match? '<img src="image.jpg">'
 
       get :image_with_suffix, 'image.jpg', '-aloha'
-      does(last_response).match? '<img src="/assets/image.jpg-aloha" alt="image">'
+      does(last_response).match? '<img src="/assets/image.jpg-aloha">'
+
+      Should 'avoid double slashing' do
+        get :image_with_url, url: '/image.jpg'
+        does(last_response).match? '<img src="/assets/image.jpg">'
+      end
     end
 
     Testing :script_tag do
@@ -94,6 +99,11 @@ module EMoreTest__Assets
 
       get :script_with_suffix, 'url.js', '-aloha'
       does(last_response).match?  '<script src="/assets/url.js-aloha" type="text/javascript"></script>'
+
+      Should 'avoid double slashing' do
+        get :script_with_url, url: '/url.js'
+        does(last_response).match?  '<script src="/assets/url.js" type="text/javascript"></script>'
+      end
     end
 
     Testing :style_tag do
@@ -113,6 +123,11 @@ module EMoreTest__Assets
 
       get :style_with_suffix, 'url.css', '-aloha'
       does(last_response).match? '<link href="url.css-aloha" rel="stylesheet">'
+
+      Should 'avoid double slashing' do
+        get :style_with_url, url: '/url.css'
+        does(last_response).match? '<link href="/assets/url.css" rel="stylesheet">'
+      end
     end
 
   end

@@ -14,8 +14,8 @@ module EspressoAssetsMixin
       "<script %s>\n%s\n</script>\n" % [__e__assets__opts_to_s(opts), proc.call]
     else
       opted_src = opts.delete(:src)
-      src ||= opted_src || raise('Please provide script URL as first argument or via :src option')
-      "<script src=\"%s%s%s\" %s></script>\n" % [
+      src || opted_src || raise('Please provide script URL as first argument or via :src option')
+      "<script src=\"%s%s%s\"%s></script>\n" % [
         opted_src ? opted_src : assets_url(src),
         opts.delete(:ext),
         opts.delete(:suffix) || __e__assets__opts[:suffix],
@@ -38,8 +38,8 @@ module EspressoAssetsMixin
     else
       opts[:rel] = 'stylesheet'
       opted_src = opts.delete(:href) || opts.delete(:src)
-      src ||= opted_src || raise('Please URL as first argument or :href option')
-      "<link href=\"%s%s%s\" %s>\n" % [
+      src || opted_src || raise('Please URL as first argument or :href option')
+      "<link href=\"%s%s%s\"%s>\n" % [
         opted_src ? opted_src : assets_url(src),
         opts.delete(:ext),
         opts.delete(:suffix) || __e__assets__opts[:suffix],
@@ -58,9 +58,8 @@ module EspressoAssetsMixin
   def image_tag src = nil, opts = {}
     src.is_a?(Hash) && (opts = src.dup) && (src = nil)
     opted_src = opts.delete(:src)
-    src ||= opted_src || raise('Please provide image URL as first argument or :src option')
-    opts[:alt] ||= ::File.basename(src, ::File.extname(src))
-    "<img src=\"%s%s%s\" %s>\n" % [
+    src || opted_src || raise('Please provide image URL as first argument or :src option')
+    "<img src=\"%s%s%s\"%s>\n" % [
       opted_src ? opted_src : assets_url(src),
       opts.delete(:ext),
       opts.delete(:suffix) || __e__assets__opts[:suffix],
@@ -70,19 +69,16 @@ module EspressoAssetsMixin
   alias img_tag image_tag
 
   %w[.jpg .jpeg .png .gif .tif .tiff .bmp .svg .ico .xpm .icon].each do |ext|
-    self.class_eval <<-RB
-      def #{ext.delete('.') + '_tag'} src = nil, opts = {}
-        src.is_a?(Hash) && (opts = src.dup) && (src = nil)
-        image_tag src, opts.merge(:ext => '#{ext}')
-      end
-    RB
+    define_method ext.delete('.') + '_tag' do |src = nil, opts = {}|
+      src.is_a?(Hash) && (opts = src.dup) && (src = nil)
+      image_tag src, opts.merge(ext: ext)
+    end
   end
 
   private
   def __e__assets__opts_to_s opts
-    (@__e__assets__opts_to_s ||= {})[opts.hash] = opts.keys.inject([]) do |f, k|
-      f << '%s="%s"' % [k, ::CGI.escapeHTML(opts[k])]
-    end.join(' ')
+    (@__e__assets__opts_to_s ||= {})[opts.hash] ||= opts.any? ? 
+      opts.keys.inject(['']) {|c,k| c << '%s="%s"' % [k, ::CGI.escapeHTML(opts[k])]}*' ' : ''
   end
 
   def __e__assets__opts
@@ -119,9 +115,7 @@ class EspressoAssetsMapper
   def initialize baseurl, opts = {}, &proc
     @opts = opts.freeze
     baseurl = baseurl.to_s.dup.strip
-    if baseurl.size > 0
-      baseurl << '/' unless baseurl =~ /\/\Z/
-    end
+    baseurl.empty? ? baseurl = nil : (baseurl =~ /\/\Z/ || baseurl << '/')
     @baseurl, @wd = baseurl.freeze, nil
     proc && self.instance_exec(&proc)
   end
@@ -148,7 +142,11 @@ class EspressoAssetsMapper
 
   private
   def assets_url path = nil
-    baseurl + wd.to_s + path.to_s
+    chunks = [baseurl, wd, path]          # assigning array to a variable
+    chunks.select! {|c| c && c.size > 0}  # and work on it
+    File.join *chunks                     # is 2x faster than
+                                          # [baseurl, wd, path].select {...}
+                                          # cause last one will create 2 arrays
   end
 
   def __e__assets__opts
@@ -170,7 +168,7 @@ class E
   private
   def assets_url path = nil
     path ?
-      (app.assets_url ? app.assets_url + path.to_s : path.to_s) :
+      (app.assets_url ? File.join(app.assets_url, path.to_s) : path.to_s) :
       (app.assets_url ? app.assets_url : '')
   end
 
