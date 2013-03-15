@@ -2,9 +2,14 @@ module EspressoConstants
 
   VIEW__ENGINE_BY_EXT, VIEW__ENGINE_BY_SYM = {}, {}
   
+  if Object.const_defined?(:Rabl)
+    Rabl.register!
+  end
+
   Tilt.mappings.each do |m|
     m.last.each do |engine|
       engine_name = engine.name.split('::').last.sub(/Template\Z/, '')
+      engine_name = engine.name.split('::').first if engine_name.empty?
       next if engine_name.empty?
       VIEW__ENGINE_BY_EXT['.' + engine_name.downcase] = engine
       VIEW__ENGINE_BY_SYM[engine_name.to_sym] = engine
@@ -26,27 +31,4 @@ module EspressoConstants
   VIEW__DEFAULT_PATH   = 'view/'.freeze
   VIEW__DEFAULT_ENGINE = [Tilt::ERBTemplate]
 
-end
-
-module EspressoUtils
-  def register_rabl_engine!
-    if Object.const_defined?(:Rabl)
-      Rabl.register!
-      VIEW__ENGINE_BY_EXT['.rabl'] = RablTemplate
-      VIEW__ENGINE_BY_SYM[:Rabl]  = RablTemplate
-      VIEW__EXT_BY_ENGINE[RablTemplate] = '.rabl'.freeze
-    end
-    def __method__; end
-  end
-  module_function :register_rabl_engine!
-
-  def register_slim_engine!
-    if Object.const_defined?(:Slim)
-      VIEW__ENGINE_BY_EXT['.slim'] = Slim::Template
-      VIEW__ENGINE_BY_SYM[:Slim]  = Slim::Template
-      VIEW__EXT_BY_ENGINE[Slim::Template] = '.slim'.freeze
-    end
-    def __method__; end
-  end
-  module_function :register_slim_engine!
 end
