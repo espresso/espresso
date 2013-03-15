@@ -31,6 +31,7 @@ end
 module EspressoUtils
   def register_rabl_engine!
     if Object.const_defined?(:Rabl)
+      Rabl.register!
       VIEW__ENGINE_BY_EXT['.rabl'] = RablTemplate
       VIEW__ENGINE_BY_SYM[:Rabl]  = RablTemplate
       VIEW__EXT_BY_ENGINE[RablTemplate] = '.rabl'.freeze
