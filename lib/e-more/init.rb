@@ -10,6 +10,11 @@ module EspressoConstants
       VIEW__ENGINE_BY_SYM[engine_name.to_sym] = engine
     end
   end
+  # Rabl adapter not shipped with Tilt,
+  # so adding Rabl to map to be sure adhoc methods are defined at loadtime
+  VIEW__ENGINE_BY_EXT['.rabl'] = nil unless VIEW__ENGINE_BY_EXT.has_key?('.rabl')
+  VIEW__ENGINE_BY_SYM[:Rabl]   = nil unless VIEW__ENGINE_BY_SYM.has_key?(:Rabl)
+
   # Slim adapter not shipped with Tilt,
   # so adding Slim to map to be sure adhoc methods are defined at loadtime
   VIEW__ENGINE_BY_EXT['.slim'] = nil unless VIEW__ENGINE_BY_EXT.has_key?('.slim')
@@ -24,6 +29,16 @@ module EspressoConstants
 end
 
 module EspressoUtils
+  def register_rabl_engine!
+    if Object.const_defined?(:Rabl)
+      VIEW__ENGINE_BY_EXT['.rabl'] = RablTemplate
+      VIEW__ENGINE_BY_SYM[:Rabl]  = RablTemplate
+      VIEW__EXT_BY_ENGINE[RablTemplate] = '.rabl'.freeze
+    end
+    def __method__; end
+  end
+  module_function :register_rabl_engine!
+
   def register_slim_engine!
     if Object.const_defined?(:Slim)
       VIEW__ENGINE_BY_EXT['.slim'] = Slim::Template
