@@ -115,25 +115,25 @@ class E
   end
   alias render_lf render_layout_file
 
-  VIEW__ENGINE_BY_EXT.each_key do |ext|
+  VIEW__ENGINE_MAPPER.each_key do |ext|
     __e__adhoc_engine_ext = ext.sub('.', '')
     
     define_method 'render_%s' % __e__adhoc_engine_ext do |*args, &proc|
       template, scope, locals = __e__engine_arguments(args)
       engine_args = proc ? [] : [__e__template(template, ext)]
-      output = __e__engine_instance(VIEW__ENGINE_BY_EXT[ext], *engine_args, &proc).render(scope, locals)
+      output = __e__engine_instance(VIEW__ENGINE_MAPPER[ext], *engine_args, &proc).render(scope, locals)
 
       layout, layout_proc = layout?
       return output unless layout || layout_proc
 
       engine_args = layout_proc ? [] : [__e__layout_template(layout, ext)]
-      __e__engine_instance(VIEW__ENGINE_BY_EXT[ext], *engine_args, &layout_proc).render(scope, locals) {output}
+      __e__engine_instance(VIEW__ENGINE_MAPPER[ext], *engine_args, &layout_proc).render(scope, locals) {output}
     end
 
     define_method 'render_%s_partial' % __e__adhoc_engine_ext do |*args, &proc|
       template, scope, locals = __e__engine_arguments(args)
       engine_args = proc ? [] : [__e__template(template, ext)]
-      __e__engine_instance(VIEW__ENGINE_BY_EXT[ext], *engine_args, &proc).render(scope, locals)
+      __e__engine_instance(VIEW__ENGINE_MAPPER[ext], *engine_args, &proc).render(scope, locals)
     end
     alias_method 'render_%s_p' % __e__adhoc_engine_ext, 'render_%s_partial' % __e__adhoc_engine_ext
 
@@ -142,7 +142,7 @@ class E
       layout, layout_proc = layout ? layout : layout?
       layout || layout_proc || raise('No explicit layout given nor implicit layout found' % action)
       engine_args = layout_proc ? [] : [__e__layout_template(layout, ext)]
-      __e__engine_instance(VIEW__ENGINE_BY_EXT[ext], *engine_args, &layout_proc).render(scope, locals, &(proc || Proc.new {''}))
+      __e__engine_instance(VIEW__ENGINE_MAPPER[ext], *engine_args, &layout_proc).render(scope, locals, &(proc || Proc.new {''}))
     end
     alias_method 'render_%s_l' % __e__adhoc_engine_ext, 'render_%s_layout' % __e__adhoc_engine_ext
 
@@ -198,5 +198,4 @@ class E
 
 end
 
-# allow to check whether explicit path given
 class EspressoExplicitViewPath < String; end

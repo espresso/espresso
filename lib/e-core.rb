@@ -11,9 +11,6 @@ require 'e-core/controller/setup'
 require 'e-core/controller/base'
 require 'e-core/controller/actions'
 
-require 'e-core/app/setup'
-require 'e-core/app/base'
-
 require 'e-core/instance/setup'
 require 'e-core/instance/base'
 require 'e-core/instance/cookies'
