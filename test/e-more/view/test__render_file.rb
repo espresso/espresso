@@ -2,12 +2,15 @@ module EMoreTest__View__File
   class RenderFileTest < E
     map '/'
 
-    format '.xml'
+    format '.xml', '.json'
     layout :layout
 
     engine :ERB
     on '.xml' do
       engine :Slim
+    end
+    on '.json' do
+      engine :Rabl
     end
 
     def file
@@ -28,6 +31,10 @@ module EMoreTest__View__File
       end
     end
 
+    def rabl_file
+      render_rabl_f params[:file]
+    end
+
   end
 
   Spec.new RenderFileTest do
@@ -42,6 +49,13 @@ module EMoreTest__View__File
       Should 'use Slim engine' do
         get 'file.xml', :file => 'render_file.slim'
         expect(last_response.body) == '.xml/file'
+      end
+
+      Should 'use Rabl engine' do
+        # NOTE: Rabl internally implements a format helper so instead it
+        # provides request_format which does not contain a preceeding '.'
+        get 'file.json', :file => 'render_file.rabl'
+        expect(last_response.body) == '{"format":"json","action":"file"}'
       end
     end
 
@@ -66,6 +80,11 @@ module EMoreTest__View__File
         get :slim_layout_file, :file => 'adhoc_test/layouts/slim_layout_file.slim', :content => 'SLIMTEST'
         expect(last_response.body) == 'HEADER|SLIMTEST|FOOTER'
 
+      end
+
+      Testing :Rabl do
+        get :rabl_file, :file => 'adhoc_test/rabl_file.rabl'
+        expect(last_response.body) == '{"action":"rabl_file","file":"rabl_file.rabl"}'
       end
     end
 

@@ -5,6 +5,8 @@ require 'stringio'
 require 'specular'
 require 'sonar'
 require 'slim'
+require 'json'
+require 'rabl'
 require 'haml'
 
 $:.unshift File.expand_path('../../lib', __FILE__)
