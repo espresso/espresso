@@ -1,6 +1,7 @@
 
-+ 0.4.2 [Feb ? 2013]
++ 0.4.2 [March 11 2013]
 
+  - Generator moved to a standalone gem - [Enginery](https://github.com/espresso/enginery)
   - helpers are now included via `helper` method - [#ab2063461](https://github.com/espresso/espresso/commit/ab2063461)
   - `link_to` helper [#db51c839](https://github.com/espresso/espresso/commit/db51c839cf2e1165bceb5d394b3706e53c59f0b4)
   - make index action to serve /index URL [#fb763c64](https://github.com/espresso/espresso/commit/fb763c644092577627321a0d672e3cc060f9c9cf)

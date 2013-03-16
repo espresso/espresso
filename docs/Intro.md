@@ -164,11 +164,9 @@ app.run
 You are free to create projects of any types using any design patterns.<br>
 Espresso wont stay in your way nor bombarding you with conventions.
 
-However, if you want to simplify the routine, you can use built-in generator.
+And when you want to simplify the routine use [Enginery](https://github.com/espresso/enginery)
 
-It will build a ready-to-use application and will to easily generate controllers, routes, models etc. from command line.
-
-**[More on Generator](https://github.com/espresso/espresso/blob/master/docs/Generator.md)**
+It will build a ready-to-use application and will to easily generate controllers, routes, specs, models, migrations etc. from command line.
 
 **[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
