@@ -117,6 +117,7 @@ module EspressoUtils
     max = nil if unlimited
     [min, max]
   end
+  module_function :method_arity
 
   # call it like activesupport method
   # convert constant names to underscored (file) names
