@@ -107,7 +107,6 @@ class << E
     else
       nil
     end
-
     {
               controller: self,
                   action: action,
@@ -124,27 +123,6 @@ class << E
   # returning required parameters calculated by arity
   def action_parameters action
     method = self.instance_method(action)
-
-    parameters = method.parameters
-    min, max = 0, parameters.size
-
-    unlimited = false
-    parameters.each_with_index do |param, i|
-
-      increment = param.first == :req
-
-      if (next_param = parameters.values_at(i+1).first)
-        increment = true if next_param[0] == :req
-      end
-
-      if param.first == :rest
-        increment = false
-        unlimited = true
-      end
-      min += 1 if increment
-    end
-    max = nil if unlimited
-    [parameters.freeze, [min, max].freeze]
+    [method.parameters.freeze, method_arity(method).freeze]
   end
-  
 end

@@ -95,6 +95,29 @@ module EspressoUtils
   end
   module_function :indifferent_hash
 
+  def method_arity method
+    parameters = method.parameters
+    min, max = 0, parameters.size
+
+    unlimited = false
+    parameters.each_with_index do |param, i|
+
+      increment = param.first == :req
+
+      if (next_param = parameters.values_at(i+1).first)
+        increment = true if next_param[0] == :req
+      end
+
+      if param.first == :rest
+        increment = false
+        unlimited = true
+      end
+      min += 1 if increment
+    end
+    max = nil if unlimited
+    [min, max]
+  end
+
   # call it like activesupport method
   # convert constant names to underscored (file) names
   def underscore str

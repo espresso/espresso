@@ -1,20 +1,24 @@
 
++ 0.4.3 [March ? 2013]
+
+  - Rabl support added - [f65a37bb059](https://github.com/espresso/espresso/commit/f65a37bb059)
+
 + 0.4.2 [March 11 2013]
 
   - Generator moved to a standalone gem - [Enginery](https://github.com/espresso/enginery)
-  - helpers are now included via `helper` method - [#ab2063461](https://github.com/espresso/espresso/commit/ab2063461)
-  - `link_to` helper [#db51c839](https://github.com/espresso/espresso/commit/db51c839cf2e1165bceb5d394b3706e53c59f0b4)
-  - make index action to serve /index URL [#fb763c64](https://github.com/espresso/espresso/commit/fb763c644092577627321a0d672e3cc060f9c9cf)
+  - helpers are now included via `helper` method - [ab2063461](https://github.com/espresso/espresso/commit/ab2063461)
+  - `link_to` helper [db51c839](https://github.com/espresso/espresso/commit/db51c839cf2e1165bceb5d394b3706e53c59f0b4)
+  - make index action to serve /index URL [fb763c64](https://github.com/espresso/espresso/commit/fb763c644092577627321a0d672e3cc060f9c9cf)
   - Added `reject_automount!` for controllers that should not be mounted at automount [f5ce4723a](https://github.com/espresso/espresso/commit/f5ce4723a)
   - Fixed RDoc generation on Ruby 2.0.0 - [0ad4bbe951](https://github.com/espresso/espresso/commit/0ad4bbe951)
-  - trap INT and TERM signals to gracefully stop web server - [#fcbebf974](https://github.com/espresso/espresso/commit/fcbebf9740a49065b31ad8d65dcc0d31cf80247b)
+  - trap INT and TERM signals to gracefully stop web server - [fcbebf974](https://github.com/espresso/espresso/commit/fcbebf9740a49065b31ad8d65dcc0d31cf80247b)
 
 <hr>
 
 + 0.4.1 [Feb 18 2013]
 
-  - support for various streaming backends - [#bd844acf](https://github.com/espresso/espresso/commit/bd844acf)
-  - added transfer_encoding setup - [#e6f4805f4](https://github.com/espresso/espresso/commit/e6f4805f478050df9a7a1206e7ed8ae9b94da039)
+  - support for various streaming backends - [bd844acf](https://github.com/espresso/espresso/commit/bd844acf)
+  - added transfer_encoding setup - [e6f4805f4](https://github.com/espresso/espresso/commit/e6f4805f478050df9a7a1206e7ed8ae9b94da039)
 
 <hr>
 
