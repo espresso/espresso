@@ -19,6 +19,7 @@ class EspressoApp
     @automount = automount
     proc && self.instance_exec(&proc)
     use ExtendedRack
+    compiler_pool(Hash.new)
   end
 
   # mount given/discovered controllers into current app.
