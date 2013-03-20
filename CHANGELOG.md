@@ -1,6 +1,7 @@
 
 + 0.4.3 [March ? 2013]
 
+  - View compiler enabled by default - [2baaf2](https://github.com/espresso/espresso/commit/2baaf2)
   - Rabl support added - [f65a37bb059](https://github.com/espresso/espresso/commit/f65a37bb059)
 
 + 0.4.2 [March 11 2013]
