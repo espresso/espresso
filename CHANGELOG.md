@@ -4,6 +4,8 @@
   - View compiler enabled by default - [2baaf2](https://github.com/espresso/espresso/commit/2baaf2)
   - Rabl support added - [f65a37bb059](https://github.com/espresso/espresso/commit/f65a37bb059)
 
+<hr>
+
 + 0.4.2 [March 11 2013]
 
   - Generator moved to a standalone gem - [Enginery](https://github.com/espresso/enginery)
