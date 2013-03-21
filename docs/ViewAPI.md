@@ -469,10 +469,11 @@ When rendering templates, most time are spent at files reading and templates com
 
 You can skip these expensive operations by using built-in compiler.
 
-It will simply store compiled templates in memory and on consequent requests will just render them,
-avoiding filesystem calls for reading and CPU time for compiling templates.
+It will simply store compiled templates in memory and on consequent requests will just render them, avoiding filesystem calls for reading and CPU time for compiling templates.
 
-To use compiler you should simply set `compiler_pool` at app level:
+As of version "0.4.3", compiler are enabled by default.
+
+Before "0.4.3" you have to enable it manually by using `compiler_pool` at app level:
 
 ```ruby
 class App < E
