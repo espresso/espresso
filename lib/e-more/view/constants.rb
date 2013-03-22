@@ -8,6 +8,13 @@ module EspressoConstants
   # but not all engines are registered under Tilt namespace, e.g. Slim, Rabl
   VIEW__ENGINE_BY_SYM = {}
 
+  # Slim and Rabl adapters not shipped with Tilt
+  VIEW__EXTRA_ENGINES = {
+    Slim: {extension: '.slim', template: 'Slim::Template'},
+    Rabl: {extension: '.rabl', template: 'RablTemplate'}
+  }
+  VIEW__EXTRA_ENGINES.each_key {|e| VIEW__ENGINE_BY_SYM[e] = nil}
+
   Tilt.mappings.each do |(ext,engines)|
     engines.each do |engine|
       engine_name = engine.to_s.scan(/(\w+)Template/).flatten.first || next
@@ -27,12 +34,6 @@ module EspressoConstants
   VIEW__EXT_BY_ENGINE = Tilt.mappings.sort { |a, b| b.first.size <=> a.first.size }.
     inject({}) {|m,i| i.last.each { |e| m.update e => ('.' + i.first).freeze }; m }
 
-  # Slim and Rabl adapters not shipped with Tilt
-  VIEW__EXTRA_ENGINES = {
-    Slim: {extension: '.slim', template: 'Slim::Template'},
-    Rabl: {extension: '.rabl', template: 'RablTemplate'}
-  }
-  
   # making sure adhoc renderers will be defined for extra engines
   # even if they are required after Espresso
   VIEW__EXTRA_ENGINES.each_value do |info|
