@@ -41,14 +41,18 @@ class << E
     orm = :ar if resource.respond_to?(:arel_table)
     orm = :dm if resource.respond_to?(:storage_name)
     orm_map = {
-      :ar => {:get => :find, :put => :update_attributes, :patch => :update_attributes},
+      ar: {
+          get: :find,
+          put: :update_attributes,
+        patch: :update_attributes
+      },
     }[orm] || {}
     resource_method = {
-      :get    => opts.fetch(:get,    orm_map[:get]   || :get),
-      :post   => opts.fetch(:post,   :create),
-      :put    => opts.fetch(:put,    orm_map[:put]   || :update),
-      :patch  => opts.fetch(:patch,  orm_map[:patch] || :update),
-      :delete => opts.fetch(:delete, :destroy),
+         get: opts.fetch(:get,    orm_map[:get] || :get),
+         put: opts.fetch(:put,    orm_map[:put] || :update),
+        post: opts.fetch(:post,   :create),
+       patch: opts.fetch(:patch,  orm_map[:patch] || :update),
+      delete: opts.fetch(:delete, :destroy),
     }
     
     proc_accept_object, proc_accept_errors = nil
@@ -76,9 +80,9 @@ class << E
             # so using trivial looping to extract error messages.
             errors = []
             err.each_pair do |k,v|
-              # usually DataMapper returns erros in the following format:
+              # usually DataMapper returns errors in the following format:
               # { :property => ['error 1', 'error 2'] }
-              # flatten is there just in case we get nested arrays.
+              # flatten is here just in case we get nested arrays.
               error = v.is_a?(Array) ? v.flatten.join(join_with) : v.to_s
               errors << '%s: %s' % [k, error]
             end
