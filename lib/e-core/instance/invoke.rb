@@ -68,9 +68,7 @@ class E
     end
 
     env = Hash[env()] # faster than #dup
-    if block_given?
-      yield env
-    end
+    yield(env) if block_given?
     env[ENV__SCRIPT_NAME]  = route
     env[ENV__PATH_INFO]    = ''
     env[ENV__QUERY_STRING] = ''
@@ -98,25 +96,31 @@ class E
   %w[invoke pass fetch].each do |meth|
     # defining methods that will allow to issue requests via XHR, aka. Ajax.
     # ex: #xhr_pass, #xhr_fetch, #xhr_invoke
-    define_method 'xhr_%s' % meth do |*args|
-      self.send(meth, *args) { |env| env.update ENV__HTTP_X_REQUESTED_WITH => 'XMLHttpRequest' }
+    define_method 'xhr_%s' % meth do |*args, &proc|
+      self.send(meth, *args) do |env|
+        proc.call(env) if proc
+        env.update ENV__HTTP_X_REQUESTED_WITH => 'XMLHttpRequest'
+      end
     end
 
     HTTP__REQUEST_METHODS.each do |rm|
       # defining methods that will allow to issue requests via custom request method.
       # ex: #pass_via_get, #invoke_via_post, #fetch_via_post etc.
-      define_method '%s_via_%s' % [meth, rm.downcase] do |*args|
-        self.send(meth, *args) { |env| env.update ENV__REQUEST_METHOD => rm }
+      define_method '%s_via_%s' % [meth, rm.downcase] do |*args, &proc|
+        self.send(meth, *args) do |env|
+          proc.call(env) if proc
+          env.update ENV__REQUEST_METHOD => rm
+        end
       end
 
       # defining methods like
       # #xhr_pass_via_post, #xhr_fetch_via_get etc
-      define_method 'xhr_%s_via_%s' % [meth, rm.downcase] do |*args|
+      define_method 'xhr_%s_via_%s' % [meth, rm.downcase] do |*args, &proc|
         self.send(meth, *args) do |env|
+          proc.call(env) if proc
           env.update ENV__REQUEST_METHOD => rm, ENV__HTTP_X_REQUESTED_WITH => 'XMLHttpRequest'
         end
       end
-
     end
   end
 
