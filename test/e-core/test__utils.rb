@@ -3,10 +3,13 @@ module ECoreTest__Utils
     Testing 'rootify_url' do
       variations = [
         [["/", "/main"], "/main"],
-        [["/main", "/second"], "/main/second"],
-        [["main", "second"], "/main/second"]
+        [["/main", "/second"],          "/main/second"],
+        [["main", "second"],            "/main/second"],
+        ['path',                        '/path'],
+        ['///some-path/',               '/some-path'],
+        [['/some', '/path/'],           '/some/path'],
+        [['some', 'another', 'path/'],  '/some/another/path'],
       ]
-
       variations.each do |variation|
         is?(EspressoUtils::rootify_url(*variation[0])) == variation[1]
       end
