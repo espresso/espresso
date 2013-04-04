@@ -1,13 +1,15 @@
 module EspressoUtils
   include EspressoConstants
 
-  PATH_MODIFIERS = [
+  PATH_MODIFIERS = Regexp.union([
+      /\\+/,
+      /\/+/,
       /\A\.\.\Z/,
       '../', '/../', '/..',
       '..%2F', '%2F..%2F', '%2F..',
       '..\\', '\\..\\', '\\..',
       '..%5C', '%5C..%5C', '%5C..',
-  ].freeze
+  ].map { |x| x.is_a?(String) ? Regexp.escape(x) : x })
 
   # "fluffing" potentially hostile paths to avoid paths traversing.
   #
@@ -20,7 +22,7 @@ module EspressoUtils
   # @return [String]
   #
   def normalize_path path
-    path.gsub ::Regexp.union(/\\+/, /\/+/, *PATH_MODIFIERS), '/'
+    path.gsub PATH_MODIFIERS, '/'
   end
   module_function :normalize_path
 
