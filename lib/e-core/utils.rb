@@ -18,7 +18,7 @@ module EspressoUtils
   #
   # @note TERRIBLE SLOW METHOD! use only at load time
   #
-  # @param [String, Symbol] *chunks
+  # @param [String, Symbol] path
   # @return [String]
   #
   def normalize_path path
