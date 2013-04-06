@@ -80,8 +80,10 @@ class E
       args.each { |a| a.is_a?(Hash) ? params.update(a) : path << a }
       env[ENV__PATH_INFO] = env[ENV__REQUEST_URI] = path.join('/')
       
-      params.any? &&
+      if params.any?
         env.update(ENV__QUERY_STRING => build_nested_query(params))
+        env['rack.input'] = StringIO.new
+      end
     end
     controller.new(action).call(env)
   end

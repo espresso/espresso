@@ -1,6 +1,6 @@
 require 'cgi'
-require 'rubygems'
 require 'rack'
+require 'stringio'
 
 require 'e-core/constants'
 require 'e-core/utils'
