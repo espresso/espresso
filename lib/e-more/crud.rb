@@ -188,15 +188,15 @@ class << E
     end
 
     options = lambda do |controller_instance|
-      EspressoConstants::HTTP__REQUEST_METHODS.reject do |rm|
+      EConstants::HTTP__REQUEST_METHODS.reject do |rm|
         next if rm == 'OPTIONS'
         args  = rm == 'POST' ? 
           [{E__CRUD__AUTH_TEST_PAYLOAD_KEY => 'true'}] : 
           [E__CRUD__AUTH_TEST_PAYLOAD_KEY]
         s,h,b = controller_instance.invoke(action % rm.downcase, *args) do |env|
-          env.update ENV__REQUEST_METHOD => rm
+          env.update EConstants::ENV__REQUEST_METHOD => rm
         end
-        s == STATUS__PROTECTED
+        s == EConstants::STATUS__PROTECTED
       end.join(', ')
     end
 

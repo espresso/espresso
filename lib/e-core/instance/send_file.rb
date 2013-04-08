@@ -19,15 +19,15 @@ class E
     (cache_control = opts[:cache_control]) && (file.cache_control = cache_control)
     response = file.serving env
 
-    response[1][HEADER__CONTENT_DISPOSITION] = opts[:attachment] ?
+    response[1][EConstants::HEADER__CONTENT_DISPOSITION] = opts[:attachment] ?
         'attachment; filename="%s"' % (opts[:filename] || ::File.basename(path)) :
         'inline'
 
     (content_type = opts[:content_type]) &&
-      (response[1][HEADER__CONTENT_TYPE] = content_type)
+      (response[1][EConstants::HEADER__CONTENT_TYPE] = content_type)
 
     (last_modified = opts[:last_modified]) &&
-      (response[1][HEADER__LAST_MODIFIED] = last_modified)
+      (response[1][EConstants::HEADER__LAST_MODIFIED] = last_modified)
 
     halt response
   end

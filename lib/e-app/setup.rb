@@ -2,7 +2,7 @@ class EspressoApp
 
   # set base URL to be prepended to all controllers
   def map url
-    @base_url = rootify_url(url).freeze
+    @base_url = EUtils.rootify_url(url).freeze
   end
 
   def base_url

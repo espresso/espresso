@@ -36,8 +36,8 @@ class EspressoApp
     controllers, roots = [], []
     args.flatten.each do |a|
       if a.is_a?(String)
-        roots << rootify_url(a)
-      elsif is_app?(a)
+        roots << EUtils.rootify_url(a)
+      elsif EUtils.is_app?(a)
         controllers << a
       else
         controllers.concat extract_controllers(a)
@@ -96,7 +96,7 @@ class EspressoApp
   alias urlmap url_map
 
   def environment
-    ENV['RACK_ENV'] || :development
+    ENV[EConstants::ENV__RACK_ENV] || :development
   end
 
   # by default, Espresso will use WEBrick server.
@@ -114,10 +114,10 @@ class EspressoApp
   #
   def run opts = {}
     handler = opts.delete(:server)
-    (handler && Rack::Handler.const_defined?(handler)) || (handler = HTTP__DEFAULT_SERVER)
+    (handler && Rack::Handler.const_defined?(handler)) || (handler = EConstants::HTTP__DEFAULT_SERVER)
 
     port = opts.delete(:port)
-    opts[:Port] ||= port || HTTP__DEFAULT_PORT
+    opts[:Port] ||= port || EConstants::HTTP__DEFAULT_PORT
 
     host = opts.delete(:host) || opts.delete(:bind)
     opts[:Host] = host if host
@@ -157,29 +157,29 @@ class EspressoApp
 
   private
   def call! env
-    path = env[ENV__PATH_INFO]
-    script_name = env[ENV__SCRIPT_NAME]
+    path = env[EConstants::ENV__PATH_INFO]
+    script_name = env[EConstants::ENV__SCRIPT_NAME]
     sorted_routes.each do |route|
       if matches = route.match(path)
 
-        if route_setup = @routes[route][env[ENV__REQUEST_METHOD]] || @routes[route][:*]
+        if route_setup = @routes[route][env[EConstants::ENV__REQUEST_METHOD]] || @routes[route][:*]
 
           if route_setup[:rewriter]
-            app = EspressoRewriter.new(*matches.captures, &route_setup[:rewriter])
+            app = ERewriter.new(*matches.captures, &route_setup[:rewriter])
             return app.call(env)
           elsif route_setup[:app]
-            env[ENV__PATH_INFO] = matches[1].to_s
+            env[EConstants::ENV__PATH_INFO] = matches[1].to_s
             return route_setup[:app].call(env)
           else
             path_info = matches[1].to_s
 
-            env[ENV__SCRIPT_NAME] = (route_setup[:path]).freeze
-            env[ENV__PATH_INFO]   = (path_ok?(path_info) ? path_info : '/' << path_info).freeze
+            env[EConstants::ENV__SCRIPT_NAME] = (route_setup[:path]).freeze
+            env[EConstants::ENV__PATH_INFO]   = (path_ok?(path_info) ? path_info : '/' << path_info).freeze
 
             epi, format = nil
             (fr = route_setup[:format_regexp]) && (epi, format = path_info.split(fr))
-            env[ENV__ESPRESSO_PATH_INFO] = epi
-            env[ENV__ESPRESSO_FORMAT]    = format
+            env[EConstants::ENV__ESPRESSO_PATH_INFO] = epi
+            env[EConstants::ENV__ESPRESSO_FORMAT]    = format
 
             controller_instance = route_setup[:controller].new
             controller_instance.action_setup = route_setup
@@ -190,7 +190,7 @@ class EspressoApp
           end
         else
           return [
-            STATUS__NOT_IMPLEMENTED,
+            EConstants::STATUS__NOT_IMPLEMENTED,
             {"Content-Type" => "text/plain"},
             ["Resource found but it can be accessed only through %s" % @routes[route].keys.join(", ")]
           ]
@@ -198,13 +198,13 @@ class EspressoApp
       end
     end
     [
-      STATUS__NOT_FOUND,
-      {"Content-Type" => "text/plain", "X-Cascade" => "pass"},
-      ["Not Found: #{env[ENV__PATH_INFO]}"]
+      EConstants::STATUS__NOT_FOUND,
+      {'Content-Type' => "text/plain", "X-Cascade" => "pass"},
+      ['Not Found: %s' % env[EConstants::ENV__PATH_INFO]]
     ]
   ensure
-    env[ENV__PATH_INFO] = path
-    env[ENV__SCRIPT_NAME] = script_name
+    env[EConstants::ENV__PATH_INFO] = path
+    env[EConstants::ENV__SCRIPT_NAME] = script_name
   end
 
   def sorted_routes
@@ -245,7 +245,7 @@ class EspressoApp
 
   def discover_controllers namespace = nil
     controllers = ObjectSpace.each_object(Class).
-      select { |c| is_app?(c) }.reject { |c| [E].include? c }
+      select { |c| EUtils.is_app?(c) }.reject { |c| [E].include? c }
     namespace.is_a?(Regexp) ?
       controllers.select { |c| c.name =~ namespace } :
       controllers

@@ -39,7 +39,7 @@ module ECoreTest__REST
   Spec.new RestApp do
 
     Ensure "verbless actions respond to any Request Method" do
-      EspressoConstants::HTTP__REQUEST_METHODS.each do |m|
+      EConstants::HTTP__REQUEST_METHODS.each do |m|
         self.send m.to_s.downcase
         is(last_response).ok?
         is('%s|index' % m).current_body? unless m == 'HEAD'

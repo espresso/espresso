@@ -1,18 +1,15 @@
-module EspressoConstants
-
-  HTTP__DEFAULT_SERVER = :WEBrick
-  HTTP__DEFAULT_PORT   = 5252
-  HTTP__DEFAULT_REQUEST_METHOD = 'GET'.freeze
-
-  HTTP__REQUEST_METHODS = %w[GET POST PUT HEAD DELETE OPTIONS PATCH TRACE].freeze
-
-  E__PATH_RULES = {
+module EConstants
+  PATH_RULES = {
     %r[____] => '.'.freeze,
     %r[___]  => '-'.freeze,
     %r[__]   => '/'.freeze,
   }.freeze
+  INDEX_ACTION = :index
 
-  E__INDEX_ACTION = :index
+  HTTP__DEFAULT_SERVER = :WEBrick
+  HTTP__DEFAULT_PORT   = 5252
+  HTTP__DEFAULT_REQUEST_METHOD = 'GET'.freeze
+  HTTP__REQUEST_METHODS = %w[GET POST PUT HEAD DELETE OPTIONS PATCH TRACE].freeze
 
   CONTENT_TYPE__DEFAULT      = 'text/html'.freeze
   CONTENT_TYPE__EVENT_STREAM = 'text/event-stream'.freeze
@@ -38,7 +35,7 @@ module EspressoConstants
   ENV__HTTP_IF_MODIFIED_SINCE   = 'HTTP_IF_MODIFIED_SINCE'.freeze
   ENV__HTTP_IF_UNMODIFIED_SINCE = 'HTTP_IF_UNMODIFIED_SINCE'.freeze
   ENV__HTTP_X_REQUESTED_WITH    = 'HTTP_X_REQUESTED_WITH'.freeze
-
+  ENV__XML_HTTP_REQUEST         = 'XMLHttpRequest'.freeze
   ENV__ESPRESSO_PATH_INFO = 'espresso.path_info'.freeze
   ENV__ESPRESSO_ACTION    = 'espresso.action'.freeze
   ENV__ESPRESSO_FORMAT    = 'espresso.format'.freeze
@@ -47,9 +44,20 @@ module EspressoConstants
   HEADER__LAST_MODIFIED = 'Last-Modified'.freeze
   HEADER__CACHE_CONTROL = 'Cache-Control'.freeze
   HEADER__EXPIRES       = 'Expires'.freeze
-  HEADER__CONTENT_DISPOSITION = 'Content-Disposition'.freeze
   HEADER__LOCATION      = 'Location'.freeze
-  HEADER__TRANSFER_ENCODING = 'Transfer-Encoding'.freeze
+  HEADER__TRANSFER_ENCODING   = 'Transfer-Encoding'.freeze
+  HEADER__CONTENT_DISPOSITION = 'Content-Disposition'.freeze
 
+  ENV__RACK_ENV   = 'RACK_ENV'.freeze
   RACK__WEBSOCKET = 'rack.websocket'.freeze
+
+  PATH_MODIFIERS = Regexp.union([
+      /\\+/,
+      /\/+/,
+      /\A\.\.\Z/,
+      '../', '/../', '/..',
+      '..%2F', '%2F..%2F', '%2F..',
+      '..\\', '\\..\\', '\\..',
+      '..%5C', '%5C..%5C', '%5C..',
+  ].map { |x| x.is_a?(String) ? Regexp.escape(x) : x }).freeze
 end

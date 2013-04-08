@@ -18,23 +18,23 @@ class E
   # @param [Array] args
   #
   def content_type *args
-    return response[HEADER__CONTENT_TYPE] if args.empty?
+    return response[EConstants::HEADER__CONTENT_TYPE] if args.empty?
     type, opts = nil, {}
     args.each {|a| a.is_a?(Hash) ? opts.update(a) : type = a}
     if type
       type = mime_type(type, type)
     else
-      if actual = response[HEADER__CONTENT_TYPE]
+      if actual = response[EConstants::HEADER__CONTENT_TYPE]
         type, charset = actual.split(';')
         opts[:charset] ||= charset
       else
-        type = CONTENT_TYPE__DEFAULT
+        type = EConstants::CONTENT_TYPE__DEFAULT
       end
     end
     if charset = opts[:charset]
       type = '%s; charset=%s' % [type, charset]
     end
-    response[HEADER__CONTENT_TYPE] = type
+    response[EConstants::HEADER__CONTENT_TYPE] = type
   end
   define_setup_method :content_type
 
@@ -44,7 +44,7 @@ class E
   define_setup_method :charset
 
   def transfer_encoding encoding
-    response[HEADER__TRANSFER_ENCODING] = encoding
+    response[EConstants::HEADER__TRANSFER_ENCODING] = encoding
   end
   define_setup_method :transfer_encoding
 

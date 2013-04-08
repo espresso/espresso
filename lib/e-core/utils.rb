@@ -1,16 +1,5 @@
-module EspressoUtils
-  include EspressoConstants
-
-  PATH_MODIFIERS = Regexp.union([
-      /\\+/,
-      /\/+/,
-      /\A\.\.\Z/,
-      '../', '/../', '/..',
-      '..%2F', '%2F..%2F', '%2F..',
-      '..\\', '\\..\\', '\\..',
-      '..%5C', '%5C..%5C', '%5C..',
-  ].map { |x| x.is_a?(String) ? Regexp.escape(x) : x })
-
+module EUtils
+  
   # "fluffing" potentially hostile paths to avoid paths traversing.
   #
   # @note
@@ -22,7 +11,7 @@ module EspressoUtils
   # @return [String]
   #
   def normalize_path path
-    path.gsub PATH_MODIFIERS, '/'
+    path.gsub EConstants::PATH_MODIFIERS, '/'
   end
   module_function :normalize_path
 
@@ -139,7 +128,7 @@ module EspressoUtils
   end
   module_function :class_to_route
 
-  def action_to_route action_name, path_rules = EspressoConstants::E__PATH_RULES
+  def action_to_route action_name, path_rules = EConstants::PATH_RULES
     action_name = action_name.to_s.dup
     path_rules.each_pair {|from, to| action_name = action_name.gsub(from, to)}
     action_name
@@ -148,13 +137,14 @@ module EspressoUtils
 
   def canonical_to_route canonical, action_setup
     args = [canonical]
-    args << action_setup[:action_path] unless action_setup[:action_name] == E__INDEX_ACTION
+    args << action_setup[:action_path] unless action_setup[:action_name] == EConstants::INDEX_ACTION
     rootify_url(*args).freeze
   end
+  module_function :canonical_to_route
 
   def deRESTify_action action
     action_name, request_method = action.to_s.dup, :*
-    HTTP__REQUEST_METHODS.each do |m|
+    EConstants::HTTP__REQUEST_METHODS.each do |m|
       regex = /\A#{m}_/i
       if action_name =~ regex
         request_method = m.freeze
@@ -165,15 +155,5 @@ module EspressoUtils
     [action_name.to_sym, request_method]
   end
   module_function :deRESTify_action
-
-  # instance_exec at runtime is expensive enough,
-  # so compiling procs into methods at load time.
-  def proc_to_method *chunks, &proc
-    chunks += [self.to_s, proc.__id__]
-    name = ('__e__%s__' % chunks.join('_').gsub(/[^\w|\d]/, '_')).to_sym
-    define_method name, &proc
-    private name
-    name
-  end
 
 end

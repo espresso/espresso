@@ -11,7 +11,7 @@ module ECoreTest__Utils
         [['some', 'another', 'path/'],  '/some/another/path'],
       ]
       variations.each do |variation|
-        is?(EspressoUtils::rootify_url(*variation[0])) == variation[1]
+        is?(EUtils::rootify_url(*variation[0])) == variation[1]
       end
     end
 
@@ -21,7 +21,7 @@ module ECoreTest__Utils
         ["One1Two2", "one1_two2"]
       ]
       variations.each do |variation|
-        check(EspressoUtils.underscore(variation[0])) == variation[1]
+        check(EUtils.underscore(variation[0])) == variation[1]
       end
     end
 
@@ -33,7 +33,7 @@ module ECoreTest__Utils
         ["One1Two2", "/one1_two2"]
       ]
       variations.each do |variation|
-        check(EspressoUtils.class_to_route(variation[0])) == variation[1]
+        check(EUtils.class_to_route(variation[0])) == variation[1]
       end
     end
 
@@ -44,7 +44,7 @@ module ECoreTest__Utils
         [['page', {:with => 'param-added', :an_ignored_param => nil}], "page?with=param-added"],
       ]
       variations.each do |variation|
-        check(EspressoUtils.build_path(*variation[0])) == variation[1]
+        check(EUtils.build_path(*variation[0])) == variation[1]
       end
     end
   end

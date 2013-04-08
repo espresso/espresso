@@ -19,10 +19,10 @@ class E
   # @param [String] *args
   #   any args to be passed to engine at initialization
   def engine engine, engine_opts = {}
-    EspressoUtils.register_extra_engines!
-    engine = VIEW__ENGINE_BY_SYM[engine] ||
+    EUtils.register_extra_engines!
+    engine = EConstants::VIEW__ENGINE_BY_SYM[engine] ||
       raise(ArgumentError, '%s engine not supported. Supported engines: %s' %
-        [engine, VIEW__ENGINE_BY_SYM.keys.join(', ')])
+        [engine, EConstants::VIEW__ENGINE_BY_SYM.keys.join(', ')])
     @__e__engine = [engine, engine_opts].freeze
   end
   define_setup_method :engine

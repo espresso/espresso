@@ -51,37 +51,37 @@ class E
 
     if args.empty?
       body = '`invoke` expects some action(or a Controller and some action) to be provided'
-      return [STATUS__BAD_REQUEST, {}, [body]]
+      return [EConstants::STATUS__BAD_REQUEST, {}, [body]]
     end
 
-    controller = EspressoUtils.is_app?(args.first) ? args.shift : self.class
+    controller = EUtils.is_app?(args.first) ? args.shift : self.class
 
     if args.empty?
       body = 'Beside Controller, `invoke` expects some action to be provided'
-      return [STATUS__BAD_REQUEST, {}, [body]]
+      return [EConstants::STATUS__BAD_REQUEST, {}, [body]]
     end
 
     action = args.shift.to_sym
     unless route = controller[action]
       body = '%s does not respond to %s action' % [controller, action]
-      return [STATUS__NOT_FOUND, {}, [body]]
+      return [EConstants::STATUS__NOT_FOUND, {}, [body]]
     end
 
     env = Hash[env()] # faster than #dup
     yield(env) if block_given?
-    env[ENV__SCRIPT_NAME]  = route
-    env[ENV__PATH_INFO]    = ''
-    env[ENV__QUERY_STRING] = ''
-    env[ENV__REQUEST_URI]  = ''
-    env[ENV__ESPRESSO_PATH_INFO] = nil
+    env[EConstants::ENV__SCRIPT_NAME]  = route
+    env[EConstants::ENV__PATH_INFO]    = ''
+    env[EConstants::ENV__QUERY_STRING] = ''
+    env[EConstants::ENV__REQUEST_URI]  = ''
+    env[EConstants::ENV__ESPRESSO_PATH_INFO] = nil
 
     if args.size > 0
       path, params = [''], {}
       args.each { |a| a.is_a?(Hash) ? params.update(a) : path << a }
-      env[ENV__PATH_INFO] = env[ENV__REQUEST_URI] = path.join('/')
+      env[EConstants::ENV__PATH_INFO] = env[EConstants::ENV__REQUEST_URI] = path.join('/')
       
       if params.any?
-        env.update(ENV__QUERY_STRING => build_nested_query(params))
+        env.update(EConstants::ENV__QUERY_STRING => build_nested_query(params))
         env['rack.input'] = StringIO.new
       end
     end
@@ -101,17 +101,17 @@ class E
     define_method 'xhr_%s' % meth do |*args, &proc|
       self.send(meth, *args) do |env|
         proc.call(env) if proc
-        env.update ENV__HTTP_X_REQUESTED_WITH => 'XMLHttpRequest'
+        env.update EConstants::ENV__HTTP_X_REQUESTED_WITH => EConstants::ENV__XML_HTTP_REQUEST
       end
     end
 
-    HTTP__REQUEST_METHODS.each do |rm|
+    EConstants::HTTP__REQUEST_METHODS.each do |rm|
       # defining methods that will allow to issue requests via custom request method.
       # ex: #pass_via_get, #invoke_via_post, #fetch_via_post etc.
       define_method '%s_via_%s' % [meth, rm.downcase] do |*args, &proc|
         self.send(meth, *args) do |env|
           proc.call(env) if proc
-          env.update ENV__REQUEST_METHOD => rm
+          env.update EConstants::ENV__REQUEST_METHOD => rm
         end
       end
 
@@ -120,7 +120,10 @@ class E
       define_method 'xhr_%s_via_%s' % [meth, rm.downcase] do |*args, &proc|
         self.send(meth, *args) do |env|
           proc.call(env) if proc
-          env.update ENV__REQUEST_METHOD => rm, ENV__HTTP_X_REQUESTED_WITH => 'XMLHttpRequest'
+          env.update({
+            EConstants::ENV__REQUEST_METHOD => rm,
+            EConstants::ENV__HTTP_X_REQUESTED_WITH => EConstants::ENV__XML_HTTP_REQUEST
+          })
         end
       end
     end

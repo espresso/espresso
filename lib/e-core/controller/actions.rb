@@ -94,10 +94,10 @@ class << E
 
   private
   def generate_action_setup action
-    action_name, request_method = deRESTify_action(action)
+    action_name, request_method = EUtils.deRESTify_action(action)
     
-    action_path = action_to_route(action_name, path_rules).freeze
-    path = rootify_url(base_url, action_path).freeze
+    action_path = EUtils.action_to_route(action_name, path_rules).freeze
+    path = EUtils.rootify_url(base_url, action_path).freeze
 
     action_arguments, required_arguments = action_parameters(action)
 
@@ -123,6 +123,6 @@ class << E
   # returning required parameters calculated by arity
   def action_parameters action
     method = self.instance_method(action)
-    [method.parameters.freeze, method_arity(method).freeze]
+    [method.parameters.freeze, EUtils.method_arity(method).freeze]
   end
 end

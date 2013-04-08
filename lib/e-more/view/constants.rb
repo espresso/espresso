@@ -1,4 +1,4 @@
-module EspressoConstants
+module EConstants
 
   # this map is used to define adhoc renderers like `render_haml` etc.
   VIEW__ENGINE_MAPPER = {}

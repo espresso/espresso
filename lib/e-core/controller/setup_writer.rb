@@ -19,13 +19,6 @@ class << E
   #    - "____" (4 underscores) => "." (period)
   #
   # @example
-  #    path_rule  "__d__" => "-"
-  #
-  #    def some__d__action
-  #      # will resolve to some-action
-  #    end
-  #
-  # @example
   #    path_rule  "!" => ".html"
   #
   #    def some_action!
@@ -42,14 +35,7 @@ class << E
   def path_rule from, to
     return if mounted?
     from = %r[#{from}] unless from.is_a?(Regexp)
-    (@__e__path_rules ||= Hash[E__PATH_RULES]).update from => to
-  end
-
-  def path_rules
-    @__e__sorted_path_rules ||= begin
-      rules = @__e__path_rules || E__PATH_RULES
-      Hash[rules.sort {|a,b| b.first.source.size <=> a.first.source.size}].freeze
-    end
+    (@__e__path_rules ||= Hash[EConstants::PATH_RULES]).update from => to
   end
 
   # allow to set routes directly, without relying on path rules.
@@ -72,10 +58,6 @@ class << E
   def alias_action url, action
     return if mounted?
     ((@__e__alias_actions ||= {})[action]||=[]) << url
-  end
-
-  def alias_actions
-    @__e__alias_actions || {}
   end
 
   # automatically setting URL extension and Content-Type.
@@ -155,10 +137,6 @@ class << E
     (@__e__disable_formats_for ||= []).concat matchers
   end
 
-  def formats action
-    (@__e__expanded_formats || {})[action] || []
-  end
-
   # add setups to be executed before/after given(or all) actions.
   #
   # @note setups will be executed in the order they was added
@@ -198,8 +176,13 @@ class << E
   def before *matchers, &proc
     add_setup :a, *matchers, &proc
   end
-  alias on    before
   alias setup before
+  # convenient when doing some setup based on format
+  # @example
+  #   on '.xml' do
+  #     # ...
+  #   end
+  alias on before
 
   # allow to run multiple callbacks for same action.
   # action will run its callback(s)(if any) regardless aliased callbacks.
@@ -237,39 +220,11 @@ class << E
     (@__e__after_aliases ||= {})[action] = others
   end
 
-  def setup_aliases position, action
-    if position == :a
-      (@__e__before_aliases || {})[action] || []
-    elsif position == :z
-      (@__e__after_aliases  || {})[action] || []
-    end
-  end
-
-  def add_setup position, *matchers, &proc
-    return if mounted?
-    (@__e__setups  ||= {})[@__e__setup_container] ||= {}
-    method   = proc_to_method(:setups, position, *matchers, &proc)
-    matchers = [:*] if matchers.empty?
-    matchers.each do |matcher|
-      (@__e__setups[@__e__setup_container][position] ||= []) << [matcher, method]
-    end
-  end
-  private :add_setup
-
-  def setups position, action, format
-    return [] unless (s = @__e__expanded_setups) && (s = s[position]) && (s = s[action])
-    s[format] || []
-  end
-
   # add Rack middleware to chain
   def use ware, *args, &proc
     return if mounted?
     (@__e__middleware ||= []).none? {|w| w.first == ware} && 
       @__e__middleware << [ware, args, proc]
-  end
-
-  def middleware
-    @__e__middleware || []
   end
 
   # define a block to be executed on errors.
@@ -295,10 +250,6 @@ class << E
     error_codes.any? || error_codes = [:*]
     meth = proc_to_method(:error_handlers, *error_codes, &proc)
     error_codes.each {|c| (@__e__error_handlers ||= {})[c] = [meth, proc.arity]}
-  end
-
-  def error_handler error_code
-    ((@__e__error_handlers || {}).find {|k,v| error_code == k} || []).last
   end
 
   def rewrite rule, &proc
@@ -330,6 +281,28 @@ class << E
   # include multiple helpers at once
   def helpers *mdls
     mdls.each {|m| helper m}
+  end
+
+  private
+
+  def add_setup position, *matchers, &proc
+    return if mounted?
+    (@__e__setups  ||= {})[@__e__setup_container] ||= {}
+    method   = proc_to_method(:setups, position, *matchers, &proc)
+    matchers = [:*] if matchers.empty?
+    matchers.each do |matcher|
+      (@__e__setups[@__e__setup_container][position] ||= []) << [matcher, method]
+    end
+  end
+
+  # instance_exec at runtime is expensive enough,
+  # so compiling procs into methods at load time.
+  def proc_to_method *chunks, &proc
+    chunks += [self.to_s, proc.__id__]
+    name = ('__e__%s__' % chunks.join('_').gsub(/[^\w|\d]/, '_')).to_sym
+    define_method name, &proc
+    private name
+    name
   end
 
 end

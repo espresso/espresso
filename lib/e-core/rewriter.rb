@@ -1,4 +1,7 @@
-class EspressoRewriter
+class ERewriter
+  include Rack::Utils
+  include EConstants
+  include EUtils
 
   attr_reader :env, :request
 
@@ -7,14 +10,13 @@ class EspressoRewriter
   end
 
   def call env
-    @env, @request = env, EspressoRequest.new(env)
+    @env, @request = env, ERequest.new(env)
     @status, @headers, @body =
       STATUS__BAD_REQUEST, {"Content-Type" => "text/plain"}, []
 
     catch :__e__rewriter__halt_symbol__ do
       self.instance_exec *@matches, &@proc
     end
-
     [@status, @headers, @body]
   end
 

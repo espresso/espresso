@@ -1,52 +1,5 @@
 class << E
 
-  def app;           @__e__app    end
-  def routes;        @__e__routes end
-  def action_setup;  @__e__action_setup end
-  def rewrite_rules; @__e__rewrite_rules || []  end
-  def mounted?;      @__e__mounted || @__e__app end
-
-  # build URL from given action name(or path) and consequent params
-  # @return [String]
-  def route *args
-    mounted? || raise("`route' works only on mounted controllers. Please consider to use `base_url' instead.")
-    return base_url if args.size == 0
-    (route = self[args.first]) && args.shift
-    build_path(route || base_url, *args)
-  end
-  
-  def base_url
-    @__e__base_url || default_route
-  end
-  alias baseurl base_url
-
-  def canonicals
-    @__e__canonicals || []
-  end
-
-  def default_route
-    @__e__default_route ||= class_to_route(self.name).freeze
-  end
-
-  # @example
-  #    class Forum < E
-  #      format '.html', '.xml'
-  #
-  #      def posts
-  #      end
-  #    end
-  #
-  #    App[:posts]             #=> /forum/posts
-  #    App['posts.html']       #=> /forum/posts.html
-  #    App['posts.xml']        #=> /forum/posts.xml
-  #    App['posts.json']       #=> nil
-  #
-  def [] action_or_action_with_format
-    mounted? || raise("`[]' method works only on mounted controllers")
-    @__e__route_by_action[action_or_action_with_format] ||
-      @__e__route_by_action_with_format[action_or_action_with_format]
-  end
-
   def run *args
     mount.run *args
   end
@@ -108,11 +61,11 @@ class << E
   #
   def remap! root, *given_canonicals
     return if mounted?
-    new_base_url   = rootify_url(root, base_url)
+    new_base_url   = EUtils.rootify_url(root, base_url)
     new_canonicals = canonicals.dup
 
     given_canonicals.each do |gc|
-      new_canonicals << rootify_url(gc)
+      new_canonicals << EUtils.rootify_url(gc)
     end
 
     map! new_base_url, *new_canonicals.uniq
@@ -133,8 +86,8 @@ class << E
   private
 
   def map! *paths
-    @__e__base_url   = rootify_url(paths.shift.to_s).freeze
-    @__e__canonicals = paths.map { |p| rootify_url(p.to_s) }.freeze
+    @__e__base_url   = EUtils.rootify_url(paths.shift.to_s).freeze
+    @__e__canonicals = paths.map { |p| EUtils.rootify_url(p.to_s) }.freeze
   end
 
   def lock!
@@ -178,12 +131,12 @@ class << E
 
   def set_action_routes action_setup
     set_route(action_setup[:path], action_setup)
-    set_route(base_url, action_setup) if action_setup[:action_name] == E__INDEX_ACTION
+    set_route(base_url, action_setup) if action_setup[:action_name] == EConstants::INDEX_ACTION
   end
 
   def set_canonical_routes action_setup
     canonicals.each do |c|
-      c_route = canonical_to_route(c, action_setup)
+      c_route = EUtils.canonical_to_route(c, action_setup)
       c_setup = action_setup.merge(:path => c_route, :canonical => action_setup[:path])
       set_route(c_route, c_setup)
     end
@@ -193,14 +146,14 @@ class << E
     aliases = alias_actions[action_setup[:action]] || []
 
     aliases.each do |a|
-      a_route = rootify_url(base_url, a)
+      a_route = EUtils.rootify_url(base_url, a)
       a_setup = action_setup.merge(:path => a_route)
       set_route(a_route, a_setup)
     end
 
     canonicals.each do |c|
       aliases.each  do |a|
-        a_route = rootify_url(c, a)
+        a_route = EUtils.rootify_url(c, a)
         a_setup = action_setup.merge(:path => a_route, :canonical => action_setup[:path])
         set_route(a_route, a_setup)
       end
@@ -208,7 +161,7 @@ class << E
   end
 
   def set_route route, setup
-    regexp = route_to_regexp(route)
+    regexp = EUtils.route_to_regexp(route)
     (@__e__routes[regexp] ||= {})[setup[:request_method]] = setup
   end
 

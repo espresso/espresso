@@ -9,7 +9,7 @@ class E
   def view_path?
     @__e__computed_view_path ||= begin
       (fullpath = view_fullpath?) ? fullpath :
-        File.join(app.root, @__e__view_path || VIEW__DEFAULT_PATH).freeze
+        File.join(app.root, @__e__view_path || EConstants::VIEW__DEFAULT_PATH).freeze
     end
   end
 
@@ -26,11 +26,11 @@ class E
   end
 
   def engine?
-    @__e__engine || VIEW__DEFAULT_ENGINE
+    @__e__engine || EConstants::VIEW__DEFAULT_ENGINE
   end
 
   def engine_ext?
-    @__e__engine_ext || VIEW__EXT_BY_ENGINE[engine?.first] || ''
+    @__e__engine_ext || EConstants::VIEW__EXT_BY_ENGINE[engine?.first] || ''
   end
 
   def engine_ext_with_format
@@ -58,7 +58,7 @@ class E
   end
 
   def view_path_proxy *args
-    EspressoExplicitViewPath.new File.join(*args)
+    EView__ExplicitPath.new File.join(*args)
   end
 
   # render a template with layout(if any defined).
@@ -115,25 +115,25 @@ class E
   end
   alias render_lf render_layout_file
 
-  VIEW__ENGINE_MAPPER.each_key do |ext|
+  EConstants::VIEW__ENGINE_MAPPER.each_key do |ext|
     __e__adhoc_engine_ext = ext.sub('.', '')
     
     define_method 'render_%s' % __e__adhoc_engine_ext do |*args, &proc|
       template, scope, locals = __e__engine_arguments(args)
       engine_args = proc ? [] : [__e__template(template, ext)]
-      output = __e__engine_instance(VIEW__ENGINE_MAPPER[ext], *engine_args, &proc).render(scope, locals)
+      output = __e__engine_instance(EConstants::VIEW__ENGINE_MAPPER[ext], *engine_args, &proc).render(scope, locals)
 
       layout, layout_proc = layout?
       return output unless layout || layout_proc
 
       engine_args = layout_proc ? [] : [__e__layout_template(layout, ext)]
-      __e__engine_instance(VIEW__ENGINE_MAPPER[ext], *engine_args, &layout_proc).render(scope, locals) {output}
+      __e__engine_instance(EConstants::VIEW__ENGINE_MAPPER[ext], *engine_args, &layout_proc).render(scope, locals) {output}
     end
 
     define_method 'render_%s_partial' % __e__adhoc_engine_ext do |*args, &proc|
       template, scope, locals = __e__engine_arguments(args)
       engine_args = proc ? [] : [__e__template(template, ext)]
-      __e__engine_instance(VIEW__ENGINE_MAPPER[ext], *engine_args, &proc).render(scope, locals)
+      __e__engine_instance(EConstants::VIEW__ENGINE_MAPPER[ext], *engine_args, &proc).render(scope, locals)
     end
     alias_method 'render_%s_p' % __e__adhoc_engine_ext, 'render_%s_partial' % __e__adhoc_engine_ext
 
@@ -142,7 +142,7 @@ class E
       layout, layout_proc = layout ? layout : layout?
       layout || layout_proc || raise('No explicit layout given nor implicit layout found' % action)
       engine_args = layout_proc ? [] : [__e__layout_template(layout, ext)]
-      __e__engine_instance(VIEW__ENGINE_MAPPER[ext], *engine_args, &layout_proc).render(scope, locals, &(proc || Proc.new {''}))
+      __e__engine_instance(EConstants::VIEW__ENGINE_MAPPER[ext], *engine_args, &layout_proc).render(scope, locals, &(proc || Proc.new {''}))
     end
     alias_method 'render_%s_l' % __e__adhoc_engine_ext, 'render_%s_layout' % __e__adhoc_engine_ext
 
@@ -187,15 +187,15 @@ class E
   end
 
   def __e__template template, ext = engine_ext_with_format
-    return template if template.instance_of?(EspressoExplicitViewPath)
+    return template if template.instance_of?(EView__ExplicitPath)
     File.join(view_path?, view_prefix?, template.to_s) << ext
   end
 
   def __e__layout_template layout, ext = engine_ext_with_format
-    return layout if layout.instance_of?(EspressoExplicitViewPath)
+    return layout if layout.instance_of?(EView__ExplicitPath)
     File.join(view_path?, layouts_path?, layout.to_s) << ext
   end
 
 end
 
-class EspressoExplicitViewPath < String; end
+class EView__ExplicitPath < String; end

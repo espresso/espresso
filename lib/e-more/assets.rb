@@ -199,11 +199,11 @@ class EspressoApp
   def assets_url url = nil, server = true
     return @assets_url unless url
     url = url.to_s.dup.strip
-    url = url =~ /\A[\w|\d]+\:\/\//i ? url : rootify_url(url)
+    url = url =~ /\A[\w|\d]+\:\/\//i ? url : EUtils.rootify_url(url)
     @assets_url = (url =~ /\/\Z/ ? url : String.new(url) << '/').freeze
     if server
       require 'sprockets'
-      @routes[route_to_regexp(@assets_url)] = {'GET' => {:app => assets}}
+      @routes[EUtils.route_to_regexp(@assets_url)] = {'GET' => {:app => assets}}
     end
   end
   alias assets_map assets_url

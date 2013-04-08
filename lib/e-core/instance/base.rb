@@ -14,12 +14,12 @@ class E
   alias rq request
 
   def response
-    @__e__response ||= EspressoResponse.new
+    @__e__response ||= EResponse.new
   end
   alias rs response
 
   def params
-    @__e__params ||= EspressoUtils.indifferent_params(request.params)
+    @__e__params ||= EUtils.indifferent_params(request.params)
   end
 
   def action
@@ -34,16 +34,16 @@ class E
   end
 
   def setup_action! action = nil
-    if action ||= @__e__action_passed_at_initialize || env[ENV__ESPRESSO_ACTION]
+    if action ||= @__e__action_passed_at_initialize || env[EConstants::ENV__ESPRESSO_ACTION]
       if setup = self.class.action_setup[action]
-        self.action_setup = setup[env[ENV__REQUEST_METHOD]] || setup[:*]
+        self.action_setup = setup[env[EConstants::ENV__REQUEST_METHOD]] || setup[:*]
         self.action_setup ||
-          fail(STATUS__NOT_IMPLEMENTED, "Resource found
+          fail(EConstants::STATUS__NOT_IMPLEMENTED, "Resource found
             but it can be accessed only through %s" % setup.keys.join(", "))
       end
     end
     self.action_setup ||
-      fail(STATUS__NOT_FOUND, '%s %s not found' % [rq.request_method, rq.path])
+      fail(EConstants::STATUS__NOT_FOUND, '%s %s not found' % [rq.request_method, rq.path])
   end
   private :setup_action!
 
@@ -67,8 +67,8 @@ class E
   def call env
     
     @__e__env     = env
-    @__e__request = EspressoRequest.new(env)
-    @__e__format  = env[ENV__ESPRESSO_FORMAT]
+    @__e__request = ERequest.new(env)
+    @__e__format  = env[EConstants::ENV__ESPRESSO_FORMAT]
 
     e_response = catch :__e__catch__response__ do
       
@@ -78,10 +78,10 @@ class E
       given = action_params__array.size
 
       min && given < min &&
-        fail(STATUS__NOT_FOUND, 'min params accepted: %s; params given: %s' % [min, given])
+        fail(EConstants::STATUS__NOT_FOUND, 'min params accepted: %s; params given: %s' % [min, given])
 
       max && given > max &&
-        fail(STATUS__NOT_FOUND, 'max params accepted: %s; params given: %s' % [max, given])
+        fail(EConstants::STATUS__NOT_FOUND, 'max params accepted: %s; params given: %s' % [max, given])
 
       call!
     end
@@ -104,14 +104,14 @@ class E
 
     call_setups! :z
 
-    response[HEADER__CONTENT_TYPE] ||= CONTENT_TYPE__DEFAULT
+    response[EConstants::HEADER__CONTENT_TYPE] ||= EConstants::CONTENT_TYPE__DEFAULT
 
     response
   rescue => e
     # if a error handler defined, use it
     if handler = error_handler_defined?(500)
       meth, arity = handler
-      halt STATUS__SERVER_ERROR, arity > 0 ? self.send(meth, e) : self.send(meth)
+      halt EConstants::STATUS__SERVER_ERROR, arity > 0 ? self.send(meth, e) : self.send(meth)
     else
       # otherwise raise rescued exception
       raise e
@@ -125,8 +125,8 @@ class E
 
   def action_params__array
     @__e__action_params__array ||=
-      (env[ENV__ESPRESSO_PATH_INFO] || 
-        env[ENV__PATH_INFO]).to_s.split('/').reject(&:empty?).freeze
+      (env[EConstants::ENV__ESPRESSO_PATH_INFO] || 
+        env[EConstants::ENV__PATH_INFO]).to_s.split('/').reject(&:empty?).freeze
   end
 
   # @example
@@ -151,7 +151,7 @@ class E
         action_params[name] = given_params.shift
       end
     end
-    @__e__action_params = EspressoUtils.indifferent_params(action_params).freeze
+    @__e__action_params = EUtils.indifferent_params(action_params).freeze
   end
 
   # following methods are delegated to class
@@ -193,63 +193,7 @@ class E
 
 
   def user
-    env[ENV__REMOTE_USER]
+    env[EConstants::ENV__REMOTE_USER]
   end
   alias user? user
-
-  # The response object. See Rack::Response and Rack::ResponseHelpers for
-  # more info:
-  # http://rack.rubyforge.org/doc/classes/Rack/Response.html
-  # http://rack.rubyforge.org/doc/classes/Rack/Response/Helpers.html
-  class EspressoResponse < Rack::Response # kindly borrowed from Sinatra
-    def initialize(*)
-      super
-      headers['Content-Type'] ||= 'text/html'
-    end
-
-    def body=(value)
-      value = value.body while Rack::Response === value
-      @body = String === value ? [value.to_str] : value
-    end
-
-    def each
-      block_given? ? super : enum_for(:each)
-    end
-
-    def finish
-      result = body
-
-      if drop_content_info?
-        headers.delete "Content-Length"
-        headers.delete "Content-Type"
-      end
-
-      if drop_body?
-        close
-        result = []
-      end
-
-      if calculate_content_length?
-        # if some other code has already set Content-Length, don't muck with it
-        # currently, this would be the static file-handler
-        headers["Content-Length"] = body.inject(0) { |l, p| l + Rack::Utils.bytesize(p) }.to_s
-      end
-
-      [status.to_i, header, result]
-    end
-
-    private
-
-    def calculate_content_length?
-      headers["Content-Type"] and not headers["Content-Length"] and Array === body
-    end
-
-    def drop_content_info?
-      status.to_i / 100 == 1 or drop_body?
-    end
-
-    def drop_body?
-      [204, 205, 304].include?(status.to_i)
-    end
-  end
 end

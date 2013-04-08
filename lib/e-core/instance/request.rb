@@ -1,6 +1,4 @@
-class EspressoRequest < Rack::Request # partially borrowed from Sinatra Framework
-
-  include EspressoConstants
+class ERequest < Rack::Request # partially borrowed from Sinatra Framework
 
   # getting various setups accepted by browser.
   # `accept?` is for content type, `accept_charset?` for charset etc.
@@ -21,7 +19,7 @@ class EspressoRequest < Rack::Request # partially borrowed from Sinatra Framewor
   #
   ['', '_CHARSET', '_ENCODING', '_LANGUAGE', '_RANGES'].each do |field|
     define_method "accept#{field.downcase}?" do |expected_value|
-      return unless actual_value = env[ENV__HTTP_ACCEPT + field]
+      return unless actual_value = env[EConstants::ENV__HTTP_ACCEPT + field]
       return unless actual_value =~ 
         (expected_value.is_a?(Regexp) ? expected_value : /#{expected_value}/)
       actual_value
@@ -30,7 +28,7 @@ class EspressoRequest < Rack::Request # partially borrowed from Sinatra Framewor
 
   # Returns an array of acceptable media types for the response
   def accept
-    @__e__accept ||= env[ENV__HTTP_ACCEPT].to_s.split(',').
+    @__e__accept ||= env[EConstants::ENV__HTTP_ACCEPT].to_s.split(',').
       map {|e| accept_entry(e)}.sort_by {|e| e.last}.map {|e| e.first}
   end
 
@@ -46,7 +44,7 @@ class EspressoRequest < Rack::Request # partially borrowed from Sinatra Framewor
   alias secure? ssl?
 
   def forwarded?
-    env.include? ENV__HTTP_X_FORWARDED_HOST
+    env.include? EConstants::ENV__HTTP_X_FORWARDED_HOST
   end
 
   def safe?
