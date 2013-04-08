@@ -172,7 +172,6 @@ Though path rules are useful enough, you can bypass them and set routes directly
 
 ```ruby
 def bar
-  map '/'
   # ...
 end
 
@@ -184,7 +183,6 @@ alias_action 'some/another/url', :bar
 
 ```ruby
 def foo
-  map '/'
   # ...
 end
 alias_action 'some/url', :foo
@@ -194,7 +192,6 @@ alias_action 'some/url', :foo
 
 ```ruby
 def get_foo
-  map '/'
   # ...
 end
 alias_action 'some/url', :get_foo
