@@ -30,6 +30,7 @@ module EConstants
   ENV__HTTP_ACCEPT    = 'HTTP_ACCEPT'.freeze
   ENV__QUERY_STRING   = 'QUERY_STRING'.freeze
   ENV__REMOTE_USER    = 'REMOTE_USER'.freeze
+  ENV__RACK_ENV       = 'RACK_ENV'.freeze
   ENV__HTTP_X_FORWARDED_HOST    = 'HTTP_X_FORWARDED_HOST'.freeze
   ENV__HTTP_IF_NONE_MATCH       = 'HTTP_IF_NONE_MATCH'.freeze
   ENV__HTTP_IF_MODIFIED_SINCE   = 'HTTP_IF_MODIFIED_SINCE'.freeze
@@ -48,7 +49,6 @@ module EConstants
   HEADER__TRANSFER_ENCODING   = 'Transfer-Encoding'.freeze
   HEADER__CONTENT_DISPOSITION = 'Content-Disposition'.freeze
 
-  ENV__RACK_ENV   = 'RACK_ENV'.freeze
   RACK__WEBSOCKET = 'rack.websocket'.freeze
 
   PATH_MODIFIERS = Regexp.union([

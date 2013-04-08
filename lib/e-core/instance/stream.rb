@@ -10,16 +10,16 @@ class E
       response.body = Reel::Stream.new(&proc)
     else
       # kindly borrowed from Sinatra
-      scheduler = env['async.callback'] ? EventMachine : EspressoStream
+      scheduler = env['async.callback'] ? EventMachine : EStream
       current   = (@__e__params||{}).dup
-      response.body = EspressoStream.new(scheduler, keep_open) {|out| with_params(current) { yield(out) }}
+      response.body = EStream.new(scheduler, keep_open) {|out| with_params(current) { yield(out) }}
     end
   end
 
   def websocket?
     # on websocket requests, Reel web-server storing the socket into ENV['rack.websocket']
     # TODO: implement rack.hijack
-    env[RACK__WEBSOCKET]
+    env[EConstants::RACK__WEBSOCKET]
   end
 
   private
@@ -39,7 +39,7 @@ end
 # handler is using.
 #
 # Scheduler has to respond to defer and schedule.
-class EspressoStream # kindly borrowed from Sinatra
+class EStream # kindly borrowed from Sinatra
   def self.schedule(*) yield end
   def self.defer(*)    yield end
 

@@ -23,7 +23,7 @@ module EUtils
   # @note slow method! use only at loadtime
   #
   def rootify_url *paths
-    '/' << normalize_path(paths.compact.join('/')).gsub(/\A\/+|\/+\Z/, '')
+    '/' << EUtils.normalize_path(paths.compact.join('/')).gsub(/\A\/+|\/+\Z/, '')
   end
   module_function :rootify_url
 
@@ -138,7 +138,7 @@ module EUtils
   def canonical_to_route canonical, action_setup
     args = [canonical]
     args << action_setup[:action_path] unless action_setup[:action_name] == EConstants::INDEX_ACTION
-    rootify_url(*args).freeze
+    EUtils.rootify_url(*args).freeze
   end
   module_function :canonical_to_route
 

@@ -20,7 +20,7 @@ class E
   #      end
   #    end
   #
-  def fail error_code = STATUS__SERVER_ERROR, body = nil
+  def fail error_code = EConstants::STATUS__SERVER_ERROR, body = nil
     if handler = error_handler_defined?(error_code)
       meth, arity = handler
       body = arity > 0 ? self.send(meth, body) : [self.send(meth), body].join

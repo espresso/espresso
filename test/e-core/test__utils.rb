@@ -11,7 +11,7 @@ module ECoreTest__Utils
         [['some', 'another', 'path/'],  '/some/another/path'],
       ]
       variations.each do |variation|
-        is?(EUtils::rootify_url(*variation[0])) == variation[1]
+        is?(EUtils.rootify_url(*variation[0])) == variation[1]
       end
     end
 

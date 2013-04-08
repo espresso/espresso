@@ -1,4 +1,3 @@
-
 ## Base URL
 
 By default, each class will serve the path built from its underscored name.
