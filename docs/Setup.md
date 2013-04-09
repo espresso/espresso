@@ -62,7 +62,7 @@ end
 class App < E
 
   setup /_js_/ do
-      content_type '.js'
+    content_type '.js'
   end
 
   # ...
