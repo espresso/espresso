@@ -255,7 +255,7 @@ end
 
 `App` will now respond to both **/foo** and **/bar** URL's
 
-Please note that `import` will include all methods but only public ones will be treated as actions. That's it, protected/private methods are not treated as actions.
+Please note that `import` will include all methods, however only public ones will be treated as actions. That's it, protected/private methods are not treated as actions.
 
 Also, `import` wont import any setups, just actions.
 
