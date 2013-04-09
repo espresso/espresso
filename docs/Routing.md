@@ -1,4 +1,3 @@
-
 ## Base URL
 
 By default, each class will serve the path built from its underscored name.
@@ -152,7 +151,7 @@ class App < E
 
   path_rule /_j$/, ".json"
 
-  def j_news
+  def news_j
     # ...
   end
 end
