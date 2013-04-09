@@ -1,4 +1,9 @@
 
++ 0.4.5 [Apr ? 2013]
+  - Deprecating `EspressoApp`. Now applications are built via `E.new`
+
+<hr>
+
 + 0.4.3 [March 20 2013]
 
   - View compiler enabled by default - [2baaf2](https://github.com/espresso/espresso/commit/2baaf2)

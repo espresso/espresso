@@ -15,12 +15,12 @@ class << E
   # @param [Proc]   setup setup block. to be executed at class level
   #
   def mount *roots, &setup
-    @__e__app ||= EspressoApp.new.mount(self, *roots, &setup).to_app
+    @__e__app ||= EBuilder.new.mount(self, *roots, &setup).to_app
   end
 
-  # used when mounted from an EspressoApp instance
+  # used when mounted from an E instance
   #
-  # @param [EspressoApp] app EspressoApp instance
+  # @param [Object] app EBuilder instance
   #
   def mount! app
     return if mounted?
@@ -53,7 +53,7 @@ class << E
   #     map '/forum', '/forums'
   #     # ...
   #   end
-  #   app = EspressoApp.new.mount(Forum, '/new-root', '/some-canonical')
+  #   app = E.new.mount(Forum, '/new-root', '/some-canonical')
   #   # app will serve:
   #   #   - /new-root/forum
   #   #   - /forums

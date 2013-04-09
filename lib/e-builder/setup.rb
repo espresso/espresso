@@ -1,4 +1,4 @@
-class EspressoApp
+class EBuilder
 
   # set base URL to be prepended to all controllers
   def map url
@@ -22,7 +22,7 @@ class EspressoApp
   #    class App < E
   #      # ...
   #    end
-  #    app = EspressoApp.new
+  #    app = E.new
   #    app.session :memory
   #    app.run
   #
@@ -30,7 +30,7 @@ class EspressoApp
   #    class App < E
   #      # ...
   #    end
-  #    app = EspressoApp.new
+  #    app = E.new
   #    app.session :memory, :domain => 'foo.com', :expire_after => 2592000
   #    app.run
   #
@@ -38,7 +38,7 @@ class EspressoApp
   #    class App < E
   #      # ...
   #    end
-  #    app = EspressoApp.new
+  #    app = E.new
   #    app.session :cookies
   #    app.run
   #
@@ -46,7 +46,7 @@ class EspressoApp
   #    class App < E
   #      # ...
   #    end
-  #    app = EspressoApp.new
+  #    app = E.new
   #    app.session :memcache
   #    app.run
   #
@@ -59,7 +59,7 @@ class EspressoApp
   #
   #    require 'rack/session/mongo'
   #
-  #    app = EspressoApp.new
+  #    app = E.new
   #    app.session Rack::Session::Mongo
   #    app.run
   #
@@ -107,7 +107,7 @@ class EspressoApp
   #    class App < E
   #      # ...
   #    end
-  #    app = EspressoApp.new
+  #    app = E.new
   #    app.use SomeMiddleware, :with, :some => :opts
   #    app.run
   #
@@ -130,7 +130,7 @@ class EspressoApp
   #      end
   #    end
   #
-  #    app = EspressoApp.new
+  #    app = E.new
   #    app.use Rack::CommonLogger
   #    app.use Rack::ShowExceptions
   #    app.run
@@ -175,7 +175,7 @@ class EspressoApp
   #       or do permanent redirect for robots and simple redirect for browsers etc.
   #
   # @example
-  #    app = EspressoApp.new
+  #    app = E.new
   #
   #    # redirect to new address
   #    app.rewrite /\A\/(.*)\.php$/ do |title|
@@ -217,7 +217,7 @@ class EspressoApp
   # use this method to set Celluloid as streaming backend.
   #
   # @example
-  #   app = EspressoApp.new do
+  #   app = E.new do
   #     streaming_backend :Celluloid
   #   end
   #

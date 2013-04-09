@@ -7,7 +7,7 @@ If you are using Reel web server, you should instruct Espresso to use `Celluloid
 This is done via `streaming_backend` method at app level:
 
 ```ruby
-app = EspressoApp.new do
+app = E.new do
   streaming_backend :Celluloid
   # ...
 end

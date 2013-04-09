@@ -480,7 +480,7 @@ class App < E
   # actions here will use view compiler
 end
 
-app = EspressoApp.new do
+app = E.new do
   compiler_pool Hash.new
   mount App
 end

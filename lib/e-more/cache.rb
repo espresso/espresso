@@ -4,7 +4,7 @@ class E
   def cache_pool; app.cache_pool; end
 end
 
-class EspressoApp
+class EBuilder
 
   # very basic cache implementation.
   # by default the cache will be kept in memory.

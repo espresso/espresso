@@ -51,7 +51,7 @@ module ECoreTest__Rewriter
 
   Spec.new self do
 
-    eapp = EspressoApp.new do
+    eapp = E.new do
 
       mount Cms
 

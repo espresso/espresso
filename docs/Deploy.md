@@ -17,7 +17,7 @@ end
 app.run
 
 # or create a new app and mount controller
-app = EspressoApp.new
+app = E.new
 app.mount App do
   # some setup
 end
@@ -27,7 +27,7 @@ app.run
 Controllers can be also mounted by using Regexps:
 
 ```ruby
-app = EspressoApp.new
+app = E.new
 app.mount /SomeController/
 # etc.
 app.run
@@ -67,7 +67,7 @@ end
 app.run
 
 # or create a new app and mount the slice
-app = EspressoApp.new
+app = E.new
 app.mount Forum do
   # some setup
 end
@@ -84,7 +84,7 @@ By using automount you do not need to mount controllers manually.
 To make newly created app to automount all found controllers, pass `true` as first argument:
 
 ```ruby
-app = EspressoApp.new(true)
+app = E.new(true)
 ```
 
 If you want to automount only controllers contained into some namespace, use that namespace as first argument:
@@ -109,7 +109,7 @@ module Admin
     # ...
   end
 end
-app = EspressoApp.new(Frontend)
+app = E.new(Frontend)
 ```
 
 this will automount only controllers under `Frontend` module, leaving you to mount `Admin` controllers manually.
@@ -136,7 +136,7 @@ module Admin
     # ...
   end
 end
-app = EspressoApp.new(/Pages/)
+app = E.new(/Pages/)
 ```
 
 this will automount `Frontend::Pages` and `Admin::Pages`
@@ -153,7 +153,7 @@ class News < E
   # ...
 end
 
-app = EspressoApp.new(true)
+app = E.new(true)
 ```
 
 this will automount `Pages` controller but not `News`
@@ -179,7 +179,7 @@ app = Forum.mount '/forum'
 app.run
 
 # or
-app = EspressoApp.new
+app = E.new
 app.mount Forum, '/forum'
 app.run
 ```
@@ -191,7 +191,7 @@ app = Forum.mount '/forum', '/Forums'
 app.run
 
 # or
-app = EspressoApp.new
+app = E.new
 app.mount Forum, '/forum', '/Forums'
 app.run
 ```
@@ -249,8 +249,8 @@ require 'your-app-file(s)'
 
 app = MyController.mount
 
-# or create a new Espresso application using EspressoApp
-app = EspressoApp.new :automount  # will auto-discover all available controllers
+# or create a new Espresso application using `E.new`
+app = E.new :automount  # will auto-discover all available controllers
 
 run app
 ```

@@ -54,7 +54,7 @@ module EMoreTest__Assets
 
   Spec.new self do
     assets_url = '/assets'
-    app = EspressoApp.new do
+    app = E.new do
       assets_url(assets_url)
     end.mount(App)
     app(app)
@@ -160,7 +160,7 @@ module EMoreTest__Assets
   end
 
   Spec.new self do
-    eapp = EspressoApp.new do
+    eapp = E.new do
       assets_url '/assets'
       mount TagHelpers
     end
@@ -201,7 +201,7 @@ module EMoreTest__Assets
     path1 = File.expand_path('../sprockets', __FILE__)
     path2 = File.expand_path('../assets', __FILE__)
 
-    eapp = EspressoApp.new do
+    eapp = E.new do
       assets_url '/assets'
       assets.append_path path1
       assets.append_path path2
@@ -239,7 +239,7 @@ module EMoreTest__Assets
   end
 
   Spec.new self do
-    eapp = EspressoApp.new do
+    eapp = E.new do
       root File.expand_path('..', __FILE__)
       assets_url '/assets'
       assets.append_path 'assets'

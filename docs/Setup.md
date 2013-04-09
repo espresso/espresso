@@ -254,7 +254,7 @@ module App
   end
 end
 
-app = EspressoApp.new
+app = E.new
 app.global_setup do
   # here setup will run inside all controllers
 end
@@ -265,7 +265,7 @@ app.run
 Or you can setup controllers selectively - controller name are passed as first argument:
 
 ```ruby
-app = EspressoApp.new
+app = E.new
 app.setup do |ctrl|
   if ctrl == App::Pages
     # here setup will run ONLY inside Pages controller

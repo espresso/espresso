@@ -17,7 +17,7 @@ class App < E
     render
   end
 end
-run EspressoApp.new {
+run E.new {
   mount App
   compiler_pool Hash.new
   pids do

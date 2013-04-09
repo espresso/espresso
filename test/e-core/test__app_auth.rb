@@ -9,7 +9,7 @@ module ECoreTest__AppAuth
 
   Spec.new self do
 
-    app EspressoApp.new {
+    app E.new {
       mount Foo
       auth { |u, p| [u, p] == ['b', 'b'] }
     }
@@ -49,7 +49,7 @@ module ECoreTest__AppAuth
       end
     end
 
-    app EspressoApp.new {
+    app E.new {
       mount Foo
       digest_auth { |u| {'d' => 'd'}[u]  }
     }

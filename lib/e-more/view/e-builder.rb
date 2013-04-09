@@ -1,4 +1,4 @@
-class EspressoApp
+class EBuilder
   
   # for most apps, most expensive operations are fs operations and template compilation.
   # to avoid these operations, templates are compiled and stored into memory.
@@ -11,7 +11,7 @@ class EspressoApp
   #   class App < E
   #     # ...
   #   end
-  #   app = EspressoApp.new
+  #   app = E.new
   #   app.compiler_pool Hash.new # will store compiler cache into a hash
   #   app.run
   #

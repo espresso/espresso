@@ -9,7 +9,7 @@ module ECoreTest__Automount
   end
 
   Spec.new self do
-    app EspressoApp.new(ECoreTest__Automount)
+    app E.new(ECoreTest__Automount)
 
     get :accepted
     is(last_response).ok?
@@ -18,7 +18,7 @@ module ECoreTest__Automount
   end
 
   Spec.new self do
-    app EspressoApp.new(/Test__Automount/)
+    app E.new(/Test__Automount/)
 
     get :accepted
     is(last_response).ok?

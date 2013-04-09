@@ -1,4 +1,4 @@
-class EspressoApp
+class EBuilder
 
   def self.call env
     new(:automount).call(env)

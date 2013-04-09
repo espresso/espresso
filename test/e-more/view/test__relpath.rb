@@ -38,7 +38,7 @@ module EMoreTest__View__Relpath
   end
 
   Spec.new self do
-    app EspressoApp.new {
+    app E.new {
       root File.expand_path '..', __FILE__
     }.mount(RelpathTest)
     map RelpathTest.base_url

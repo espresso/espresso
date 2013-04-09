@@ -1,6 +1,6 @@
 class E
 
-  def initialize action = nil
+  def initialize_controller action = nil
     @__e__action_passed_at_initialize = action
   end
 

@@ -142,14 +142,14 @@ end
 
 Applications are meant to bundle, setup and run controllers and slices.
 
-To create a new Espresso application use `EspressoApp` class:
+To create a new Espresso application use `E.new`:
 
 ```ruby
 class MyController < E
   # ...
 end
 
-app = EspressoApp.new
+app = E.new
 app.mount MyController
 app.run
 ```

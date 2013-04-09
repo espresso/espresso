@@ -44,7 +44,7 @@ module EMoreTest__View__ViewPrefix
   end
 
   Spec.new self do
-    app EspressoApp.new.mount(Default)
+    app E.new.mount(Default)
     map Default.base_url
 
     get
@@ -64,7 +64,7 @@ module EMoreTest__View__ViewPrefix
   end
 
   Spec.new self do
-    app EspressoApp.new.mount(Nested::App)
+    app E.new.mount(Nested::App)
     map Nested::App.base_url
 
     get

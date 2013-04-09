@@ -17,7 +17,7 @@
 #
 class Module
   def mount *roots, &setup
-    EspressoApp.new.mount self, *roots, &setup
+    EBuilder.new.mount self, *roots, &setup
   end
 
   def run *args

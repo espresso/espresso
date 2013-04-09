@@ -4,7 +4,7 @@ Starting with version 0.4, Espresso is using Sprockets to serve assets.
 To enable and use this feature, simply call `assets_url` at app level:
 
 ```ruby
-app = EspressoApp.new
+app = E.new
 app.assets_url '/assets'
 app.assets.append_path 'assets'
 app.run
@@ -18,7 +18,7 @@ app.run
 as base path, so folders containing assets should reside in your app root.
 
 ```ruby
-app = EspressoApp.new do
+app = E.new do
   assets_url '/assets'
   assets.append_path 'assets'
   assets.append_path 'public'
@@ -29,7 +29,7 @@ app.run
 `assets` method can be used to fully setup Sprockets environment:
 
 ```ruby
-app = EspressoApp.new do
+app = E.new do
   assets_url '/assets'
   assets.compile = true
   assets.compress = false
@@ -97,7 +97,7 @@ class App < E
   end
 end
 
-app = EspressoApp.new do
+app = E.new do
   assets_url '/public'
 end
 app.run
@@ -129,7 +129,7 @@ automatically prefixed, but you do not need Sprockets,<br>simply set second
 argument to `false` when using `assets_url`, or its alias - `assets_map`:
 
 ```ruby
-app = EspressoApp.new do
+app = E.new do
   assets_url '/assets', false
 end
 ```
