@@ -8,8 +8,8 @@ require 'e-core/utils'
 require 'e-core/e-core'
 require 'e-core/rewriter'
 
-require 'e-core/controller/setup_writer'
-require 'e-core/controller/setup_reader'
+require 'e-core/controller/setups_writer'
+require 'e-core/controller/setups_reader'
 require 'e-core/controller/actions'
 require 'e-core/controller/mounter'
 
