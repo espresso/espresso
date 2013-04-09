@@ -1,5 +1,7 @@
 class E
 
+  attr_accessor :action_setup
+
   def initialize_controller action = nil
     @__e__action_passed_at_initialize = action
   end
@@ -24,13 +26,6 @@ class E
 
   def action
     action_setup[:action]
-  end
-
-  def action_setup= setup
-    @__e__action_setup = setup
-  end
-  def action_setup
-    @__e__action_setup
   end
 
   def setup_action! action = nil
