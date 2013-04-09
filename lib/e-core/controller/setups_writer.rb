@@ -220,6 +220,41 @@ class << E
     (@__e__after_aliases ||= {})[action] = others
   end
 
+  # use `around` when you need some action to run inside given block.
+  # call `invoke_action` where you need action to be executed.
+  # 
+  # @example graciously throw an error if some /remote/ action takes more than 5 seconds to run
+  #   class App < E
+  #
+  #     around /remote/ do
+  #
+  #       Timeout.timeout(5) do
+  #         begin
+  #           invoke_action # executing action
+  #         rescue => e
+  #           fail 500, e.message
+  #         end
+  #       end
+  #
+  #     end
+  #
+  #     def remote_init
+  #       # occasionally slow action
+  #     end
+  #
+  #     def remote_post
+  #       # occasionally slow action
+  #     end
+  #
+  #     def remote_fetch
+  #       # occasionally slow action
+  #     end
+  #   end
+  #
+  def around *matchers, &proc
+    add_setup :around, *matchers, &proc
+  end
+
   # add Rack middleware to chain
   def use ware, *args, &proc
     return if mounted?

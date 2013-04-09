@@ -2,6 +2,7 @@
 + 0.4.5 [Apr ? 2013]
   - Deprecating `EspressoApp`. Now applications are built via `E.new`
   - Moving CRUD, Assets, HTMLHelpers, Cache and IPCM extensions to a separate gem
+  - Added `around` filter
   - Removing `helper` method. `include` are now used to share helpers between controllers and `import` to share actions.
 
 <hr>

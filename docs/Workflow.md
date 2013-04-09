@@ -578,6 +578,9 @@ end
 
 `before` and `after` allow to set callbacks to be called before and after action processed.
 
+`around` allow to define a block that will wrap execution of current action. Just type your stuff and call `invoke_action` where you need action to be executed.
+
+
 **Example:**
 
 ```ruby
@@ -592,6 +595,35 @@ class App < E
   end
 
   # ...
+end
+```
+
+**Example:** graciously throw an error if some /remote/ action takes more than 5 seconds to run
+
+```ruby
+class App < E
+
+  around /remote/ do
+    Timeout.timeout(5) do
+      begin
+        invoke_action # executing action
+      rescue => e
+        fail 500, e.message
+      end
+    end
+  end
+
+  def remote_init
+    # occasionally slow action
+  end
+
+  def remote_post
+    # occasionally slow action
+  end
+
+  def remote_fetch
+    # occasionally slow action
+  end
 end
 ```
 

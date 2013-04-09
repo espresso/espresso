@@ -93,8 +93,10 @@ class E
     #       use #content_type inside action
     format && content_type(format)
 
-    response.body = nil
-    body = self.send(action, *action_params__array)
+    body, response.body = nil
+    (wrappers = setups(:around)).any? ?
+      wrappers.each {|w| body = self.send(w)} :
+      body = invoke_action
     response.body ||= [body.to_s]
 
     call_setups! :z
@@ -113,6 +115,10 @@ class E
     end
   end
   private :call!
+
+  def invoke_action
+    self.send(action, *action_params__array)
+  end
 
   def call_setups! position = :a
     setups(position).each {|m| self.send m}

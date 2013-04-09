@@ -10,11 +10,6 @@ class E
   #      pass :control_panel if user?
   #    end
   #
-  # @example passing with modified arguments
-  #    def index id
-  #      pass :update, id
-  #    end
-  #
   # @example passing with modified arguments and custom HTTP params
   #    def index id, column
   #      pass :update, column, :value => id
