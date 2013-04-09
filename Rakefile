@@ -4,7 +4,7 @@ Dir['./test/**/test__*.rb'].each { |f| require f }
 
 namespace :test do
 
-  def run_test regex, unit
+  def run regex, unit
     puts "\n***\nTesting #{unit} ..."
     session = session(unit)
     session.run regex, :trace => true
@@ -36,36 +36,20 @@ namespace :test do
   end
 
   task :core do
-    run_test(/ECoreTest/, "e-core")
+    run(/ECoreTest/, "e-core")
   end
 
   task :more do
-    run_test(/EMoreTest/, "e-more")
+    run(/EMoreTest/, "e-more")
   end
 
   task :view do
-    run_test(/EMoreTest__View/, :ViewAPI)
-  end
-
-  task :cache do
-    run_test(/EMoreTest__Cache/, :Cache)
-  end
-
-  task :crud do
-    run_test(/EMoreTest__CRUD/, :CRUD)
-  end
-
-  task :assets do
-    run_test(/EMoreTest__Assets/, :Assets)
-  end
-
-  task :ipcm do
-    run_test(/EIPCMTest/, :IPCM)
+    run(/EMoreTest__View/, :ViewAPI)
   end
 end
 
-task :test => ['test:core', 'test:more']
+task test: ['test:core', 'test:more']
 task :overhead do
   require './test/overhead/run'
 end
-task :default => :test
+task default: :test

@@ -154,8 +154,6 @@ app.mount MyController
 app.run
 ```
 
-
-
 ## MVC?
 
 
@@ -166,7 +164,7 @@ Espresso wont stay in your way nor bombarding you with conventions.
 
 And when you want to simplify the routine use [Enginery](https://github.com/espresso/enginery)
 
-It will build a ready-to-use application and will to easily generate controllers, routes, specs, models, migrations etc. from command line.
+It will build a ready-to-use application and will help to easily generate controllers, routes, specs, models, migrations etc. from command line.
 
 **[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
@@ -176,5 +174,6 @@ Espresso by itself does not deal with models, migrations etc.
 
 It is the responsibility of the ORM you choose to use.
 
+Also you can use some sort of app builders like [Enginery](https://github.com/espresso/enginery) to generate models, migrations etc.
 
 **[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**

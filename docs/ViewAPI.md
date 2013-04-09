@@ -490,5 +490,4 @@ app.run
 To clear compiled templates call `clear_compiler!`.
 
 
-
 **[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**

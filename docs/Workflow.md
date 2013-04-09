@@ -1059,63 +1059,6 @@ accept_ranges? 'bytes'
 **[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
 
-## Cache Manager
-
-
-Allow to cache the result of an arbitrary block and use the result on consequent requests.
-
-*Note: Value is not stored if block returns false or nil.*
-
-Cache can be cleared by calling `clear_cache!` method.
-
-If called without params, all cache will be cleared.
-
-To clear only specific blocks, pass their IDs as params.
-
-**Example:**
-
-```ruby
-class App < E
-
-  def index
-    @db_items = cache :db_items do
-      # fetching items
-    end
-    @banners = cache :banners do
-      # render banners partial
-    end
-    # ...
-  end
-
-  def products
-    cache do
-      # fetch and render products
-    end
-  end
-
-  after do
-    if 'some condition occurred'
-      # clearing cache only for @banners and @db_items
-      clear_cache! :banners, :db_items
-    end
-    if 'some another condition occurred'
-      # clearing all cache
-      clear_cache!
-    end
-  end
-end
-```
-
-
-By default, the cache will be kept in memory.<br>
-If you want to use a different pool, set it by using `cache_pool` at app level.
-
-Just make sure your pool behaves like a Hash,
-Meant it should respond to `[]=`, `[]`, `delete` and `clear`.
-
-
-**[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
-
 
 ## Send File
 
@@ -1211,7 +1154,7 @@ response['Max-Forwards']
 
 Sure, any additional modules can be included via `include`.
 
-But all methods included this way will be available via HTTP cause `include` is used to [share actions between controllers](https://github.com/espresso/espresso/blob/master/docs/Routing.md#shared-actions).
+But all methods included this via `include` will be available as HTTP actions cause `include` is used to [share actions between controllers](https://github.com/espresso/espresso/blob/master/docs/Routing.md#shared-actions).
 
 So use `helper` to include helper methods:
 
@@ -1223,7 +1166,7 @@ class App < E
 end
 ```
 
-Also `helpers` can be used to include multiple helpers at once:
+To include multiple helpers at once use `helpers`:
 
 ```ruby
 class App < E
@@ -1234,60 +1177,3 @@ end
 ```
 
 **[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
-
-
-## link_to
-
-Build a HTML &lt;a&gt; tag.
-
-If first param is a valid action, the URL of given action will be used.
-
-Action accepted as a symbol or a string representing action name and format.
-
-Action can also be passed in deRESTified form, eg. `:read` instead of `:post_read`
-
-```ruby
-class App < E
-  format '.html'
-
-  def read
-    link_to :read        #=> /app/read
-    link_to 'read.html'  #=> /app/read.html
-    link_to 'read.xml'   #=> read.xml - not translated, used as is
-  end
-
-  def post_write
-    link_to :post_write  #=> /app/write - works but it is tedious, use :write instead
-    link_to :write       #=> /app/write
-    link_to 'write.html' #=> /app/write.html
-    link_to '/something' #=> /something - not translated, used as is
-  end
-end
-```
-
-If `nil` passed as first argument, a void link will be created:
-
-`link_to nil, 'something'` #=> &lt;a href="javascript:void(null);"&gt;something&lt;/a&gt;
-
-Anchor can be passed via second argument.
-
-If it is missing, the link will be used as anchor:
-
-`link_to :something`   #=> &lt;a href="/something"&gt;/something&lt;/a&gt;
-
-`link_to :foo, 'bar'`  #=> &lt;a href="/foo"&gt;bar&lt;/a&gt;
-
-
-Anchor can also be passed as a block:
-
-`link_to(:foo) { 'bar' }`  #=> &lt;a href="/foo"&gt;bar&lt;/a&gt;
-
-Attributes can be passed as a hash via last argument:
-
-`link_to :foo, target: '_blank'`        #=> &lt;a href="/foo" target="_blank"&gt;/foo&lt;/a&gt;
-
-`link_to :foo, :bar, target: '_blank'`  #=> &lt;a href="/foo" target="_blank"&gt;bar&lt;/a&gt;
-
-**[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
-
-

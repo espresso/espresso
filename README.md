@@ -101,13 +101,11 @@ $ ruby app.rb
 [Expires](https://github.com/espresso/espresso/blob/master/docs/Workflow.md#expires) |
 [Last Modified](https://github.com/espresso/espresso/blob/master/docs/Workflow.md#last-modified) |
 [Accepted Content Type](https://github.com/espresso/espresso/blob/master/docs/Workflow.md#accepted-content-type) |
-[Cache Manager](https://github.com/espresso/espresso/blob/master/docs/Workflow.md#cache-manager) |
 [Send File](https://github.com/espresso/espresso/blob/master/docs/Workflow.md#send-file) |
 [Send Files](https://github.com/espresso/espresso/blob/master/docs/Workflow.md#send-files) |
 [Attachment](https://github.com/espresso/espresso/blob/master/docs/Workflow.md#attachment) |
 [Headers](https://github.com/espresso/espresso/blob/master/docs/Workflow.md#headers) |
 [Helpers](https://github.com/espresso/espresso/blob/master/docs/Workflow.md#helpers) |
-[link_to](https://github.com/espresso/espresso/blob/master/docs/Workflow.md#link_to)
 
 
 ### View API
@@ -130,23 +128,12 @@ $ ruby app.rb
 [WebSockets](https://github.com/espresso/espresso/blob/master/docs/Streaming.md#websockets) |
 [Chunked Responses](https://github.com/espresso/espresso/blob/master/docs/Streaming.md#chunked-responses)
 
+### Periphery
 
-### Assets
-
-[Intro](https://github.com/espresso/espresso/blob/master/docs/Assets.md) |
-[Helpers](https://github.com/espresso/espresso/blob/master/docs/Assets.md#tag-helpers) |
-[Mapper](https://github.com/espresso/espresso/blob/master/docs/Assets.md#assets-mapper)
-
-
-### CRUD
-
-[Intro](https://github.com/espresso/espresso/blob/master/docs/CRUD.md#intro) |
-[Resource](https://github.com/espresso/espresso/blob/master/docs/CRUD.md#resource) |
-[Excluded Params](https://github.com/espresso/espresso/blob/master/docs/CRUD.md#excluded-params) |
-[Root](https://github.com/espresso/espresso/blob/master/docs/CRUD.md#root) |
-[Response](https://github.com/espresso/espresso/blob/master/docs/CRUD.md#response) |
-[Error Handler](https://github.com/espresso/espresso/blob/master/docs/CRUD.md#error-handler) |
-[Access Restriction](https://github.com/espresso/espresso/blob/master/docs/CRUD.md#access-restriction)
+[CRUD](https://github.com/espresso/e-periphery/) |
+[Assets](https://github.com/espresso/e-periphery/) |
+[HTML Helpers](https://github.com/espresso/e-periphery/) |
+[Cache Manager](https://github.com/espresso/e-periphery/)
 
 ### Deploy
 
@@ -156,11 +143,6 @@ $ ruby app.rb
 [Run](https://github.com/espresso/espresso/blob/master/docs/Deploy.md#run) |
 [config.ru](https://github.com/espresso/espresso/blob/master/docs/Deploy.md#configru)
 
-<hr/>
-
-# Espresso in the wild?
-
-[CIBox](http://cibox.org) service are entirely built on Espresso Framework.
 
 <hr/>
 
@@ -430,15 +412,6 @@ For most web sites, most time are spent at templates rendering. When rendering t
 
 Espresso allow to easily skip these expensive operations by keeping compiled templates in memory and just render them on consequent requests.
 
-Cache Manager
----
-
-If you have some expensive operations that basically return static data,
-simply put them inside `cache` block.
-
-The result will be cached and returned on consequent requests.
-
-To clear cache, simply call `clear_cache!`
 
 ## Contributing
 

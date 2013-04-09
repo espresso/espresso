@@ -1,6 +1,7 @@
 
 + 0.4.5 [Apr ? 2013]
   - Deprecating `EspressoApp`. Now applications are built via `E.new`
+  - Moving CRUD, Assets, HTMLHelpers, Cache and IPCM extensions to a separate gem
 
 <hr>
 
