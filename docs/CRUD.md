@@ -4,7 +4,7 @@
 
 <pre>
 <b>Request                      Resource</b>
-GET   /id                    #get(id)
+GET     /id                  #get(id)
 
 POST    /   with POST data   #create(params)
 
