@@ -230,7 +230,9 @@ use standard ruby `alias` or `alias_method` rather than `alias_action`.
 
 Sometimes you need some actions to perform on multiple controllers.
 
-To avoid repetitive typing, just put that actions into a module and include them in controllers:
+To avoid repetitive operations, just put that actions into a module and `import` them.
+
+Yes, `import`, not `include`, cause `include` are used to share helpers and included methods wont be treated as actions.
 
 ```ruby
 module MySharedActions
@@ -245,13 +247,19 @@ end
 
 class App < E
   map '/'
-  include MySharedActions
+  import MySharedActions
 
   # ...
 end
 ```
 
 `App` will now respond to both **/foo** and **/bar** URL's
+
+Please note that `import` will include all methods but only public ones will be treated as actions. That's it, protected/private methods are not treated as actions.
+
+Also, `import` wont import any setups, just actions.
+
+See [Remote Setup](https://github.com/espresso/espresso/blob/master/docs/Setup.md#remote-setup) if you need to share setups between controllers.
 
 
 **[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**

@@ -6,7 +6,7 @@ module ECoreTest__Helpers
   end
 
   class App < E
-    helper SomeHelper
+    include SomeHelper
 
     def index
       foo

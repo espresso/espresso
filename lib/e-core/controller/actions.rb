@@ -79,8 +79,8 @@ class << E
       actions = begin
         (self.public_instance_methods(false)) +
         (@__e__alias_actions    || {}).keys   +
-        (@__e__included_actions || [])
-      end.uniq - (@__e__helper_methods || [])
+        (@__e__imported_methods || [])
+      end.uniq - (@__e__included_methods || [])
       
       if actions.empty?
         define_method :index do |*|

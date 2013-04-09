@@ -11,14 +11,13 @@ module ECoreTest__Canonical
   
   class App < E
     map '/root', '/cms', '/pages'
-    include Actions
+    import Actions
   end
 
   class RemountApp < E
     map '/root', '/cms', '/pages'
-    include Actions
+    import Actions
   end
-
 
   Spec.new App do
     Testing 'without remap' do

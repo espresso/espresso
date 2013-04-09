@@ -12,11 +12,11 @@ module ECoreTest__Include
   end
 
   class App < E
-    include SharedActions
+    import SharedActions
   end
 
   class Override < E
-    include SharedActions
+    import SharedActions
 
     def bar baz
       'bar_from_class+' + baz
