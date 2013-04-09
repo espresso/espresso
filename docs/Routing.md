@@ -151,7 +151,7 @@ class App < E
 
   path_rule /_j$/, ".json"
 
-  def j_news
+  def news_j
     # ...
   end
 end

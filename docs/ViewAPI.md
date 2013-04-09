@@ -1,4 +1,3 @@
-
 # Setup
 
 ## Engine
@@ -441,7 +440,7 @@ class Index < E
   def index
     render_file 'banners/top.xhtml' # will render ./view/banners/top.xhtml
 
-    render_partial 'banners/top     # will render ./view/index/banners/top.erb
+    render_partial 'banners/top'    # will render ./view/index/banners/top.erb
   end
 
 end
