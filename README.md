@@ -130,10 +130,16 @@ $ ruby app.rb
 
 ### Periphery
 
-[CRUD](https://github.com/espresso/e-periphery/) |
-[Assets](https://github.com/espresso/e-periphery/) |
-[HTML Helpers](https://github.com/espresso/e-periphery/) |
-[Cache Manager](https://github.com/espresso/e-periphery/)
+<a href="https://github.com/espresso/e-periphery/blob/master/docs/CRUD.md" target="_blank">
+  CRUD</a> |
+<a href="https://github.com/espresso/e-periphery/blob/master/docs/Assets.md" target="_blank">
+  Assets</a> |
+<a href="https://github.com/espresso/e-periphery/blob/master/docs/ContentHelpers.md" target="_blank">
+  Content Helpers</a> |
+<a href="https://github.com/espresso/e-periphery/blob/master/docs/TagFactory.md" target="_blank">
+  Tag Factory</a> |
+<a href="https://github.com/espresso/e-periphery/blob/master/docs/CacheManager.md" target="_blank">
+  Cache Manager</a>
 
 ### Deploy
 
