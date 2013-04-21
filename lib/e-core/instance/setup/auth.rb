@@ -89,13 +89,12 @@ class E
   #     end
   #
   #     def set_account
-  #       @account = Account.find_by(url_name: request.subdomains.first)
+  #       @account = Account.find_by ...
   #     end
   #
   #     private
   #     def authenticate
-  #       case
-  #       when accept? /xml|atom/
+  #       if accept? /xml|atom/
   #         if user = valid_token_auth? { |t, o| @account.users.authenticate(t, o) }
   #           @current_user = user
   #         else

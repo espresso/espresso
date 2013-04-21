@@ -674,6 +674,9 @@ Types supported:
 
 *   Basic
 *   Digest
+*   Token
+
+### Basic Authorization
 
 **Example:** - All actions under Admin controller will require Basic authorization
 
@@ -703,6 +706,8 @@ class MyBlog < E
 end
 ```
 
+### Digest Authorization
+
 **Example:** - Everything under Admin slice will require(Digest) authorization
 
 ```ruby
@@ -722,6 +727,53 @@ app = Admin.mount do
   end
 end
 app.run
+```
+
+### Token based Authorization
+
+```ruby
+class App < E
+  TOKEN = "secret".freeze
+
+  before :edit do
+    token_auth { |token| token == TOKEN }
+  end
+
+  def index
+    "Everyone can see me!"
+  end
+
+  def edit
+    "I'm only accessible if you know the password"
+  end
+end
+```
+
+**Example:**  more advanced Token example where only Atom feeds and the XML API is protected by HTTP token authentication
+
+```ruby
+class App < E
+  before :set_account do
+    authenticate
+  end
+
+  def set_account
+    @account = Account.find_by ...
+  end
+
+  private
+  def authenticate
+    if accept? /xml|atom/
+      if user = valid_token_auth? { |t, o| @account.users.authenticate(t, o) }
+        @current_user = user
+      else
+        request_token_auth!
+      end
+    else
+      # session based authentication
+    end
+  end
+end
 ```
 
 **[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
