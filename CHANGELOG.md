@@ -1,4 +1,9 @@
 
++ 0.4.6 HEAD
+  - Added token based authorization - [1beb5db](https://github.com/espresso/espresso/commit/1beb5db)
+
+<hr>
+
 + 0.4.5 [Apr 11 2013]
   - Deprecating `EspressoApp`. Now applications are built via `E.new`
   - Moving CRUD, Assets, HTMLHelpers, Cache and IPCM extensions to a separate gem
