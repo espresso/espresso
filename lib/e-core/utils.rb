@@ -156,4 +156,16 @@ module EUtils
   end
   module_function :deRESTify_action
 
+  # Encodes the given token and options into an Authorization header value.
+  #
+  # @param [String] token
+  # @param [Hash] options - optional Hash of the options
+  #
+  def encode_token_auth_credentials(token = nil, options = {})
+    token.is_a?(Hash) && (options = token) && (token = nil)
+    token && options = {token: token}.merge(options)
+    'Token %s' % options.map {|k,v| '%s=%s' % [k, v.to_s.inspect]}.join(', ')
+  end
+  module_function :encode_token_auth_credentials
+
 end

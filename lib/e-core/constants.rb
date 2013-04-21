@@ -40,12 +40,19 @@ module EConstants
   ENV__ESPRESSO_PATH_INFO = 'espresso.path_info'.freeze
   ENV__ESPRESSO_ACTION    = 'espresso.action'.freeze
   ENV__ESPRESSO_FORMAT    = 'espresso.format'.freeze
+  ENV__AUTHORIZATION_KEYS = [
+    'HTTP_AUTHORIZATION',
+    'X-HTTP_AUTHORIZATION',
+    'X_HTTP_AUTHORIZATION',
+    'REDIRECT_X_HTTP_AUTHORIZATION'
+  ].map(&:freeze).freeze
 
   HEADER__CONTENT_TYPE  = 'Content-Type'.freeze
   HEADER__LAST_MODIFIED = 'Last-Modified'.freeze
   HEADER__CACHE_CONTROL = 'Cache-Control'.freeze
   HEADER__EXPIRES       = 'Expires'.freeze
   HEADER__LOCATION      = 'Location'.freeze
+  HEADER__AUTHENTICATE  = 'WWW-Authenticate'.freeze
   HEADER__TRANSFER_ENCODING   = 'Transfer-Encoding'.freeze
   HEADER__CONTENT_DISPOSITION = 'Content-Disposition'.freeze
 
@@ -60,4 +67,5 @@ module EConstants
       '..\\', '\\..\\', '\\..',
       '..%5C', '%5C..%5C', '%5C..',
   ].map { |x| x.is_a?(String) ? Regexp.escape(x) : x }).freeze
+  
 end

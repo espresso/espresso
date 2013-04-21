@@ -97,4 +97,65 @@ module ECoreTest__Auth
     end
   end
 
+  class TokenAuth < E
+    TOKEN = 'blah'.freeze
+    REALM = 'API'.freeze
+
+    before :without_options do
+      token_auth do |token, options|
+        token == TOKEN
+      end
+    end
+    
+    before :with_options do
+      token_auth do |token, options|
+        token == TOKEN && options[:realm] == REALM
+      end
+    end
+
+    def index
+      __method__
+    end
+
+    def without_options
+      __method__
+    end
+
+    def with_options
+      __method__
+    end
+  end
+
+  Spec.new TokenAuth do
+    get
+    is(last_response).ok?
+    is(last_response.body) == 'index'
+
+    get :without_options
+    is(last_response).protected?
+    does(/HTTP Token/).match_body?
+    does(/Access denied/).match_body?
+
+    header['HTTP_AUTHORIZATION'] = EUtils.encode_token_auth_credentials(TokenAuth::TOKEN)
+    get :without_options
+    is(last_response).ok?
+    is(last_response.body) == 'without_options'
+    
+    get :with_options
+    is(last_response).protected?
+    does(/HTTP Token/).match_body?
+    does(/Access denied/).match_body?
+
+    header['HTTP_AUTHORIZATION'] = EUtils.encode_token_auth_credentials(TokenAuth::TOKEN)
+    get :with_options
+    is(last_response).protected?
+    does(/HTTP Token/).match_body?
+    does(/Access denied/).match_body?
+
+    header['HTTP_AUTHORIZATION'] = EUtils.encode_token_auth_credentials(TokenAuth::TOKEN, realm: TokenAuth::REALM)
+    get :with_options
+    is(last_response).ok?
+    is(last_response.body) == 'with_options'
+  end
+
 end
