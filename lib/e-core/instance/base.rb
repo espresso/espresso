@@ -106,7 +106,7 @@ class E
     response
   rescue => e
     # if a error handler defined, use it
-    if handler = error_handler_defined?(500)
+    if handler = error_handler_defined?(EConstants::STATUS__SERVER_ERROR)
       meth, arity = handler
       halt EConstants::STATUS__SERVER_ERROR, arity > 0 ? self.send(meth, e) : self.send(meth)
     else
@@ -165,8 +165,8 @@ class E
     middleware
   ].each do |meth|
     define_method meth do
-      # somehow sometimes __method__ is nil in this context
-      # TODO: find out how/why
+      # in some scenarios __method__ is nil in this context,
+      # so sending meth rather than __method__
       self.class.send meth
     end
   end
@@ -191,7 +191,6 @@ class E
   def alias_actions
     self.class.alias_actions[action] || []
   end
-
 
   def user
     env[EConstants::ENV__REMOTE_USER]
