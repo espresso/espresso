@@ -1,8 +1,9 @@
 class EBuilder
 
   # set base URL to be prepended to all controllers
-  def map url
+  def map url, opts = {}
     @base_url = EUtils.rootify_url(url).freeze
+    @hosts = EUtils.extract_hosts(opts)
   end
 
   def base_url

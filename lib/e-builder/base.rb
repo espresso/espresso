@@ -15,7 +15,7 @@ class EBuilder
   # @param [Proc] proc if block given, it will be executed inside newly created app
   #
   def initialize automount = false, &proc
-    @routes, @controllers = {}, {}
+    @routes, @controllers, @hosts = {}, {}, []
     @automount = automount
     proc && self.instance_exec(&proc)
     use ExtendedRack
@@ -34,6 +34,7 @@ class EBuilder
   #
   def mount *args, &setup
     controllers, roots = [], []
+    opts = args.last.is_a?(Hash) ? args.pop : {}
     args.flatten.each do |a|
       if a.is_a?(String)
         roots << EUtils.rootify_url(a)
@@ -44,7 +45,7 @@ class EBuilder
       end
     end
     controllers.each do |c|
-      @controllers[c] = [roots, setup]
+      @controllers[c] = [roots, opts, setup]
     end
     self
   end
@@ -67,7 +68,7 @@ class EBuilder
   end
   alias setup_controllers global_setup
   alias controllers_setup global_setup
-  alias setup global_setup
+  alias setup             global_setup
 
   # displays URLs the app will respond to,
   # with controller and action that serving each URL.
@@ -221,15 +222,15 @@ class EBuilder
   def mount_controllers!
     automount! if @automount
     @mounted_controllers = []
-    @controllers.each_pair {|c,(roots,setup)| mount_controller c, *roots, &setup}
+    @controllers.each_pair {|c,(roots,opts,setup)| mount_controller(c, *roots, opts, &setup)}
   end
 
-  def mount_controller controller, *roots, &setup
+  def mount_controller controller, *roots, opts, &setup
     return if @mounted_controllers.include?(controller)
 
     root = roots.shift
     if root || base_url.size > 0
-      controller.remap!(base_url + root.to_s, *roots)
+      controller.remap!(base_url + root.to_s, *roots, opts)
     end
 
     @global_setup && controller.global_setup!(&@global_setup)

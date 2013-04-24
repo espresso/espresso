@@ -59,16 +59,17 @@ class << E
   #   #   - /forums
   #   #   - /some-canonical
   #
-  def remap! root, *given_canonicals
+  def remap! root, *args
     return if mounted?
+    opts = args.last.is_a?(Hash) ? args.pop : {}
     new_base_url   = EUtils.rootify_url(root, base_url)
     new_canonicals = canonicals.dup
 
-    given_canonicals.each do |gc|
+    args.each do |gc|
       new_canonicals << EUtils.rootify_url(gc)
     end
 
-    map! new_base_url, *new_canonicals.uniq
+    map! new_base_url, *new_canonicals.uniq, opts
   end
 
   def global_setup! &setup
@@ -85,9 +86,11 @@ class << E
 
   private
 
-  def map! *paths
-    @__e__base_url   = EUtils.rootify_url(paths.shift.to_s).freeze
-    @__e__canonicals = paths.map { |p| EUtils.rootify_url(p.to_s) }.freeze
+  def map! *args
+    opts = args.last.is_a?(Hash) ? args.pop : {}
+    @__e__base_url   = EUtils.rootify_url(args.shift.to_s).freeze
+    @__e__canonicals = args.map { |p| EUtils.rootify_url(p.to_s) }.freeze
+    (@__e__hosts ||= []).push(*EUtils.extract_hosts(opts)).uniq!
   end
 
   def lock!

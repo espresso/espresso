@@ -8,9 +8,9 @@ module ECoreTest__Mount
     end
 
     Spec.new self do
-      eapp = E.new
-      eapp.mount App1, App1::App2, '/app'
-      app eapp
+      app E.new {
+        mount App1, App1::App2, '/app'
+      }
       map '/app'
 
       Ensure 'both controllers mounted' do

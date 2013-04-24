@@ -6,9 +6,19 @@ class << E
   # and other ones are treated as canonical routes.
   # canonical routes allow controller to serve multiple roots.
   #
-  def map *paths
+  # also it accepts a Hash of options.
+  # if :host option given, controller will respond only to requests originating on given host.
+  # multiple hosts can be provided as an Array via :hosts option.
+  #
+  # @example respond only to requests from site.com
+  #   map host: 'site.com'
+  #
+  # @example respond only to requests from site.com and site.net
+  #   map hosts: ['site.com', 'site.net']
+  #
+  def map *args
     return if mounted?
-    map! *paths
+    map! *args
   end
 
   # add/update a path rule

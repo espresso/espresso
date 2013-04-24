@@ -168,4 +168,11 @@ module EUtils
   end
   module_function :encode_token_auth_credentials
 
+  def extract_hosts opts
+    hosts = opts[:host] || opts[:hosts]
+    hosts = [hosts] unless hosts.is_a?(Array)
+    hosts.compact.map {|h| h.to_s.strip.gsub(/\A\w+\:\/\//, '')}
+  end
+  module_function :extract_hosts
+
 end
