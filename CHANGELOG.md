@@ -1,5 +1,5 @@
 
-+ 0.4.6 HEAD
++ 0.4.6 [Apr 25 2013]
   - Added token based authorization - [1beb5db](https://github.com/espresso/espresso/commit/1beb5db)
   - Respond only to requests originating on known hosts - [f2d1027](https://github.com/espresso/espresso/commit/f2d10)
   - Allow mounting of any Rack application - [bb3ff2](https://github.com/espresso/espresso/commit/bb3ff2)
