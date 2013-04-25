@@ -216,12 +216,13 @@ class EBuilder
     @sorted_routes ||= @routes.keys.sort {|a,b| b.source.size <=> a.source.size}
   end
 
-  def valid_host? hosts, env
+  def valid_host? accepted_hosts, env
     http_host, server_name, server_port =
       env.values_at(ENV__HTTP_HOST, ENV__SERVER_NAME, ENV__SERVER_PORT)
-    hosts.any? ?
-      (hosts[http_host]         || hosts[server_name]) :
-      (http_host == server_name || http_host == server_name+':'+server_port)
+    accepted_hosts[http_host] ||
+      accepted_hosts[server_name] ||
+      http_host == server_name ||
+      http_host == server_name+':'+server_port
   end
 
   # checking whether path is empty or starts with a slash

@@ -208,12 +208,24 @@ module ECoreTest__Rewriter
 
   Spec.new HostTest do
 
-    get 'blah.html'
-    is(last_response).not_found?
+    Should 'listen on default host' do
+      get 'blah.html'
+      is(last_response).ok?
+      is('blah').ok_body?
+    end
 
-    header['HTTP_HOST'] = 'foo.bar'
-    get 'blah.html'
-    is(last_response).ok?
-    is('blah').ok_body?
+    Should 'listen on specified hosts' do
+      header['HTTP_HOST'] = 'foo.bar'
+      get 'blah.html'
+      is(last_response).ok?
+      is('blah').ok_body?
+    end
+
+    Should 'reject foreign hosts' do
+      header['HTTP_HOST'] = 'evil.tld'
+      get 'blah.html'
+      is(last_response).not_found?
+    end
   end
+
 end

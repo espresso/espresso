@@ -1,20 +1,26 @@
 module ECoreTest__Host
 
   class App < E
-    map host: 'http://foo.bar'
+    map host: 'foo.bar'
   end
 
   Spec.new App do
-    get
-    is(last_response).not_found?
+    Should 'listen on default host' do
+      get
+      is(last_response).ok?
+    end
 
-    header['HTTP_HOST'] = 'foo.bar'
-    get
-    is(last_response).ok?
+    Should 'listen on specified hosts' do
+      header['HTTP_HOST'] = 'foo.bar'
+      get
+      is(last_response).ok?
+    end
 
-    header['HTTP_HOST'] = 'bar.foo'
-    get
-    is(last_response).not_found?
+    Should 'reject foreign hosts' do
+      header['HTTP_HOST'] = 'evil.tld'
+      get
+      is(last_response).not_found?
+    end
   end
 
   module Slice
@@ -28,16 +34,26 @@ module ECoreTest__Host
     }
     map Slice::App.base_url
 
-    get
-    is(last_response).not_found?
+    Should 'listen on default host' do
+      get
+      is(last_response).ok?
+    end
 
-    header['HTTP_HOST'] = 'foo.com'
-    get
-    is(last_response).ok?
-    
-    header['HTTP_HOST'] = 'foo.net'
-    get
-    is(last_response).ok?
+    Should 'listen on specified hosts' do
+      header['HTTP_HOST'] = 'foo.com'
+      get
+      is(last_response).ok?
+      
+      header['HTTP_HOST'] = 'foo.net'
+      get
+      is(last_response).ok?
+    end
+
+    Should 'reject foreign hosts' do
+      header['HTTP_HOST'] = 'evil.tld'
+      get
+      is(last_response).not_found?
+    end
   end
 
   class App2 < E
@@ -51,15 +67,25 @@ module ECoreTest__Host
     }
     map App2.base_url
 
-    get
-    is(last_response).not_found?
+    Should 'listen on default host' do
+      get
+      is(last_response).ok?
+    end
 
-    header['HTTP_HOST'] = 'some.thing.com'
-    get
-    is(last_response).ok?
+    Should 'listen on specified hosts' do
+      header['HTTP_HOST'] = 'some.thing.com'
+      get
+      is(last_response).ok?
 
-    header['HTTP_HOST'] = 'dothub.com'
-    get
-    is(last_response).ok?
+      header['HTTP_HOST'] = 'dothub.com'
+      get
+      is(last_response).ok?
+    end
+
+    Should 'reject foreign hosts' do
+      header['HTTP_HOST'] = 'evil.tld'
+      get
+      is(last_response).not_found?
+    end
   end
 end
