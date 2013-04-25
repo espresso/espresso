@@ -2,7 +2,7 @@ source 'http://rubygems.org'
 gemspec
 gem 'rake',     '~> 10'
 gem 'specular', '>= 0.2.1'
-gem 'sonar',    '>= 0.1.5'
+gem 'sonar',    '>= 0.1.6'
 gem 'slim'
 gem 'haml'
 gem 'rabl'
