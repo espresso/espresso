@@ -510,6 +510,84 @@ end
 
 **[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
+## Hosts
+
+By default Espresso will respond only to requests originating on the host application is running on.
+
+To make it listen on multiple hosts, pass originating hosts via controller's `map` method or via `mount` method when controllers are mounted.
+
+Let's suppose your application are listening on `site.com`.
+
+**Example:** make `App` controller to listen also on `site.org`:
+
+```ruby
+class App < E
+  map '/', host: 'site.org'
+  # or just
+  map host: 'site.org'
+
+  # ...
+end
+```
+
+**Example:** make `App` controller to listen also on `site.org` and `site.net`:
+
+```ruby
+class App < E
+  map '/', hosts: ['site.org', 'site.net']
+  # or just
+  map hosts: ['site.org', 'site.net']
+
+  # ...
+end
+```
+
+**Example:** make `Forum` slice to listen on `site.org` beside default `site.com`:
+
+```ruby
+module Forum
+  class Posts < E
+    # ...
+  end
+  class Users < E
+    # ...
+  end
+end
+
+E.new do
+  mount Forum, host: 'site.org'
+  run
+end
+```
+
+**Example:** make `Forum` slice to listen on `site.org` and `site.net` beside default `site.com`:
+
+```ruby
+E.new do
+  mount Forum, hosts: ['site.org', 'site.net']
+  run
+end
+```
+
+Hosts can also be specified at app level and will apply to all controllers:
+
+```ruby
+E.new do
+  map '/', host: 'site.org'
+  # or
+  map host: 'site.org'
+  # or
+  map hosts: ['site.org', 'site.net']
+
+  mount Forum
+  mount Blog
+
+  run
+end
+```
+
+**[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
+
 
 ## Rewriter
 
