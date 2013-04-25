@@ -51,7 +51,7 @@ module ECoreTest__Rewriter
 
   Spec.new self do
 
-    eapp = E.new do
+    app E.new {
 
       mount Cms
 
@@ -104,8 +104,7 @@ module ECoreTest__Rewriter
           redirect Cms.route(:news, name)
         end
       end
-    end
-    app eapp
+    }
 
     def redirected? response, status = 302
       check(response.status) == status
@@ -148,12 +147,12 @@ module ECoreTest__Rewriter
 
     Testing :pass do
       name = rand(100000).to_s
-      response = get '/pass_test_I/%s' % name
+      get '/pass_test_I/%s' % name
       
       is([name, {'name' => name}].inspect).ok_body?
       
       name = rand(100000).to_s
-      response = get '/pass_test_II/%s' % name
+      get '/pass_test_II/%s' % name
       is([name, {'name' => name}].to_s).ok_body?
     end
 
@@ -200,4 +199,21 @@ module ECoreTest__Rewriter
     end
   end
 
+  class HostTest < E
+    map host: 'foo.bar'
+    rewrite /\A\/+(.*)\.html\Z/ do |page|
+      halt 200, page
+    end
+  end
+
+  Spec.new HostTest do
+
+    get 'blah.html'
+    is(last_response).not_found?
+
+    header['HTTP_HOST'] = 'foo.bar'
+    get 'blah.html'
+    is(last_response).ok?
+    is('blah').ok_body?
+  end
 end

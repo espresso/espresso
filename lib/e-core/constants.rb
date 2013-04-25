@@ -28,6 +28,9 @@ module EConstants
   ENV__REQUEST_URI    = 'REQUEST_URI'.freeze
   ENV__PATH_INFO      = 'PATH_INFO'.freeze
   ENV__HTTP_ACCEPT    = 'HTTP_ACCEPT'.freeze
+  ENV__HTTP_HOST      = 'HTTP_HOST'.freeze
+  ENV__SERVER_NAME    = 'SERVER_NAME'.freeze
+  ENV__SERVER_PORT    = 'SERVER_PORT'.freeze
   ENV__QUERY_STRING   = 'QUERY_STRING'.freeze
   ENV__REMOTE_USER    = 'REMOTE_USER'.freeze
   ENV__RACK_ENV       = 'RACK_ENV'.freeze

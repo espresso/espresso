@@ -52,11 +52,3 @@ class E
 
   end
 end
-
-class EspressoApp < EBuilder
-  def initialize(*)
-    warn "\n--- WARN: EspressoApp is deprecated and will be removed soon ---
-          Please use E.new instead\n"
-    super
-  end
-end

@@ -171,7 +171,7 @@ module EUtils
   def extract_hosts opts
     hosts = opts[:host] || opts[:hosts]
     hosts = [hosts] unless hosts.is_a?(Array)
-    hosts.compact.map {|h| h.to_s.strip.gsub(/\A\w+\:\/\//, '')}
+    Hash[hosts.compact.map {|h| [h.to_s.strip.downcase.gsub(/\A\w+\:\/\//, ''), true]}]
   end
   module_function :extract_hosts
 

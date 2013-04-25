@@ -90,7 +90,7 @@ class << E
     opts = args.last.is_a?(Hash) ? args.pop : {}
     @__e__base_url   = EUtils.rootify_url(args.shift.to_s).freeze
     @__e__canonicals = args.map { |p| EUtils.rootify_url(p.to_s) }.freeze
-    (@__e__hosts ||= []).push(*EUtils.extract_hosts(opts)).uniq!
+    (@__e__hosts ||= {}).update EUtils.extract_hosts(opts)
   end
 
   def lock!
