@@ -34,13 +34,15 @@ class EBuilder
   # 
   # proc given here will be executed inside given/discovered controllers
   def mount *args, &setup
-    controllers, roots = [], []
+    controllers, roots, applications = [], [], []
     opts = args.last.is_a?(Hash) ? args.pop : {}
     args.flatten.each do |a|
       if a.is_a?(String)
         roots << rootify_url(a)
       elsif is_app?(a)
         controllers << a
+      elsif a.respond_to?(:call)
+        applications << a
       else
         controllers.concat extract_controllers(a)
       end
@@ -48,6 +50,9 @@ class EBuilder
     controllers.each do |c|
       @controllers[c] = [roots, opts, setup]
     end
+    
+    mount_applications applications, roots, opts
+
     self
   end
 
@@ -172,19 +177,18 @@ class EBuilder
             return app.call(env)
           elsif route_setup[:app]
             break unless valid_host?(@hosts.merge(@controllers_hosts), env)
-            env[ENV__PATH_INFO] = matches[1].to_s
+            env[ENV__PATH_INFO] = normalize_path(matches[1].to_s)
             return route_setup[:app].call(env)
           else
             break unless valid_host?(@hosts.merge(route_setup[:controller].hosts), env)
-            path_info = matches[1].to_s
 
-            env[ENV__SCRIPT_NAME] = (route_setup[:path]).freeze
-            env[ENV__PATH_INFO]   = (path_ok?(path_info) ? path_info : '/' << path_info).freeze
+            env[ENV__SCRIPT_NAME] = route_setup[:path].freeze
+            env[ENV__PATH_INFO]   = normalize_path(matches[1].to_s)
 
-            epi, format = nil
-            (fr = route_setup[:format_regexp]) && (epi, format = path_info.split(fr))
-            env[ENV__ESPRESSO_PATH_INFO] = epi
-            env[ENV__ESPRESSO_FORMAT]    = format
+            if format_regexp = route_setup[:format_regexp]
+              env[ENV__ESPRESSO_PATH_INFO], env[ENV__ESPRESSO_FORMAT] = \
+                env[ENV__PATH_INFO].split(format_regexp)
+            end
 
             controller_instance = route_setup[:controller].new
             controller_instance.action_setup = route_setup
@@ -223,6 +227,10 @@ class EBuilder
       accepted_hosts[server_name] ||
       http_host == server_name ||
       http_host == server_name+':'+server_port
+  end
+
+  def normalize_path path
+    (path_ok?(path) ? path : '/' << path).freeze
   end
 
   # checking whether path is empty or starts with a slash
@@ -273,6 +281,33 @@ class EBuilder
     end
     discover_controllers namespace
   end
+
+  def mount_applications applications, roots, opts = {}
+    applications = [applications] unless applications.is_a?(Array)
+    applications.compact!
+    return if applications.empty?
+
+    roots = [roots] unless roots.is_a?(Array)
+    roots.compact!
+    roots = ['/'] if roots.empty?
+    roots.map! {|s| rootify_url(s.to_s)}
+    
+    request_methods = (opts[:on] || opts[:request_method] || opts[:request_methods])
+    request_methods = [request_methods] unless request_methods.is_a?(Array)
+    request_methods.compact!
+    request_methods.map! {|m| m.to_s.upcase}.reject! do |m|
+      HTTP__REQUEST_METHODS.none? {|lm| lm == m}
+    end
+    request_methods = HTTP__REQUEST_METHODS if request_methods.empty?
+
+    applications.each do |a|
+      route = request_methods.inject({}) {|map,m| map.merge(m => {app: a})}
+      roots.each do |r|
+        @routes[route_to_regexp(r)] = route
+      end
+    end
+  end
+  alias mount_application mount_applications
 
   # Some Rack handlers (Thin, Rainbows!) implement an extended body object protocol, however,
   # some middleware (namely Rack::Lint) will break it by not mirroring the methods in question.
