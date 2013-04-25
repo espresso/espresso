@@ -1,6 +1,8 @@
 
 + 0.4.6 HEAD
   - Added token based authorization - [1beb5db](https://github.com/espresso/espresso/commit/1beb5db)
+  - Respond only to requests originating on known hosts - [f2d1027](https://github.com/espresso/espresso/commit/f2d10)
+  - Allow mounting of any Rack application - [bb3ff2](https://github.com/espresso/espresso/commit/bb3ff2)
 
 <hr>
 
@@ -13,14 +15,12 @@
 <hr>
 
 + 0.4.3 [March 20 2013]
-
   - View compiler enabled by default - [2baaf2](https://github.com/espresso/espresso/commit/2baaf2)
   - Rabl support added - [f65a37bb059](https://github.com/espresso/espresso/commit/f65a37bb059)
 
 <hr>
 
 + 0.4.2 [March 11 2013]
-
   - Generator moved to a standalone gem - [Enginery](https://github.com/espresso/enginery)
   - helpers are now included via `helper` method - [ab2063461](https://github.com/espresso/espresso/commit/ab2063461)
   - `link_to` helper [db51c839](https://github.com/espresso/espresso/commit/db51c839cf2e1165bceb5d394b3706e53c59f0b4)
@@ -32,14 +32,12 @@
 <hr>
 
 + 0.4.1 [Feb 18 2013]
-
   - support for various streaming backends - [bd844acf](https://github.com/espresso/espresso/commit/bd844acf)
   - added transfer_encoding setup - [e6f4805f4](https://github.com/espresso/espresso/commit/e6f4805f478050df9a7a1206e7ed8ae9b94da039)
 
 <hr>
 
 + 0.4.0 [Feb 11 2013] - First Stable Release
-
   - Created a handy generator to easily generate projects, controllers, routes etc.
   - Path to templates are now resolved by controller name, not by base URL
   - Verbified actions has priority over verbless ones, regardless defining order
