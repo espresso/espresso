@@ -70,6 +70,7 @@ $ ruby app.rb
 [Parametrization](https://github.com/espresso/espresso/blob/master/docs/Routing.md#parametrization) |
 [Format](https://github.com/espresso/espresso/blob/master/docs/Routing.md#format) |
 [RESTful Actions](https://github.com/espresso/espresso/blob/master/docs/Routing.md#restful-actions) |
+[Hosts](https://github.com/espresso/espresso/blob/master/docs/Routing.md#hosts) |
 [Rewriter](https://github.com/espresso/espresso/blob/master/docs/Routing.md#rewriter)
 
 
@@ -146,6 +147,7 @@ $ ruby app.rb
 [Controllers](https://github.com/espresso/espresso/blob/master/docs/Deploy.md#controllers) |
 [Slices](https://github.com/espresso/espresso/blob/master/docs/Deploy.md#slices) |
 [Roots](https://github.com/espresso/espresso/blob/master/docs/Deploy.md#roots) |
+[Arbitrary Applications](https://github.com/espresso/espresso/blob/master/docs/Deploy.md#arbitrary-applications) |
 [Run](https://github.com/espresso/espresso/blob/master/docs/Deploy.md#run) |
 [config.ru](https://github.com/espresso/espresso/blob/master/docs/Deploy.md#configru)
 

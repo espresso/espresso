@@ -198,6 +198,59 @@ app.run
 
 **[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
+## Arbitrary Applications
+
+Espresso allow to mount any Rack-compatible application same way as usual controllers/slices mounted.
+
+**Example:** mount `SomeSinatraApp` into "/"
+
+```ruby
+E.new do
+  mount SomeSinatraApp
+end
+```
+
+**Example:** mount `SomeSinatraApp` into "/blog"
+
+```ruby
+E.new do
+  mount SomeSinatraApp, "/blog"
+end
+```
+
+By default, mounted applications will respond to any request method.
+
+To make it respond only to some request method(s), use `:on` option:
+
+**Example:** make `SomeSinatraApp` to respond only to specific requests
+
+```ruby
+E.new do
+  mount SomeSinatraApp, on: :get
+  # or
+  mount SomeSinatraApp, on: [:get, :post]
+  # or
+  mount SomeSinatraApp, request_method: :get
+  # or
+  mount SomeSinatraApp, request_methods: [:get, :post]
+end
+```
+
+Worth to note that mounted applications will honor host politics:
+
+**Example:** `SomeSinatraApp` will respond only to requests originating on default host and `site.com`
+
+```ruby
+E.new do
+  map host: 'site.com'
+  mount SomeSinatraApp
+end
+```
+
+
+
+**[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
+
 
 ## Run
 
