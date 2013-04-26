@@ -74,6 +74,8 @@ class << E
       (@__e__before_aliases || {})[action] || []
     elsif position == :z
       (@__e__after_aliases  || {})[action] || []
+    else
+      []
     end
   end
 
