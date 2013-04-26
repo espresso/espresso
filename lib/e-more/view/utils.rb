@@ -14,7 +14,7 @@ module EUtils
       end
     end
     # redefining method so engines wont be registered multiple times
-    def __method__; end
+    def EUtils.register_extra_engines!; end
   end
   module_function :register_extra_engines!
 end
