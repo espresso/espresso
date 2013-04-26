@@ -92,6 +92,11 @@ class << E
     end
   end
 
+  # clear public_actions cache when new method added
+  def method_added(*)
+    @__e__public_actions = nil
+  end
+
   private
   def generate_action_setup action
     action_name, request_method = EUtils.deRESTify_action(action)
