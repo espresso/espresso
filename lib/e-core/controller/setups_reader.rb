@@ -5,6 +5,7 @@ class << E
   def hosts;         @__e__hosts || {}  end
   def action_setup;  @__e__action_setup end
   def rewrite_rules; @__e__rewrite_rules || []  end
+  def mapped?;       @__e__base_url end
   def mounted?;      @__e__mounted || @__e__app end
 
   # build URL from given action name(or path) and consequent params
