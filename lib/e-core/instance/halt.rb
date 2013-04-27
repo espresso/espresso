@@ -24,6 +24,7 @@ class E
   #    halt [200, {'Content-Disposition' => "attachment; filename=some-file"}, some_IO_instance]
   #
   # @param [Array] *args
+  #
   def halt *args
     args.each do |a|
       case a
@@ -42,6 +43,47 @@ class E
     end
     response.body ||= []
     throw :__e__catch__response__, response
+  end
+
+  # same as `halt` except it carrying earlier defined error handlers.
+  # if no handler found it behaves exactly as `halt(error_code[, body])`.
+  #
+  # @example
+  #    class App < E
+  #
+  #      # defining the proc to be executed on 404 errors
+  #      error 404 do |message|
+  #        render_layout('layouts/404') { message }
+  #      end
+  #
+  #      def index id, status
+  #        item = Model.fisrt(:id => id, :status => status)
+  #        unless item
+  #          # interrupt execution and send a styled 404 error to browser.
+  #          styled_halt 404, 'Can not find item by given ID and Status'
+  #        end
+  #        # code to be executed only if item found
+  #      end
+  #    end
+  #
+  def styled_halt error_code = EConstants::STATUS__SERVER_ERROR, body = nil
+    if handler = error_handler_defined?(error_code)
+      meth, arity = handler
+      body = arity > 0 ? self.send(meth, body) : [self.send(meth), body].join
+    end
+    halt error_code.to_i, body
+  end
+  alias styled_error  styled_halt
+  alias styled_error! styled_halt
+  alias fail   styled_halt
+  alias fail!  styled_halt
+  alias quit   styled_halt
+  alias quit!  styled_halt
+  alias error  styled_halt
+  alias error! styled_halt
+
+  def error_handler_defined? error_code
+    self.class.error_handler(error_code) || self.class.error_handler(:*)
   end
 
 end

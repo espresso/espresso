@@ -33,12 +33,12 @@ class E
       if setup = self.class.action_setup[action]
         self.action_setup = setup[env[EConstants::ENV__REQUEST_METHOD]] || setup[:*]
         self.action_setup ||
-          fail(EConstants::STATUS__NOT_IMPLEMENTED, "Resource found
+          styled_halt(EConstants::STATUS__NOT_IMPLEMENTED, "Resource found
             but it can be accessed only through %s" % setup.keys.join(", "))
       end
     end
     self.action_setup ||
-      fail(EConstants::STATUS__NOT_FOUND, '%s %s not found' % [rq.request_method, rq.path])
+      styled_halt(EConstants::STATUS__NOT_FOUND, '%s %s not found' % [rq.request_method, rq.path])
   end
   private :setup_action!
 
@@ -73,10 +73,10 @@ class E
       given = action_params__array.size
 
       min && given < min &&
-        fail(EConstants::STATUS__NOT_FOUND, 'min params accepted: %s; params given: %s' % [min, given])
+        styled_halt(EConstants::STATUS__NOT_FOUND, 'min params accepted: %s; params given: %s' % [min, given])
 
       max && given > max &&
-        fail(EConstants::STATUS__NOT_FOUND, 'max params accepted: %s; params given: %s' % [max, given])
+        styled_halt(EConstants::STATUS__NOT_FOUND, 'max params accepted: %s; params given: %s' % [max, given])
 
       call!
     end
