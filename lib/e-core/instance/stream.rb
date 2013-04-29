@@ -144,11 +144,11 @@ class EStream
       # - EventSource expects \n\n at the end of each single message.
       write "data: %s\n\n" % data.gsub(/\n|\r/, '')
     end
+    alias :<< :data
 
     def write data
       @scheduler.schedule { @front.call(data.to_s) }
     end
-    alias :<< :write
 
   end
 
