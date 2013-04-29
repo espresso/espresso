@@ -1,8 +1,9 @@
+
 #### Note: Streaming in Espresso is working only with Thin, Rainbows! and [Reel(0.3 and up)](https://github.com/celluloid/reel) web-servers.
 
-By default Espresso will use `EventMachine` for streaming.
+By default Espresso will use `EventMachine` as streaming backend.
 
-If you are using Reel web server, you should instruct Espresso to use `Celluloid` backend.
+If you are using Reel web server, you should instruct `Espresso` to use `Celluloid` as backend.
 
 This is done via `streaming_backend` method at app level:
 
@@ -31,8 +32,8 @@ class App < E
   map '/'
   
   def subscribe
-    stream :keep_open do |stream|
-      stream << "data: some string\n\n" # will set #wall's HTML to 'some string'
+    evented_stream :keep_open do |stream|
+      stream << "some string" # sending data
     end
   end
 end
@@ -49,9 +50,20 @@ evs.addEventListener('time', function(e) {
 
 ```ruby
 def subscribe
-  stream :keep_open do |stream|
-    stream << "event: time\n"
-    stream << "data: #{Time.now}\n\n" # will set #time's HTML to current time
+  evented_stream :keep_open do |stream|
+    stream.event "time" # sending "time" event
+    stream << Time.now  # sending time data
+  end
+end
+```
+
+Other `EventSource` related methods - `id`, `retry`:
+
+```ruby
+def subscribe
+  evented_stream :keep_open do |stream|
+    stream.id "foo"     # sending "foo" ID
+    stream.retry 10000  # instructing browser to reconnect every 10 seconds
   end
 end
 ```
@@ -115,12 +127,11 @@ Here is an example that will release the response instantly and then send body b
 
 ```ruby
 def some_heavy_action
-  stream do |socket|
+  chunked_stream do |socket|
     ExtractDataFromDBOrSomePresumablySlowAPI.each do |data|
-      socket << data.bytesize.to_s(16) + "\r\n"
-      socket << data + "\r\n"
+      socket << data
     end
-    socket << "0\r\n\r\n" # close it, otherwise the browser will wait for data forever
+    socket.close # close it, otherwise the browser will wait for data forever
   end
 end
 ```
