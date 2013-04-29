@@ -1,4 +1,11 @@
 
++ 0.4.7 HEAD
+  - `evented_stream` and `chunked_stream` helpers - [aebc298](https://github.com/espresso/espresso/commit/aebc298)
+  - `styled_halt` helper - [5eeb404190](https://github.com/espresso/espresso/commit/5eeb404190)
+  - `mapped?` helper - [d0ee33729](https://github.com/espresso/espresso/commit/d0ee33729)
+
+<hr>
+
 + 0.4.6 [Apr 25 2013]
   - Added token based authorization - [1beb5db](https://github.com/espresso/espresso/commit/1beb5db)
   - Respond only to requests originating on known hosts - [f2d1027](https://github.com/espresso/espresso/commit/f2d10)
