@@ -4,7 +4,7 @@ class E
     streamer EStream::Generic, keep_open, &proc
   end
 
-  def chunked_stream keep_open = false, &proc
+  def chunked_stream keep_open = true, &proc
     transfer_encoding 'chunked'
     streamer EStream::Chunked, keep_open, &proc
   end
