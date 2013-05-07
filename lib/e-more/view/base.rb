@@ -104,14 +104,16 @@ class E
   # render a template by name.
   # it requires full template name, eg. with extension.
   def render_file template, *args
-    render_partial path_to_templates(template), *args
+    template = path_to_templates(template) unless template.instance_of?(EView__ExplicitPath)
+    render_partial template, *args
   end
   alias render_f render_file
 
   # render a layout.
   # it requires full layout name, eg. with extension.
   def render_layout_file template, *args, &proc
-    render_layout path_to_layouts(template), *args, &proc
+    template = path_to_layouts(template) unless template.instance_of?(EView__ExplicitPath)
+    render_layout template, *args, &proc
   end
   alias render_lf render_layout_file
 
@@ -147,12 +149,14 @@ class E
     alias_method 'render_%s_l' % __e__adhoc_engine_ext, 'render_%s_layout' % __e__adhoc_engine_ext
 
     define_method 'render_%s_file' % __e__adhoc_engine_ext do |template, *args|
-      self.send 'render_%s_partial' % __e__adhoc_engine_ext, path_to_templates(template), *args
+      template = path_to_templates(template) unless template.instance_of?(EView__ExplicitPath)
+      self.send 'render_%s_partial' % __e__adhoc_engine_ext, template, *args
     end
     alias_method 'render_%s_f' % __e__adhoc_engine_ext, 'render_%s_file' % __e__adhoc_engine_ext
 
     define_method 'render_%s_layout_file' % __e__adhoc_engine_ext do |template, *args, &proc|
-      self.send 'render_%s_layout' % __e__adhoc_engine_ext, path_to_layouts(template), *args, &proc
+      template = path_to_layouts(template) unless template.instance_of?(EView__ExplicitPath)
+      self.send 'render_%s_layout' % __e__adhoc_engine_ext, template, *args, &proc
     end
     alias_method 'render_%s_lf' % __e__adhoc_engine_ext, 'render_%s_layout_file' % __e__adhoc_engine_ext
 
