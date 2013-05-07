@@ -48,16 +48,16 @@ class E
   #       thus you should provide full path to template, relative to `view_path` of course
   #
   def path_to_templates *args
-    view_path_proxy view_path?, *args
+    explicit_view_path view_path?, *args
   end
 
   # returns full path to layouts.
   # if any args given they are `File.join`-ed and appended to returned path.
   def path_to_layouts *args
-    view_path_proxy view_path?, layouts_path?, *args
+    explicit_view_path view_path?, layouts_path?, *args
   end
 
-  def view_path_proxy *args
+  def explicit_view_path *args
     EView__ExplicitPath.new File.join(*args)
   end
 
