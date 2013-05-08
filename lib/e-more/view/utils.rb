@@ -11,10 +11,9 @@ module EUtils
         EConstants::VIEW__ENGINE_MAPPER[info[:extension]] = template
         EConstants::VIEW__ENGINE_BY_SYM[name] = template
         EConstants::VIEW__EXT_BY_ENGINE[template] = info[:extension].dup.freeze
+        EConstants::VIEW__EXTRA_ENGINES.delete(name)
       end
     end
-    # redefining method so engines wont be registered multiple times
-    def EUtils.register_extra_engines!; end
   end
   module_function :register_extra_engines!
 end
