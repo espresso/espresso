@@ -25,7 +25,7 @@ class E
   end
 
   def action
-    action_setup[:action]
+    action_setup && action_setup[:action]
   end
 
   def setup_action! action = nil
