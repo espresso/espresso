@@ -14,11 +14,6 @@ module ECoreTest__Canonical
     import Actions
   end
 
-  class RemountApp < E
-    map '/root', '/cms', '/pages'
-    import Actions
-  end
-
   Spec.new App do
     Testing 'without remap' do
       get
@@ -43,8 +38,13 @@ module ECoreTest__Canonical
     end
   end
 
+  class RemountApp < E
+    map '/root', '/cms', '/pages'
+    import Actions
+  end
+
   Spec.new self do
-    app RemountApp.mount('/new-root', '/new-canonical')
+    app RemountApp.mount('/new-root')
     map RemountApp.base_url
 
     Testing 'with remap' do
@@ -52,21 +52,21 @@ module ECoreTest__Canonical
       is(last_response).ok?
       expect(last_response.body) == ['/new-root/root/index/', nil].inspect
 
-      get '/cms'
+      get '/new-root/cms'
       is(last_response).ok?
-      expect(last_response.body) == ["/cms", "/new-root/root/index"].inspect
+      expect(last_response.body) == ["/new-root/cms", "/new-root/root/index"].inspect
 
-      post '/cms/eatme'
+      post '/new-root/cms/eatme'
       is(last_response).ok?
-      expect(last_response.body) == ["/cms/eatme", "/new-root/root/eatme"].inspect
+      expect(last_response.body) == ["/new-root/cms/eatme", "/new-root/root/eatme"].inspect
 
-      get '/pages'
+      get '/new-root/pages'
       is(last_response).ok?
-      expect(last_response.body) == ["/pages", "/new-root/root/index"].inspect
+      expect(last_response.body) == ["/new-root/pages", "/new-root/root/index"].inspect
 
-      post '/pages/eatme'
+      post '/new-root/pages/eatme'
       is(last_response).ok?
-      expect(last_response.body) == ["/pages/eatme", "/new-root/root/eatme"].inspect
+      expect(last_response.body) == ["/new-root/pages/eatme", "/new-root/root/eatme"].inspect
     end
   end
 

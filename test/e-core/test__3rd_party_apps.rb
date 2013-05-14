@@ -61,25 +61,6 @@ module ECoreTest__3rdPartyApps
       is('Articles').ok_body?
     end
 
-    Should 'mount into given roots' do
-      roots = %w[/forum /forums]
-      app E.new {
-        mount App, *roots
-      }
-
-      roots.each do |root|
-        map root
-
-        get
-        is(last_response).ok?
-        is('homePage').ok_body?
-
-        get :articles
-        is(last_response).ok?
-        is('Articles').ok_body?
-      end
-    end
-
     Ensure 'host politics honored' do
       host = 'fluffy.tld'
       app E.new {

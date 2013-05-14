@@ -34,11 +34,11 @@ class EBuilder
   # 
   # proc given here will be executed inside given/discovered controllers
   def mount *args, &setup
-    controllers, roots, applications = [], [], []
+    root, controllers, applications = nil, [], []
     opts = args.last.is_a?(Hash) ? args.pop : {}
     args.flatten.each do |a|
       if a.is_a?(String)
-        roots << rootify_url(a)
+        root = rootify_url(a)
       elsif is_app?(a)
         controllers << a
       elsif a.respond_to?(:call)
@@ -48,10 +48,11 @@ class EBuilder
       end
     end
     controllers.each do |c|
-      @controllers[c] = [roots, opts, setup]
+      @controllers[c] = [root, opts, setup]
+      c.subcontrollers.each {|sc| mount(sc, root.to_s + c.base_url, opts, &setup)}
     end
     
-    mount_applications applications, roots, opts
+    mount_applications applications, root, opts
 
     self
   end
@@ -243,15 +244,15 @@ class EBuilder
   def mount_controllers!
     automount! if @automount
     @mounted_controllers = []
-    @controllers.each_pair {|c,(roots,opts,setup)| mount_controller(c, *roots, opts, &setup)}
+    @controllers.each_pair {|c,(root,opts,setup)| mount_controller(c, root, opts, &setup)}
   end
 
-  def mount_controller controller, *roots, opts, &setup
+  def mount_controller controller, root = nil, opts = {}, &setup
     return if @mounted_controllers.include?(controller)
+    root.is_a?(Hash) && (opts = root) && (root = nil)
 
-    root = roots.shift
     if root || base_url.size > 0
-      controller.remap!(base_url + root.to_s, *roots, opts)
+      controller.remap!(base_url + root.to_s, opts)
     end
 
     @global_setup && controller.global_setup!(&@global_setup)
@@ -282,16 +283,12 @@ class EBuilder
     discover_controllers namespace
   end
 
-  def mount_applications applications, roots, opts = {}
+  def mount_applications applications, root = nil, opts = {}
     applications = [applications] unless applications.is_a?(Array)
     applications.compact!
     return if applications.empty?
+    root.is_a?(Hash) && (opts = root) && (root = nil)
 
-    roots = [roots] unless roots.is_a?(Array)
-    roots.compact!
-    roots = ['/'] if roots.empty?
-    roots.map! {|s| rootify_url(s.to_s)}
-    
     request_methods = (opts[:on] || opts[:request_method] || opts[:request_methods])
     request_methods = [request_methods] unless request_methods.is_a?(Array)
     request_methods.compact!
@@ -300,11 +297,9 @@ class EBuilder
     end
     request_methods = HTTP__REQUEST_METHODS if request_methods.empty?
 
+    route = route_to_regexp(rootify_url(root || '/'))
     applications.each do |a|
-      route = request_methods.inject({}) {|map,m| map.merge(m => {app: a})}
-      roots.each do |r|
-        @routes[route_to_regexp(r)] = route
-      end
+      @routes[route] = request_methods.inject({}) {|map,m| map.merge(m => {app: a})}
     end
   end
   alias mount_application mount_applications

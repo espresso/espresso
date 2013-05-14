@@ -70,6 +70,20 @@ class << E
     ((@__e__alias_actions ||= {})[action]||=[]) << url
   end
 
+  # allow to mount sub-controllers under the base URL of parent controller.
+  # almost same as `import`, except actions will be executed in the sub-controller context.
+  # @note sub-controllers wont be automounted when app built.
+  #       though you can still can mount them manually.
+  def mount_controllers *controllers
+    (@__e__subcontrollers ||= [])
+    controllers.each do |c|
+      EUtils.is_app?(c) ?
+        (c.reject_automount!; (@__e__subcontrollers << c).uniq!) :
+        warn('"%s" should be a Espresso controller, skipping mount' % CGI.escape_html(c))
+    end
+  end
+  alias mount_controller mount_controllers
+
   # automatically setting URL extension and Content-Type.
   # this method will set formats for all actions.
   #

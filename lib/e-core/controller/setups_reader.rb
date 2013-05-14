@@ -88,4 +88,8 @@ class << E
     @__e__middleware || []
   end
 
+  def subcontrollers
+    (@__e__subcontrollers || []).uniq
+  end
+
 end

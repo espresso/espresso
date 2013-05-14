@@ -44,7 +44,6 @@ class << E
   end
 
   # remap served root(s) by prepend given path to controller's root.
-  # if some canonicals given they will be appended to existing controller's canonicals.
   #
   # @note Important: all actions should be defined before re-mapping occurring
   #
@@ -53,23 +52,16 @@ class << E
   #     map '/forum', '/forums'
   #     # ...
   #   end
-  #   app = E.new.mount(Forum, '/new-root', '/some-canonical')
+  #
+  #   app = E.new.mount(Forum, '/new-root')
   #   # app will serve:
   #   #   - /new-root/forum
-  #   #   - /forums
-  #   #   - /some-canonical
+  #   #   - /new-root/forums
   #
-  def remap! root, *args
+  def remap! root, opts = {}
     return if mounted?
-    opts = args.last.is_a?(Hash) ? args.pop : {}
-    new_base_url   = EUtils.rootify_url(root, base_url)
-    new_canonicals = canonicals.dup
-
-    args.each do |gc|
-      new_canonicals << EUtils.rootify_url(gc)
-    end
-
-    map! new_base_url, *new_canonicals.uniq, opts
+    new_canonicals = canonicals.map {|c| EUtils.rootify_url(root, c)}
+    map! EUtils.rootify_url(root, base_url), *new_canonicals.uniq, opts
   end
 
   def global_setup! &setup
