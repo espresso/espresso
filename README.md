@@ -1,14 +1,13 @@
+
 <a href="http://espresso.github.com/">
 <img src="http://espresso.github.com/images/logo.png" align="right" /></a>
 
-# [Espresso](http://espresso.github.com)
+<a href="https://travis-ci.org/espresso/espresso">
+<img src="https://travis-ci.org/espresso/espresso.png" ></a>
+
+### [Espresso Framework](http://espresso.github.com)
 
 ### Scalable Web Framework aimed at Speed and Simplicity
-
-<p>
-<a href="https://travis-ci.org/espresso/espresso">
-<img src="https://travis-ci.org/espresso/espresso.png"></a>
-</p>
 
 ## Install
 
