@@ -159,11 +159,10 @@ app = E.new(true)
 this will automount `Pages` controller but not `News`
 
 
-## Roots
+## Mount Root
 
 
-To mount a controller/slice into a specific root, pass it as argument:
-
+To mount a controller/slice into a specific root, pass it as a `String`:
 
 ```ruby
 module Forum
@@ -175,24 +174,12 @@ module Forum
   end
 end
 
-app = Forum.mount '/forum'
+app = Forum.mount('/forum')
 app.run
 
 # or
 app = E.new
-app.mount Forum, '/forum'
-app.run
-```
-
-If controller/slice should serve multiple roots, pass them all as arguments:
-
-```ruby
-app = Forum.mount '/forum', '/Forums'
-app.run
-
-# or
-app = E.new
-app.mount Forum, '/forum', '/Forums'
+app.mount(Forum, '/forum')
 app.run
 ```
 
