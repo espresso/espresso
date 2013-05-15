@@ -292,7 +292,6 @@ class << E
     define_format_helpers(global_formats, strict_formats)
 
     @__e__expanded_formats = public_actions.inject({}) do |map, action|
-
       map[action] = global_formats
 
       action_formats = strict_formats.inject([]) do |formats,(m,f)|

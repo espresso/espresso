@@ -72,8 +72,13 @@ class << E
 
   # allow to mount sub-controllers under the base URL of parent controller.
   # almost same as `import`, except actions will be executed in the sub-controller context.
+  #
   # @note sub-controllers wont be automounted when app built.
   #       though you can still can mount them manually.
+  #
+  # @note any controller can be mounted only once,
+  #       so do not try to mount same sub-controller into multiple controllers!
+  #
   def mount_controllers *controllers
     (@__e__subcontrollers ||= [])
     controllers.each do |c|
