@@ -152,6 +152,7 @@ class EBuilder
   def app
     @app ||= begin
       mount_controllers!
+      @routes.freeze
       middleware.reverse.inject(lambda {|env| call!(env)}) {|a,e| e[a]}
     end
   end
@@ -218,7 +219,7 @@ class EBuilder
   end
 
   def sorted_routes
-    @sorted_routes ||= @routes.keys.sort {|a,b| b.source.size <=> a.source.size}
+    @sorted_routes ||= @routes.keys.sort {|a,b| b.source.size <=> a.source.size}.freeze
   end
 
   def valid_host? accepted_hosts, env
