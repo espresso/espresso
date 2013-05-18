@@ -42,4 +42,5 @@ module EConstants
 
   VIEW__DEFAULT_PATH   = 'view/'.freeze
   VIEW__DEFAULT_ENGINE = [Tilt::ERBTemplate]
+  VIEW__DEFAULT_ENGINE_NAME = :ERB
 end
