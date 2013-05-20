@@ -30,15 +30,17 @@ class E
     end
 
     # `include` are used to share helpers between controllers
-    alias native_include include
-    def include mdl
-      native_include mdl
-      (@__e__included_methods ||= []).concat mdl.public_instance_methods(false)
+    unless defined?(E.include)
+      alias native_include include
+      def include mdl
+        native_include(mdl)
+        (@__e__included_methods ||= []).concat mdl.public_instance_methods(false)
+      end
     end
 
     # `import` are used to share actions between controllers
     def import mdl
-      native_include mdl
+      native_include(mdl)
       (@__e__imported_methods ||= []).concat mdl.public_instance_methods(false)
     end
 
