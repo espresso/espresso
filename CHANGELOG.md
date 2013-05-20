@@ -1,5 +1,5 @@
 
-+ 0.4.7 HEAD
++ 0.4.7 [May 20 2013]
   - Allow controllers to mount sub-controllers - [203c314](https://github.com/espresso/espresso/commit/203c314)
   - Deprecated canonicals passing at controllers mounting.
   - `evented_stream` and `chunked_stream` helpers - [aebc298](https://github.com/espresso/espresso/commit/aebc298)
