@@ -230,4 +230,9 @@ class EBuilder
     end
   end
 
+  # block(s) to run just before application starts
+  def on_boot &proc
+    (@on_boot ||= []).push(proc)
+  end
+
 end

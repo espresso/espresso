@@ -80,24 +80,23 @@ class EBuilder
   # displays URLs the app will respond to,
   # with controller and action that serving each URL.
   def url_map opts = {}
-    to_app!
-    map = {}
-    sorted_routes.each do |r|
-      @routes[r].each_pair { |rm, as| (map[r] ||= {})[rm] = as.dup }
+    mount_controllers!
+    map = sorted_routes.inject({}) do |m,r|
+      @routes[r].each_pair {|rm,rs| (m[r] ||= {})[rm] = rs.dup}; m
     end
 
     def map.to_s
-      out = []
+      out = ''
       self.each_pair do |route, request_methods|
         next if route.source.size == 0
         out << "%s\n" % route.source
-        request_methods.each_pair do |request_method, route_setup|
-          out << "  %s%s" % [request_method, ' ' * (10 - request_method.to_s.size)]
-          out << "%s#%s\n" % [route_setup[:controller], route_setup[:action]]
+        request_methods.each_pair do |rm,rs|
+          out << "  %s%s" % [rm, ' ' * (10 - rm.to_s.size)]
+          out << "%s\n" % (rs[:app] || [rs[:controller], rs[:action]]*'#')
         end
         out << "\n"
       end
-      out.join
+      out
     end
     map
   end
@@ -121,6 +120,8 @@ class EBuilder
   # @option opts [String]  :host   (0.0.0.0)
   #
   def run opts = {}
+    boot!
+
     handler = opts.delete(:server)
     (handler && Rack::Handler.const_defined?(handler)) || (handler = HTTP__DEFAULT_SERVER)
 
@@ -151,7 +152,9 @@ class EBuilder
 
   def app
     @app ||= begin
+      on_boot!
       mount_controllers!
+      @sorted_routes = sorted_routes.freeze
       @routes.freeze
       middleware.reverse.inject(lambda {|env| call!(env)}) {|a,e| e[a]}
     end
@@ -168,7 +171,7 @@ class EBuilder
   def call! env
     path = env[ENV__PATH_INFO]
     script_name = env[ENV__SCRIPT_NAME]
-    sorted_routes.each do |route|
+    @sorted_routes.each do |route|
       if matches = route.match(path)
 
         if route_setup = @routes[route][env[ENV__REQUEST_METHOD]] || @routes[route][:*]
@@ -219,7 +222,7 @@ class EBuilder
   end
 
   def sorted_routes
-    @sorted_routes ||= @routes.keys.sort {|a,b| b.source.size <=> a.source.size}.freeze
+    @routes.keys.sort {|a,b| b.source.size <=> a.source.size}
   end
 
   def valid_host? accepted_hosts, env
@@ -304,6 +307,11 @@ class EBuilder
     end
   end
   alias mount_application mount_applications
+
+  # execute blocks defined via `on_boot`
+  def on_boot!
+    (@on_boot || []).each {|b| b.call}
+  end
 
   # Some Rack handlers (Thin, Rainbows!) implement an extended body object protocol, however,
   # some middleware (namely Rack::Lint) will break it by not mirroring the methods in question.
