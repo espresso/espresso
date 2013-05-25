@@ -234,8 +234,6 @@ E.new do
 end
 ```
 
-
-
 **[ [contents &uarr;](https://github.com/espresso/espresso#tutorial) ]**
 
 

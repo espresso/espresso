@@ -39,15 +39,15 @@ end
 App.run
 ```
 
-**Full-fledged app using [Enginery](https://github.com/espresso/enginery)**
+**Full-fledged application using [Enginery](https://github.com/espresso/enginery)**
 
 ```bash
 $ enginery g
-$ enginery g:c App route:/
-$ ruby app.rb
+$ ruby app.rb # or rackup
 ```
 
 ## Tutorial
+
 
 ### Intro
 
@@ -128,18 +128,36 @@ $ ruby app.rb
 [WebSockets](https://github.com/espresso/espresso/blob/master/docs/Streaming.md#websockets) |
 [Chunked Responses](https://github.com/espresso/espresso/blob/master/docs/Streaming.md#chunked-responses)
 
-### Periphery
 
-<a href="https://github.com/espresso/e-periphery/blob/master/docs/CRUD.md" target="_blank">
+### Espresso Lungo
+
+Extending Espresso functionality via [`Espresso Lungo`](https://github.com/espresso/espresso-lungo#espresso-lungo) gem:
+
+Install:
+```bash
+$ gem install el
+```
+
+Load:
+```ruby
+require 'el'
+```
+
+Or simply add `gem 'el'` to Gemfile.
+
+Functionality added by `Espresso Lungo`:
+
+<a href="https://github.com/espresso/espresso-lungo/blob/master/docs/CRUD.md" target="_blank">
   CRUD</a> |
-<a href="https://github.com/espresso/e-periphery/blob/master/docs/Assets.md" target="_blank">
+<a href="https://github.com/espresso/espresso-lungo/blob/master/docs/Assets.md" target="_blank">
   Assets</a> |
-<a href="https://github.com/espresso/e-periphery/blob/master/docs/ContentHelpers.md" target="_blank">
+<a href="https://github.com/espresso/espresso-lungo/blob/master/docs/ContentHelpers.md" target="_blank">
   Content Helpers</a> |
-<a href="https://github.com/espresso/e-periphery/blob/master/docs/TagFactory.md" target="_blank">
+<a href="https://github.com/espresso/espresso-lungo/blob/master/docs/TagFactory.md" target="_blank">
   Tag Factory</a> |
-<a href="https://github.com/espresso/e-periphery/blob/master/docs/CacheManager.md" target="_blank">
+<a href="https://github.com/espresso/espresso-lungo/blob/master/docs/CacheManager.md" target="_blank">
   Cache Manager</a>
+
 
 ### Deploy
 
@@ -423,12 +441,10 @@ Espresso allow to easily skip these expensive operations by keeping compiled tem
 ## Contributing
 
   - Fork Espresso repository
-  - optionally create a new branch
   - make your changes
   - submit a pull request
 
 <hr>
-
 <p>
   Issues/Bugs:
   <a href="https://github.com/espresso/espresso/issues">
@@ -443,4 +459,3 @@ Espresso allow to easily skip these expensive operations by keeping compiled tem
 </p>
 
 ### Author - [Silviu Rusu](https://github.com/slivu).  License - [MIT](https://github.com/espresso/espresso/blob/master/LICENSE).
-

@@ -1,10 +1,12 @@
 
-+ 0.4.7 [HEAD]
++ 0.4.7 [May 25 2013]
+  - `on_boot` hook for applications - [543e032](https://github.com/espresso/espresso/commit/543e032)
   - Allow controllers to mount sub-controllers - [203c314](https://github.com/espresso/espresso/commit/203c314)
-  - Deprecated canonicals passing at controllers mounting.
+  - Canonicals can not be passed at mounting anymore.
   - `evented_stream` and `chunked_stream` helpers - [aebc298](https://github.com/espresso/espresso/commit/aebc298)
   - `styled_halt` helper - [5eeb404190](https://github.com/espresso/espresso/commit/5eeb404190)
   - `mapped?` helper - [d0ee33729](https://github.com/espresso/espresso/commit/d0ee33729)
+  - `view_path_proxy` helper renamed into `explicit_view_path`
 
 <hr>
 
