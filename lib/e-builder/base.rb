@@ -17,7 +17,8 @@ class EBuilder
   # @param [Proc] proc if block given, it will be executed inside newly created app
   #
   def initialize automount = false, &proc
-    @routes, @controllers, @hosts, @controllers_hosts = {}, {}, {}, {}
+    @controllers, @subcontrollers = {}, []
+    @routes, @hosts, @controllers_hosts = {}, {}, {}
     @automount = automount
     proc && self.instance_exec(&proc)
     use ExtendedRack
@@ -49,7 +50,10 @@ class EBuilder
     end
     controllers.each do |c|
       @controllers[c] = [root, opts, setup]
-      c.subcontrollers.each {|sc| mount(sc, root.to_s + c.base_url, opts, &setup)}
+      c.subcontrollers.each do |sc|
+        mount(sc, root.to_s + c.base_url, opts)
+        @subcontrollers << sc
+      end
     end
     
     mount_applications applications, root, opts
@@ -259,8 +263,10 @@ class EBuilder
       controller.remap!(base_url + root.to_s, opts)
     end
 
-    @global_setup && controller.global_setup!(&@global_setup)
-    setup && controller.external_setup!(&setup)
+    unless @subcontrollers.include?(controller)
+      @global_setup && controller.global_setup!(&@global_setup)
+      setup && controller.external_setup!(&setup)
+    end
 
     controller.mount! self
 
