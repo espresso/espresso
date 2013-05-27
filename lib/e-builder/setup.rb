@@ -230,7 +230,18 @@ class EBuilder
     end
   end
 
-  # block(s) to run just before application starts
+  # block(s) to run just before application starts.
+  #
+  # @example
+  #
+  #   app = E.new do # block to run at application initialization
+  #     # ...
+  #   end
+  #
+  #   app.on_boot do # block to run lately, just before web server started
+  #     # ...
+  #   end
+  #
   def on_boot &proc
     (@on_boot ||= []).push(proc)
   end
