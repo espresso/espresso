@@ -902,7 +902,7 @@ cookies['cookie-name']
 **Example:** - Setting a cookie with custom options
 
 ```ruby
-cookies['question_of_the_day'] = {:value => 'who is not who?', :expires => Date.today + 1, :secure => true}
+cookies['question_of_the_day'] = {value: 'who is not who?', expires: Time.now + 86400, secure: true}
 ```
 
 **Example:** - Deleting a cookie
