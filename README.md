@@ -441,8 +441,8 @@ Espresso allow to easily skip these expensive operations by keeping compiled tem
 ## Contributing
 
   - Fork Espresso repository
-  - make your changes
-  - submit a pull request
+  - Make your changes
+  - Submit a pull request
 
 <hr>
 <p>
