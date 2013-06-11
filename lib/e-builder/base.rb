@@ -19,6 +19,12 @@ class EBuilder
   def initialize automount = false, &proc
     @controllers, @subcontrollers = {}, []
     @routes, @hosts, @controllers_hosts = {}, {}, {}
+    @presorted_routes = [
+      [], # highest priority routes, usually rewrite rules
+      [], # 3rd party application routes
+      [], # common routes
+      [], # index routes, lowest priority
+    ]
     @automount = automount
     proc && self.instance_exec(&proc)
     use ExtendedRack
@@ -96,7 +102,7 @@ class EBuilder
         out << "%s\n" % route.source
         request_methods.each_pair do |rm,rs|
           out << "  %s%s" % [rm, ' ' * (10 - rm.to_s.size)]
-          out << "%s\n" % (rs[:app] || [rs[:controller], rs[:action]]*'#')
+          out << "%s\n" % (rs[:rewriter] || rs[:app] || [rs[:controller], rs[:action]]*'#')
         end
         out << "\n"
       end
@@ -226,7 +232,9 @@ class EBuilder
   end
 
   def sorted_routes
-    @routes.keys.sort {|a,b| b.source.size <=> a.source.size}
+    @presorted_routes.inject([]) do |sorted_routes,routes|
+      sorted_routes += routes.sort {|a,b| b.source.size <=> a.source.size}
+    end
   end
 
   def valid_host? accepted_hosts, env
@@ -235,7 +243,7 @@ class EBuilder
     accepted_hosts[http_host] ||
       accepted_hosts[server_name] ||
       http_host == server_name ||
-      http_host == server_name+':'+server_port
+      http_host == server_name+':'+server_port # 3x faster than create and join an array
   end
 
   def normalize_path path
@@ -271,6 +279,10 @@ class EBuilder
     controller.mount! self
 
     @routes.update controller.routes
+    controller.routes.each_pair do |route,setups|
+      key = setups.values.first[:action] == INDEX_ACTION ? 3 : 2
+      @presorted_routes[key].push(route)
+    end
     @controllers_hosts.update controller.hosts
     controller.rewrite_rules.each {|(rule,proc)| rewrite_rule(rule, &proc)}
 
@@ -310,6 +322,7 @@ class EBuilder
     route = route_to_regexp(rootify_url(root || '/'))
     applications.each do |a|
       @routes[route] = request_methods.inject({}) {|map,m| map.merge(m => {app: a})}
+      @presorted_routes[1].push(route)
     end
   end
   alias mount_application mount_applications
