@@ -251,6 +251,8 @@ class Reader < E
 end
 ```
 
+`env['espresso.gateways']` will display the list of tried routes before matched one.
+
 It is also possible to pass control to a given action or controller:
 
 **Important:** If no params given, actual params will be passed.

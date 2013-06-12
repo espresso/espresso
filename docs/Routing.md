@@ -665,6 +665,7 @@ class Pages < E
 end
 ```
 
+`env['espresso.gateways']` will display the list of tried routes before matched one.
 
 `halt` will send response to browser and stop any code execution, without redirect.
 
