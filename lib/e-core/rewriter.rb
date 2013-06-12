@@ -31,6 +31,8 @@ class ERewriter
   end
 
   def pass *args
+    return @status = 100 if args.empty?
+
     ctrl = (args.size > 0 && is_app?(args.first) && args.shift) ||
       raise(ArgumentError, "Controller missing. Please provide it as first argument when calling `pass' inside a rewrite rule block.")
 
@@ -40,7 +42,6 @@ class ERewriter
 
     env[ENV__SCRIPT_NAME] = route
     env[ENV__REQUEST_URI] = env[ENV__PATH_INFO] = ''
-    env[ENV__ESPRESSO_PATH_INFO] = nil
 
     if args.size > 0
       path, params = '/', {}

@@ -38,6 +38,10 @@ module ECoreTest__Rewriter
     def page
       params.inspect
     end
+
+    def index(*)
+      action_name
+    end
   end
 
   class Store < E
@@ -104,6 +108,10 @@ module ECoreTest__Rewriter
           redirect Cms.route(:news, name)
         end
       end
+
+      rewrite /\/pass_next/ do
+        pass
+      end
     }
 
     def redirected? response, status = 302
@@ -113,6 +121,11 @@ module ECoreTest__Rewriter
     def check_redir_location(location, status=302)
       is(status).current_redirect_code?
       is(location).current_location?
+    end
+
+    Should 'halt and move to next matched route' do
+      get '/pass_next'
+      is('index').current_body?
     end
 
     Testing :redirect do

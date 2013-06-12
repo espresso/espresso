@@ -126,8 +126,8 @@ class E
 
   def action_params__array
     @__e__action_params__array ||=
-      (env[EConstants::ENV__ESPRESSO_PATH_INFO] || 
-        env[EConstants::ENV__PATH_INFO]).to_s.split('/').reject(&:empty?).freeze
+      env[EConstants::ENV__PATH_INFO].to_s.split('/').reject(&:empty?).freeze
+      # split('/').reject(&:empty?) is about 2x faster than split(/\/+/)[1..-1]
   end
 
   # @example

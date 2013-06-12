@@ -1,5 +1,33 @@
 class E
 
+  # simply pass control and data to another action or controller.
+  #
+  # by default, it will pass control to an action on current controller.
+  # however, if first argument is a controller, control will be passed to it.
+  #
+  # @example pass control to #control_panel if user authorized
+  #    def index
+  #      pass :control_panel if user?
+  #    end
+  #
+  # @example passing with modified arguments and custom HTTP params
+  #    def index id, column
+  #      pass :update, column, :value => id
+  #    end
+  #
+  # @example passing control to inner controller
+  #    def index id
+  #      pass Articles, :render_item, id
+  #    end
+  #
+  # @param [Array] *args
+  #
+  def pass *args, &proc
+    return response.status = 100 if args.empty?
+    args << params() unless args.any? {|a| a.is_a?(Hash)}
+    halt invoke(*args, &proc)
+  end
+
   # stop executing any code and send response to browser.
   #
   # accepts an arbitrary number of arguments.

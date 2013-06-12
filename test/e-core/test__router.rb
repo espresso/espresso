@@ -33,9 +33,32 @@ module ECoreTest__Router
     def edit x
     end
 
+    def p__pass
+      pass
+    end
+
+    def p__pass_with_args a1, a2 = nil
+      pass
+    end
+
+    def p *args
+      [env['espresso.gateways']*',', args*',']*'+'
+    end
+
   end
 
   Spec.new App do
+
+    Should 'halt and move to next matched route' do
+      get App[:p__pass]
+      is('p__pass+pass').current_body?
+      
+      get App[:p__pass_with_args], 1, 2
+      is('p__pass_with_args+pass_with_args,1,2').current_body?
+
+      get App[:p__pass_with_args], 1
+      is('p__pass_with_args+pass_with_args,1').current_body?
+    end
 
     Testing 'action boundary' do
       get :edit, 1

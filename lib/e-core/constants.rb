@@ -40,9 +40,9 @@ module EConstants
   ENV__HTTP_IF_UNMODIFIED_SINCE = 'HTTP_IF_UNMODIFIED_SINCE'.freeze
   ENV__HTTP_X_REQUESTED_WITH    = 'HTTP_X_REQUESTED_WITH'.freeze
   ENV__XML_HTTP_REQUEST         = 'XMLHttpRequest'.freeze
-  ENV__ESPRESSO_PATH_INFO = 'espresso.path_info'.freeze
   ENV__ESPRESSO_ACTION    = 'espresso.action'.freeze
   ENV__ESPRESSO_FORMAT    = 'espresso.format'.freeze
+  ENV__ESPRESSO_GATEWAYS  = 'espresso.gateways'.freeze
   ENV__AUTHORIZATION_KEYS = [
     'HTTP_AUTHORIZATION',
     'X-HTTP_AUTHORIZATION',

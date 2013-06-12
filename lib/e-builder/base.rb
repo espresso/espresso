@@ -180,22 +180,25 @@ class EBuilder
   private
 
   def call! env
-    path = env[ENV__PATH_INFO]
-    script_name = env[ENV__SCRIPT_NAME]
+    path_info, script_name = env[ENV__PATH_INFO], env[ENV__SCRIPT_NAME]
+    env[ENV__ESPRESSO_GATEWAYS] = []
     @sorted_routes.each do |route|
-      next unless matches = route.match(path)
+      next unless matches = route.match(path_info)
 
       unless route_setup = valid_route?(route, env[ENV__REQUEST_METHOD])
         return not_implemented @routes[route].keys.join(", ")
       end
 
-      unit = [:controller, :rewriter, :application].find {|u| route_setup[u]}
-      return self.send('call_' + unit.to_s, env, route_setup, matches) if unit
+      next unless unit = [:controller, :rewriter, :application].find {|u| route_setup[u]}
+      response = self.send('call_' + unit.to_s, env, route_setup, matches)
+      return response unless response[0] == 100
+      env[ENV__PATH_INFO], env[ENV__SCRIPT_NAME] = path_info, script_name
+      env[ENV__ESPRESSO_GATEWAYS].push(route_setup[:action])
+      next
     end
     not_found(env)
   ensure
-    env[ENV__PATH_INFO] = path
-    env[ENV__SCRIPT_NAME] = script_name
+    env[ENV__PATH_INFO], env[ENV__SCRIPT_NAME] = path_info, script_name
   end
 
   def not_found env
@@ -216,16 +219,13 @@ class EBuilder
 
   def call_rewriter env, route_setup, matches
     return not_found(env) unless valid_host?(@hosts.merge(@controllers_hosts), env)
-    
-    app = ERewriter.new(*matches.captures, &route_setup[:rewriter])
-    return app.call(env)
+    ERewriter.new(*matches.captures, &route_setup[:rewriter]).call(env)
   end
 
   def call_application env, route_setup, matches
     return not_found(env) unless valid_host?(@hosts.merge(@controllers_hosts), env)
-
     env[ENV__PATH_INFO] = normalize_path( matched_path_info(matches) )
-    return route_setup[:application].call(env)
+    route_setup[:application].call(env)
   end
 
   def call_controller env, route_setup, matches
@@ -241,7 +241,7 @@ class EBuilder
     app = Rack::Builder.new
     app.run controller_instance
     route_setup[:controller].middleware.each {|w,a,p| app.use w, *a, &p}
-    return app.call(env)
+    app.call(env)
   end
 
   def matched_path_info matches
@@ -251,7 +251,7 @@ class EBuilder
   def sorted_routes
     @presorted_routes.inject([]) do |sorted_routes,routes|
       sorted_routes += routes.sort {|a,b| b.source.size <=> a.source.size}
-    end
+    end.uniq
   end
 
   def handle_format formats, path_info
