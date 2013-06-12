@@ -17,7 +17,7 @@ class EBuilder
 
       def to_s
         out = ''
-        @routes.each do |(*,route,route_setup)|
+        @routes.each do |(route,route_setup)|
           out << "%s\n" % route.source
           route_setup.each_pair do |rm,rs|
             out << "  %s%s" % [rm, ' ' * (10 - rm.to_s.size)]
@@ -42,14 +42,14 @@ class EBuilder
 
   def sorted_routes
     @routes.sort do |a,b|
-      b[1].source.size <=> a[1].source.size # sorting by size, high to low
+      b.first.source.size <=> a.first.source.size # sorting by size, high to low
     end.sort do |a,b|
-      a[0] <=> b[0] # sorting by priority, low to high
+      a.last <=> b.last # sorting by priority, low to high
     end
   end
 
   def index_routes controller, initial_priority = 2
-    controller.routes.inject([]) do |routes,(*,r,rs)|
+    controller.routes.inject([]) do |routes,(r,rs)|
       rs.values.first[:action] == INDEX_ACTION ? routes.push(r) : routes
     end.sort {|a,b| b.source.size <=> a.source.size}.inject({}) do |map,r|
       map.merge r => (initial_priority += 1)
@@ -119,5 +119,5 @@ class EBuilder
       ["Resource found but it can be accessed only through %s" % implemented]
     ]
   end
-  
+
 end

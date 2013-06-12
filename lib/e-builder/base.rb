@@ -152,7 +152,7 @@ class EBuilder
   def call! env
     path_info, script_name = env[ENV__PATH_INFO], env[ENV__SCRIPT_NAME]
     env[ENV__ESPRESSO_GATEWAYS] = []
-    @sorted_routes.each do |(*,route,overall_setup)|
+    @sorted_routes.each do |(route,overall_setup)|
       next unless matches = route.match(path_info)
 
       if rewriter?(overall_setup) # rewriter works only on GET and HEAD requests
@@ -225,8 +225,7 @@ class EBuilder
 
     index_routes = index_routes(controller)
     controller.routes.each_pair do |route,route_setup|
-      priority = index_routes[route] || 2
-      @routes << [priority, route, route_setup]
+      @routes << [route, route_setup, (index_routes[route] || 2)]
     end
     @controllers_hosts.update controller.hosts
     controller.rewrite_rules.each {|(rule,proc)| rewrite_rule(rule, &proc)}
@@ -269,7 +268,7 @@ class EBuilder
       route_setup = request_methods.inject({}) do |map,m|
         map.merge(m => {application: a})
       end
-      @routes << [1, route, route_setup]
+      @routes << [route, route_setup, 1]
     end
   end
   alias mount_application mount_applications
@@ -278,4 +277,5 @@ class EBuilder
   def on_boot!
     (@on_boot || []).each {|b| b.call}
   end
+
 end
