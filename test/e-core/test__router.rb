@@ -32,9 +32,19 @@ module ECoreTest__Router
       route action.to_sym
     end
 
+    def edit x
+    end
+
   end
 
   Spec.new App do
+
+    Testing 'action boundary' do
+      get :edit, 1
+      is(last_response).ok?
+      get :edited
+      is(last_response).not_found?
+    end
 
     Testing 'with zero args' do
       get

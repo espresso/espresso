@@ -60,8 +60,16 @@ module EUtils
   end
   module_function :is_app?
 
-  def route_to_regexp route
-    /\A#{Regexp.escape(route).gsub('/', '/+')}(.*)/n
+  def route_to_regexp route, opts = {}
+    route = rootify_url(route)
+    boundary_check = if route == '/' || opts[:skip_boundary_check]
+      nil
+    else
+      (formats = opts[:formats]) && formats.any? ?
+        '(\/|%s|\Z)' % formats.map {|f| Regexp.escape(f) + '\Z'}.join('|') :
+        '(\/|\Z)'
+    end
+    /\A#{Regexp.escape(route).gsub('/', '/+')}#{boundary_check}(.*)/.freeze
   end
   module_function :route_to_regexp
 

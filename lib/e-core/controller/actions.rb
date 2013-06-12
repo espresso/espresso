@@ -101,12 +101,7 @@ class << E
 
     action_arguments, required_arguments = action_parameters(action)
 
-    format_regexp = if formats(action).any?
-      regexp = formats(action).map {|f| Regexp.escape f}.join('|')
-      /(?:\A(?:\/{0,})?#{action})?(#{regexp})\Z/
-    else
-      nil
-    end
+    formats = formats(action)
     {
               controller: self,
                   action: action,
@@ -115,7 +110,7 @@ class << E
         action_arguments: action_arguments,
       required_arguments: required_arguments,
                     path: path.freeze,
-           format_regexp: format_regexp,
+                 formats: Hash[formats.zip(formats)].freeze, # Hash lookup is a lot faster than Array include
           request_method: request_method,
     }.freeze
   end

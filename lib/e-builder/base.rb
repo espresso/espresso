@@ -178,63 +178,102 @@ class EBuilder
   alias boot!   to_app
 
   private
+
   def call! env
     path = env[ENV__PATH_INFO]
     script_name = env[ENV__SCRIPT_NAME]
     @sorted_routes.each do |route|
-      if matches = route.match(path)
+      next unless matches = route.match(path)
 
-        if route_setup = @routes[route][env[ENV__REQUEST_METHOD]] || @routes[route][:*]
-
-          if route_setup[:rewriter]
-            break unless valid_host?(@hosts.merge(@controllers_hosts), env)
-            app = ERewriter.new(*matches.captures, &route_setup[:rewriter])
-            return app.call(env)
-          elsif route_setup[:app]
-            break unless valid_host?(@hosts.merge(@controllers_hosts), env)
-            env[ENV__PATH_INFO] = normalize_path(matches[1].to_s)
-            return route_setup[:app].call(env)
-          else
-            break unless valid_host?(@hosts.merge(route_setup[:controller].hosts), env)
-
-            env[ENV__SCRIPT_NAME] = route_setup[:path].freeze
-            env[ENV__PATH_INFO]   = normalize_path(matches[1].to_s)
-
-            if format_regexp = route_setup[:format_regexp]
-              env[ENV__ESPRESSO_PATH_INFO], env[ENV__ESPRESSO_FORMAT] = \
-                env[ENV__PATH_INFO].split(format_regexp)
-            end
-
-            controller_instance = route_setup[:controller].new
-            controller_instance.action_setup = route_setup
-            app = Rack::Builder.new
-            app.run controller_instance
-            route_setup[:controller].middleware.each {|w,a,p| app.use w, *a, &p}
-            return app.call(env)
-          end
-        else
-          return [
-            STATUS__NOT_IMPLEMENTED,
-            {"Content-Type" => "text/plain"},
-            ["Resource found but it can be accessed only through %s" % @routes[route].keys.join(", ")]
-          ]
-        end
+      unless route_setup = valid_route?(route, env[ENV__REQUEST_METHOD])
+        return not_implemented @routes[route].keys.join(", ")
       end
+
+      unit = [:rewriter, :application, :controller].find {|u| route_setup[u]}
+      return self.send('call_' + unit.to_s, env, route_setup, matches)
     end
+    not_found(env)
+  ensure
+    env[ENV__PATH_INFO] = path
+    env[ENV__SCRIPT_NAME] = script_name
+  end
+
+  def not_found env
     [
       STATUS__NOT_FOUND,
       {'Content-Type' => "text/plain", "X-Cascade" => "pass"},
       ['Not Found: %s' % env[ENV__PATH_INFO]]
     ]
-  ensure
-    env[ENV__PATH_INFO] = path
-    env[ENV__SCRIPT_NAME] = script_name
+  end
+
+  def not_implemented implemented
+    [
+      STATUS__NOT_IMPLEMENTED,
+      {"Content-Type" => "text/plain"},
+      ["Resource found but it can be accessed only through %s" % implemented]
+    ]
+  end
+
+  def call_rewriter env, route_setup, matches
+    return not_found(env) unless valid_host?(@hosts.merge(@controllers_hosts), env)
+    
+    app = ERewriter.new(*matches.captures, &route_setup[:rewriter])
+    return app.call(env)
+  end
+
+  def call_application env, route_setup, matches
+    return not_found(env) unless valid_host?(@hosts.merge(@controllers_hosts), env)
+
+    env[ENV__PATH_INFO] = normalize_path( matched_path_info(matches) )
+    return route_setup[:application].call(env)
+  end
+
+  def call_controller env, route_setup, matches
+    return not_found(env) unless valid_host?(@hosts.merge(route_setup[:controller].hosts), env)
+
+    format, path_info = handle_format(route_setup[:formats], matched_path_info(matches))
+    env[ENV__ESPRESSO_FORMAT] = format
+    env[ENV__PATH_INFO] = normalize_path(path_info)
+    env[ENV__SCRIPT_NAME] = route_setup[:path].freeze
+
+    controller_instance = route_setup[:controller].new
+    controller_instance.action_setup = route_setup
+    app = Rack::Builder.new
+    app.run controller_instance
+    route_setup[:controller].middleware.each {|w,a,p| app.use w, *a, &p}
+    return app.call(env)
+  end
+
+  def call_(env, *)
+    not_found(env)
+  end
+
+  def matched_path_info matches
+    matches[1].to_s + matches[2].to_s # 2x faster than matches[1..2].join
   end
 
   def sorted_routes
     @presorted_routes.inject([]) do |sorted_routes,routes|
       sorted_routes += routes.sort {|a,b| b.source.size <=> a.source.size}
     end
+  end
+
+  def handle_format formats, path_info
+    format = nil
+    if formats.any?
+      if format = formats[path_info]
+        path_info = ''
+      elsif format = formats[File.extname(path_info)]
+        # File join + dirname + basename
+        # is faster than building a regexp and sub path info based on it
+        path_info = File.join File.dirname(path_info), File.basename(path_info, format)
+      end
+    end
+    [format, path_info]
+  end
+
+  def valid_route? route, request_method
+    @routes[route][request_method] || @routes[route][:*]
   end
 
   def valid_host? accepted_hosts, env
@@ -319,9 +358,11 @@ class EBuilder
     end
     request_methods = HTTP__REQUEST_METHODS if request_methods.empty?
 
-    route = route_to_regexp(rootify_url(root || '/'))
+    route = route_to_regexp(rootify_url(root || '/'), skip_boundary_check: true)
     applications.each do |a|
-      @routes[route] = request_methods.inject({}) {|map,m| map.merge(m => {app: a})}
+      @routes[route] = request_methods.inject({}) do |map,m|
+        map.merge(m => {application: a})
+      end
       @presorted_routes[1].push(route)
     end
   end

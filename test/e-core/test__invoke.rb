@@ -54,6 +54,10 @@ module ECoreTest__Pass
         xhr_pass action
       end
 
+      def get_xhr_pass_via_post action
+        xhr_pass_via_post action
+      end
+
       def get_xhr_fetch action
         xhr_fetch action
       end
@@ -142,19 +146,21 @@ module ECoreTest__Pass
 
     Should 'pass via XHR' do
       get :xhr_pass, :xhr_destination
-      is(last_response).ok?
       is('true').current_body?
+    end
+
+    Should 'pass via XHR using POST' do
+      get :xhr_pass_via_post, :xhr_post_destination
+      is('[true, true]').current_body?
     end
 
     Should 'fetch via XHR' do
       get :xhr_fetch, :xhr_destination
-      is(last_response).ok?
       is('true').current_body?
     end
 
-    Should 'fetch via XHR using POST request method' do
+    Should 'fetch via XHR using POST' do
       get :xhr_fetch_via_post, :xhr_post_destination
-      is(last_response).ok?
       is('[true, true]').current_body?
     end
 

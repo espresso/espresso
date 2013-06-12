@@ -156,7 +156,7 @@ class << E
   end
 
   def set_route route, setup
-    regexp = EUtils.route_to_regexp(route)
+    regexp = EUtils.route_to_regexp(route, formats: setup[:formats].keys)
     (@__e__routes[regexp] ||= {})[setup[:request_method]] = setup
   end
 
