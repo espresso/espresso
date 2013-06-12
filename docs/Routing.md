@@ -594,7 +594,7 @@ end
 
 Espresso uses a really flexible rewrite engine
 that allow to redirect the browser to new address
-as well as pass control to arbitrary controller(without redirect)
+as well as pass control to next matching route or to an arbitrary controller(without redirect)
 or just send a custom response to browser(without redirect as well).
 
 A rewrite rule consist of a regular expression and a block that receives matches via arguments.
@@ -648,6 +648,23 @@ app = E.new do
 
 end
 ```
+
+**Important:** if `pass` called without arguments it will pass control to next matching rule/route:
+
+```ruby
+class Pages < E
+
+  rewrite /\A\/+(.*)/ do |path| # matching pretty anything
+    if matched = Redirects.where(source: path).first
+      redirect matched.target
+    end
+    pass # no redirects matched, moving to next matching route
+  end
+
+  # actions
+end
+```
+
 
 `halt` will send response to browser and stop any code execution, without redirect.
 

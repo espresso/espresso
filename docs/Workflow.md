@@ -236,8 +236,22 @@ end
 
 ## Passing Control
 
+Espresso allow to stop execution of current context and pass control to next matching action:
 
-To pass control to another action or controller, use `pass`.
+```ruby
+class Reader < E
+  def index(*)
+    render # display a list of books to choose from
+  end
+
+  def read book
+    pass unless books_in_account.include?(book) # will go to :index action
+    render # read the book
+  end
+end
+```
+
+It is also possible to pass control to a given action or controller:
 
 **Important:** If no params given, actual params will be passed.
 
@@ -255,6 +269,7 @@ class App < E
   end
 end
 ```
+
 
 **Example:** - Pass control to :json action if browser accepts JSON.
 If some params given, they will be passed as arguments to destination action.
