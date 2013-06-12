@@ -221,8 +221,7 @@ class EBuilder
   #
   def rewrite rule, &proc
     proc || raise(ArgumentError, "Rewrite rules requires a block to run")
-    @routes[rule] = {HTTP__DEFAULT_REQUEST_METHOD => {rewriter: proc}}
-    @presorted_routes[0].push(rule)
+    @routes << [0, rule, {HTTP__DEFAULT_REQUEST_METHOD => {rewriter: proc}}]
   end
   alias rewrite_rule rewrite
 

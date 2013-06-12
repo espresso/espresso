@@ -17,14 +17,9 @@ class EBuilder
   # @param [Proc] proc if block given, it will be executed inside newly created app
   #
   def initialize automount = false, &proc
+    @routes = []
     @controllers, @subcontrollers = {}, []
-    @routes, @hosts, @controllers_hosts = {}, {}, {}
-    @presorted_routes = [
-      [], # highest priority routes, usually rewrite rules
-      [], # 3rd party application routes
-      [], # common routes
-      [], # index routes, lowest priority
-    ]
+    @hosts, @controllers_hosts = {}, {}
     @automount = automount
     proc && self.instance_exec(&proc)
     use ExtendedRack
@@ -86,31 +81,6 @@ class EBuilder
   alias setup_controllers global_setup
   alias controllers_setup global_setup
   alias setup             global_setup
-
-  # displays URLs the app will respond to,
-  # with controller and action that serving each URL.
-  def url_map opts = {}
-    mount_controllers!
-    map = sorted_routes.inject({}) do |m,r|
-      @routes[r].each_pair {|rm,rs| (m[r] ||= {})[rm] = rs.dup}; m
-    end
-
-    def map.to_s
-      out = ''
-      self.each_pair do |route, request_methods|
-        next if route.source.size == 0
-        out << "%s\n" % route.source
-        request_methods.each_pair do |rm,rs|
-          out << "  %s%s" % [rm, ' ' * (10 - rm.to_s.size)]
-          out << "%s\n" % (rs[:rewriter] || rs[:application] || [rs[:controller], rs[:action]]*'#')
-        end
-        out << "\n"
-      end
-      out
-    end
-    map
-  end
-  alias urlmap url_map
 
   def environment
     ENV[ENV__RACK_ENV] || :development
@@ -182,15 +152,15 @@ class EBuilder
   def call! env
     path_info, script_name = env[ENV__PATH_INFO], env[ENV__SCRIPT_NAME]
     env[ENV__ESPRESSO_GATEWAYS] = []
-    @sorted_routes.each do |route|
+    @sorted_routes.each do |(*,route,overall_setup)|
       next unless matches = route.match(path_info)
 
-      if rewriter?(route) # rewriter works only on GET requests
-        next unless env[ENV__REQUEST_METHOD] == HTTP__DEFAULT_REQUEST_METHOD
-      end
-
-      unless route_setup = valid_route?(route, env[ENV__REQUEST_METHOD])
-        return not_implemented @routes[route].keys.join(', ')
+      if rewriter?(overall_setup) # rewriter works only on GET and HEAD requests
+        next unless route_setup = valid_rewriter_context?(overall_setup, env[ENV__REQUEST_METHOD])
+      else
+        unless route_setup = valid_route_context?(overall_setup, env[ENV__REQUEST_METHOD])
+          return not_implemented overall_setup.keys.join(', ')
+        end
       end
 
       next unless unit = [:controller, :rewriter, :application].find {|u| route_setup[u]}
@@ -203,22 +173,6 @@ class EBuilder
     not_found(env)
   ensure
     env[ENV__PATH_INFO], env[ENV__SCRIPT_NAME] = path_info, script_name
-  end
-
-  def not_found env
-    [
-      STATUS__NOT_FOUND,
-      {'Content-Type' => "text/plain", "X-Cascade" => "pass"},
-      ['Not Found: %s' % env[ENV__PATH_INFO]]
-    ]
-  end
-
-  def not_implemented implemented
-    [
-      STATUS__NOT_IMPLEMENTED,
-      {"Content-Type" => "text/plain"},
-      ["Resource found but it can be accessed only through %s" % implemented]
-    ]
   end
 
   def call_rewriter env, route_setup, matches
@@ -248,58 +202,6 @@ class EBuilder
     app.call(env)
   end
 
-  def matched_path_info matches
-    matches[1].to_s + matches[2].to_s # 2x faster than matches[1..2].join
-  end
-
-  def sorted_routes
-    @presorted_routes.inject([]) do |sorted_routes,routes|
-      sorted_routes += routes.sort {|a,b| b.source.size <=> a.source.size}.uniq
-    end
-  end
-
-  def handle_format formats, path_info
-    format = nil
-    if formats.any?
-      if format = formats[path_info]
-        path_info = ''
-      elsif format = formats[File.extname(path_info)]
-        # File join + dirname + basename
-        # is faster than building a regexp and sub path info based on it
-        path_info = File.join File.dirname(path_info), File.basename(path_info, format)
-      end
-    end
-    [format, path_info]
-  end
-
-  def valid_route? route, request_method
-    @routes[route][request_method] || @routes[route][:*]
-  end
-
-  def valid_host? accepted_hosts, env
-    http_host, server_name, server_port =
-      env.values_at(ENV__HTTP_HOST, ENV__SERVER_NAME, ENV__SERVER_PORT)
-    accepted_hosts[http_host] ||
-      accepted_hosts[server_name] ||
-      http_host == server_name ||
-      http_host == server_name+':'+server_port # 3x faster than create and join an array
-  end
-
-  def rewriter? route
-    (route_setup = @routes[route][HTTP__DEFAULT_REQUEST_METHOD]) && route_setup[:rewriter]
-  end
-
-  def normalize_path path
-    (path_ok?(path) ? path : '/' << path).freeze
-  end
-
-  # checking whether path is empty or starts with a slash
-  def path_ok? path
-    # comparing fixnums are much faster than comparing strings
-    path.hash == (@empty_string_hash ||= '' .hash) || # faster than path.empty?
-      path[0].hash == (@slash_hash   ||= '/'.hash)    # faster than path =~ /^\//
-  end
-
   def mount_controllers!
     automount! if @automount
     @mounted_controllers = []
@@ -321,10 +223,10 @@ class EBuilder
 
     controller.mount! self
 
-    @routes.update controller.routes
-    controller.routes.each_pair do |route,setups|
-      key = setups.values.first[:action] == INDEX_ACTION ? 3 : 2
-      @presorted_routes[key].push(route)
+    index_routes = index_routes(controller)
+    controller.routes.each_pair do |route,route_setup|
+      priority = index_routes[route] || 2
+      @routes << [priority, route, route_setup]
     end
     @controllers_hosts.update controller.hosts
     controller.rewrite_rules.each {|(rule,proc)| rewrite_rule(rule, &proc)}
@@ -364,10 +266,10 @@ class EBuilder
 
     route = route_to_regexp(rootify_url(root || '/'), skip_boundary_check: true)
     applications.each do |a|
-      @routes[route] = request_methods.inject({}) do |map,m|
+      route_setup = request_methods.inject({}) do |map,m|
         map.merge(m => {application: a})
       end
-      @presorted_routes[1].push(route)
+      @routes << [1, route, route_setup]
     end
   end
   alias mount_application mount_applications
@@ -375,39 +277,5 @@ class EBuilder
   # execute blocks defined via `on_boot`
   def on_boot!
     (@on_boot || []).each {|b| b.call}
-  end
-
-  # Some Rack handlers (Thin, Rainbows!) implement an extended body object protocol, however,
-  # some middleware (namely Rack::Lint) will break it by not mirroring the methods in question.
-  # This middleware will detect an extended body object and will make sure it reaches the
-  # handler directly. We do this here, so our middleware and middleware set up by the app will
-  # still be able to run.
-  unless defined?(EBuilder::ExtendedRack)
-    class ExtendedRack < Struct.new(:app) # kindly borrowed from Sinatra
-      def call(env)
-        result, callback = app.call(env), env['async.callback']
-        return result unless callback and async?(*result)
-        after_response { callback.call result }
-        setup_close(env, *result)
-        throw :async
-      end
-
-      private
-      def setup_close(env, status, header, body)
-        return unless body.respond_to? :close and env.include? 'async.close'
-        env['async.close'].callback { body.close }
-        env['async.close'].errback { body.close }
-      end
-
-      def after_response(&block)
-        raise NotImplementedError, "only supports EventMachine at the moment" unless defined? EventMachine
-        EventMachine.next_tick(&block)
-      end
-
-      def async?(status, headers, body)
-        return true if status == -1
-        body.respond_to? :callback and body.respond_to? :errback
-      end
-    end
   end
 end
