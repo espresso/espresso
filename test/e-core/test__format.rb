@@ -30,7 +30,7 @@ module ECoreTest__Format
 
   Spec.new App do
 
-    Describe 'global setup' do
+    Testing 'global setup' do
 
       Should 'return html(default Content-Type)' do
         get
@@ -56,7 +56,7 @@ module ECoreTest__Format
       end
     end
 
-    Describe 'per-action setup' do
+    Testing 'per-action setup' do
       Should 'return 404 error' do
         get 'api.xml'
         is(last_response).not_found?
@@ -92,7 +92,7 @@ module ECoreTest__Format
       is(last_response).not_found?
     end
 
-    Describe 'by appending format to last param' do
+    Testing 'by appending format to last param' do
       Testing do
         get :read, 'book.xml'
         is('[:read, ".xml", "book"]').current_body?
@@ -101,8 +101,8 @@ module ECoreTest__Format
         is('[:read, nil, "book"]').current_body?
       end
 
-      Ensure '404 when format is passed with both action and last param' do
-        get 'read.xml', 'book.xsl'
+      Should 'return 404 if something passed after format' do
+        get 'read.xml/something'
         is(last_response).not_found?
       end
     end

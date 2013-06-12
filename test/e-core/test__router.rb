@@ -2,8 +2,6 @@ module ECoreTest__Router
 
   class App < E
 
-    format '.html', '.xml'
-
     def index
       action
     end
