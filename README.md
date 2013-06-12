@@ -457,5 +457,10 @@ Espresso allow to easily skip these expensive operations by keeping compiled tem
 <p>
   IRC channel: #espressorb on irc.freenode.net
 </p>
+<p>
+  Twitter: <a href="https://twitter.com/espressorb">
+  twitter.com/espressorb</a>
+</p>
+
 
 ### Author - [Silviu Rusu](https://github.com/slivu).  License - [MIT](https://github.com/espresso/espresso/blob/master/LICENSE).
