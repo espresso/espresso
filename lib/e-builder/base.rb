@@ -189,8 +189,8 @@ class EBuilder
         return not_implemented @routes[route].keys.join(", ")
       end
 
-      unit = [:rewriter, :application, :controller].find {|u| route_setup[u]}
-      return self.send('call_' + unit.to_s, env, route_setup, matches)
+      unit = [:controller, :rewriter, :application].find {|u| route_setup[u]}
+      return self.send('call_' + unit.to_s, env, route_setup, matches) if unit
     end
     not_found(env)
   ensure
@@ -242,10 +242,6 @@ class EBuilder
     app.run controller_instance
     route_setup[:controller].middleware.each {|w,a,p| app.use w, *a, &p}
     return app.call(env)
-  end
-
-  def call_(env, *)
-    not_found(env)
   end
 
   def matched_path_info matches
