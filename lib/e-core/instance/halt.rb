@@ -23,7 +23,10 @@ class E
   # @param [Array] *args
   #
   def pass *args, &proc
-    return response.status = 100 if args.empty?
+    if args.empty?
+      response.status = EConstants::STATUS__PASS
+      throw :__e__catch__response__, response
+    end
     args << params() unless args.any? {|a| a.is_a?(Hash)}
     halt invoke(*args, &proc)
   end

@@ -9,20 +9,12 @@ module HttpSpecHelper
     check(response.status) == 501
   end
 
-  def current_status?(status)
-    is(last_response.status) == status
-  end
-
   def protected? response
     check(last_response.status) == 401
   end
 
   def authorized? response
     check(last_response.status) == 200
-  end
-
-  def current_redirect_code? status=302
-    is(status).current_status?
   end
 
   def current_charset?(charset)
@@ -45,11 +37,24 @@ module HttpSpecHelper
     expect(last_response.body) =~ val
   end
 
+  def current_status?(status)
+    is(last_response.status) == status
+  end
+
   def current_body? body
     expect(last_response.body) == body
   end
 
   def current_location?(location)
+    is?(last_response.headers['Location']) == location
+  end
+
+  def redirected? response, code = 302
+    is(response.status) == code
+  end
+  alias redirected_with? redirected?
+
+  def redirected_to? response, location
     is?(last_response.headers['Location']) == location
   end
 

@@ -25,7 +25,7 @@ module ECoreTest__Halt
 
     It 'accepts empty body' do
       r = get :haltme, :status => 301
-      is(301).current_redirect_code?
+      is(last_response).redirected_with? 301
       is('').current_body?
     end
 
@@ -41,7 +41,7 @@ module ECoreTest__Halt
 
     Testing 'custom response' do
       r = post :send_response, 301, 'redirecting...', 'Location' => 'http://to.the.sky'
-      is( 301).current_redirect_code?
+      is(last_response).redirected_with? 301
       is('redirecting...').current_body?
       is('http://to.the.sky').current_location?
     end

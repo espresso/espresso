@@ -102,7 +102,7 @@ class EBuilder
         out << "%s\n" % route.source
         request_methods.each_pair do |rm,rs|
           out << "  %s%s" % [rm, ' ' * (10 - rm.to_s.size)]
-          out << "%s\n" % (rs[:rewriter] || rs[:app] || [rs[:controller], rs[:action]]*'#')
+          out << "%s\n" % (rs[:rewriter] || rs[:application] || [rs[:controller], rs[:action]]*'#')
         end
         out << "\n"
       end
@@ -185,13 +185,17 @@ class EBuilder
     @sorted_routes.each do |route|
       next unless matches = route.match(path_info)
 
+      if rewriter?(route) # rewriter works only on GET requests
+        next unless env[ENV__REQUEST_METHOD] == HTTP__DEFAULT_REQUEST_METHOD
+      end
+
       unless route_setup = valid_route?(route, env[ENV__REQUEST_METHOD])
-        return not_implemented @routes[route].keys.join(", ")
+        return not_implemented @routes[route].keys.join(', ')
       end
 
       next unless unit = [:controller, :rewriter, :application].find {|u| route_setup[u]}
       response = self.send('call_' + unit.to_s, env, route_setup, matches)
-      return response unless response[0] == 100
+      return response unless response[0] == STATUS__PASS
       env[ENV__PATH_INFO], env[ENV__SCRIPT_NAME] = path_info, script_name
       env[ENV__ESPRESSO_GATEWAYS].push(route_setup[:action])
       next
@@ -250,8 +254,8 @@ class EBuilder
 
   def sorted_routes
     @presorted_routes.inject([]) do |sorted_routes,routes|
-      sorted_routes += routes.sort {|a,b| b.source.size <=> a.source.size}
-    end.uniq
+      sorted_routes += routes.sort {|a,b| b.source.size <=> a.source.size}.uniq
+    end
   end
 
   def handle_format formats, path_info
@@ -279,6 +283,10 @@ class EBuilder
       accepted_hosts[server_name] ||
       http_host == server_name ||
       http_host == server_name+':'+server_port # 3x faster than create and join an array
+  end
+
+  def rewriter? route
+    (route_setup = @routes[route][HTTP__DEFAULT_REQUEST_METHOD]) && route_setup[:rewriter]
   end
 
   def normalize_path path

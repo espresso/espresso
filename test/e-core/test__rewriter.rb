@@ -111,51 +111,45 @@ module ECoreTest__Rewriter
 
       rewrite /\/pass_next/ do
         pass
+        raise
       end
     }
-
-    def redirected? response, status = 302
-      check(response.status) == status
-    end
-
-    def check_redir_location(location, status=302)
-      is(status).current_redirect_code?
-      is(location).current_location?
-    end
-
-    Should 'halt and move to next matched route' do
-      get '/pass_next'
-      is('index').current_body?
-    end
 
     Testing :redirect do
       page, product = rand(1000000).to_s, rand(1000000).to_s
       get '/landing-page/%s/%s' % [page, product]
-      check_redir_location(Store.route(:buy, product, :page => page))
+      is(last_response).redirected?
+      is(last_response).redirected_to? Store.route(:buy, product, :page => page)
 
       var = rand 1000000
       get '/articles/%s.html' % var
-      check_redir_location('/page?title=%s' % var)
+      is(last_response).redirected?
+      is(last_response).redirected_to? '/page?title=%s' % var
 
       var = rand.to_s
       get '/News/%s.php' % var
-      check_redir_location('/news/%s/' % var)
+      is(last_response).redirected?
+      is(last_response).redirected_to? '/news/%s/' % var
 
       var, val = rand.to_s, rand.to_s
       get '/News/%s.php' % var, var => val
-      check_redir_location('/news/%s/?%s=%s' % [var, var, val])
+      is(last_response).redirected?
+      is(last_response).redirected_to? '/news/%s/?%s=%s' % [var, var, val]
 
       var = rand.to_s
       get '/old_news/%s.php' % var
-      check_redir_location('/news/%s' % var, 301)
+      is(last_response).redirected_with? 301
+      is(last_response).redirected_to? '/news/%s' % var
 
       name, id = rand(1000000), rand(100000)
       get '/pages/%s-%s.html' % [name, id]
-      check_redir_location('/page/%s?id=%s' % [name, id])
+      is(last_response).redirected?
+      is(last_response).redirected_to? '/page/%s?id=%s' % [name, id]
 
       name, id = rand(1000000), rand(100000)
       get '/old_pages/%s-%s.html' % [name, id]
-      check_redir_location('/page?name=%s&id=%s' % [name, id], 301)
+      is(last_response).redirected_with? 301
+      is(last_response).redirected_to? '/page?name=%s&id=%s' % [name, id]
     end
 
     Testing :pass do
@@ -167,6 +161,11 @@ module ECoreTest__Rewriter
       name = rand(100000).to_s
       get '/pass_test_II/%s' % name
       is([name, {'name' => name}].to_s).ok_body?
+
+      Should 'pass control to next matching route' do
+        get '/pass_next'
+        is('index').current_body?
+      end
     end
 
     Testing :halt do
@@ -187,20 +186,21 @@ module ECoreTest__Rewriter
     Testing :context do
       name = rand(100000).to_s
       get '/context_sensitive/%s' % name
-      is(302).current_redirect_code?
+      is(last_response).redirected?
       follow_redirect!
       is([name, {}].inspect).ok_body?
 
       header['User-Agent'] = 'google'
       get '/context_sensitive/%s' % name
-      is( 301).current_redirect_code?
+      is(last_response).redirected_with? 301
       follow_redirect!
       is([name, {}].inspect).ok_body?
     end
 
     Testing 'rules defined inside controller' do
       get 'controller-redirect'
-      check_redir_location '/news'
+      is(last_response).redirected?
+      is(last_response).redirected_to? '/news'
 
       get 'controller-pass/page', :foo => :bar
       is(200).current_status?

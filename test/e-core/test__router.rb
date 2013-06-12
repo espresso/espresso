@@ -35,10 +35,12 @@ module ECoreTest__Router
 
     def p__pass
       pass
+      raise
     end
 
     def p__pass_with_args a1, a2 = nil
       pass
+      raise
     end
 
     def p *args
@@ -49,7 +51,7 @@ module ECoreTest__Router
 
   Spec.new App do
 
-    Should 'halt and move to next matched route' do
+    Should 'pass control to next matching route' do
       get App[:p__pass]
       is('p__pass+pass').current_body?
       

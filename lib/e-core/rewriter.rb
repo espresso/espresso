@@ -12,7 +12,7 @@ class ERewriter
   def call env
     @env, @request = env, ERequest.new(env)
     @status, @headers, @body =
-      STATUS__BAD_REQUEST, {"Content-Type" => "text/plain"}, []
+      STATUS__NOT_FOUND, {"Content-Type" => "text/plain"}, []
 
     catch :__e__rewriter__halt_symbol__ do
       self.instance_exec *@matches, &@proc
@@ -23,15 +23,20 @@ class ERewriter
   def redirect location
     @status = STATUS__REDIRECT
     @headers[HEADER__LOCATION] = location
+    throw :__e__rewriter__halt_symbol__
   end
 
   def permanent_redirect location
-    redirect location
     @status = STATUS__PERMANENT_REDIRECT
+    @headers[HEADER__LOCATION] = location
+    throw :__e__rewriter__halt_symbol__
   end
 
   def pass *args
-    return @status = 100 if args.empty?
+    if args.empty?
+      @status = STATUS__PASS
+      throw :__e__rewriter__halt_symbol__
+    end
 
     ctrl = (args.size > 0 && is_app?(args.first) && args.shift) ||
       raise(ArgumentError, "Controller missing. Please provide it as first argument when calling `pass' inside a rewrite rule block.")
@@ -51,6 +56,7 @@ class ERewriter
         env.update(ENV__QUERY_STRING => build_nested_query(params))
     end
     @status, @headers, @body = ctrl.new(action).call(env)
+    throw :__e__rewriter__halt_symbol__
   end
 
   def halt *args

@@ -160,6 +160,9 @@ class EBuilder
   #     redirect to new location using 302 status code
   # `permanent_redirect('location')`
   #     redirect to new location using 301 status code
+  # `pass`
+  #     if `pass` called without arguments
+  #     the control will be passed to next matched route
   # `pass(controller, action, any, params, with => opts)`
   #     pass control to given controller and action without redirect.
   #     consequent params are used to build URL to be sent to given controller.
@@ -194,6 +197,14 @@ class EBuilder
   #      pass News, :index, :scope => :latest, :title => title
   #    end
   #
+  #    # pass control to next matching route
+  #    app.rewrite /\A\/+(.*)/ do |url|
+  #      if target = Redirects.where(source: url).first
+  #        redirect target.url
+  #      end
+  #      pass # move to next matching route
+  #    end
+  #
   #    # Return arbitrary body, status-code, headers, without redirect:
   #    # If argument is a hash, it is added to headers.
   #    # If argument is a Integer, it is treated as Status-Code.
@@ -210,7 +221,7 @@ class EBuilder
   #
   def rewrite rule, &proc
     proc || raise(ArgumentError, "Rewrite rules requires a block to run")
-    @routes[rule] = {'GET' => {:rewriter => proc}}
+    @routes[rule] = {HTTP__DEFAULT_REQUEST_METHOD => {rewriter: proc}}
     @presorted_routes[0].push(rule)
   end
   alias rewrite_rule rewrite
