@@ -36,10 +36,22 @@ class EBuilder
 
   private
 
+  # matching regexp is built to match the action boundary
+  # and whatever that comes after boundary.
+  # this method will simply concatenate boundary with whatever else.
   def matched_path_info matches
     matches[1].to_s + matches[2].to_s # 2x faster than matches[1..2].join
   end
 
+  # first of all, routes should be sorted by size in descending order,
+  # that's it, longer routes are more relevant.
+  # second, routes are sorted by groups:
+  # - rewrite rules should go first
+  # - 3rd application routes should go second
+  # - controller routes should go last
+  # @note controller routes are sub-sorted by one more criteria,
+  #       common routes goes first and index routes goes last.
+  #       index routes are also sub-sorted, see `index_routes`
   def sorted_routes
     @routes.sort do |a,b|
       b.first.source.size <=> a.first.source.size # sorting by size, high to low
@@ -48,6 +60,11 @@ class EBuilder
     end
   end
 
+  # usually controllers has 2 routes for index action:
+  # base_url and base_url/index
+  # we need them ordered by size in descending order:
+  # - base_url/index
+  # - base_url
   def index_routes controller, initial_priority = 2
     controller.routes.inject([]) do |routes,(r,rs)|
       rs.values.first[:action] == INDEX_ACTION ? routes.push(r) : routes
@@ -56,6 +73,14 @@ class EBuilder
     end
   end
 
+  # splitting path_info into format and path,
+  # so "index.html" returns [".html", "index"]
+  # - "index/something.html" => [".html", "index/something"]
+  # - "index" => [nil, "index"]
+  # - "index/something" => [nil, "index/something"]
+  #
+  # if ".html" is a unrecognized format
+  # the path remains the same and a nil format returned
   def handle_format formats, path_info
     format = nil
     if formats.any?
@@ -70,14 +95,27 @@ class EBuilder
     [format, path_info]
   end
   
+  # check whether action respond to given request method
+  # or to whatever method.
+  # RESTless actions like `def index`, `def edit` will respond to whatever method.
+  # RESTified actions, like `def post_index`, `def put_edit`
+  # will respond only to specified request method.
   def valid_route_context? route_setup, request_method
     route_setup[request_method] || route_setup[:*]
   end
 
+  # checking whether given route is a rewriter.
+  # rewriters listen on GET request method
+  # and storing the logic under the `:rewriter` key, like
+  # {'GET' => {rewriter: logic_proc}}
   def rewriter? route_setup
     (setup = route_setup[HTTP__DEFAULT_REQUEST_METHOD]) && setup[:rewriter]
   end
 
+  # check whether it is a GET or HEAD request
+  # cause rewriters are listening only on these request methods.
+  # if yes, extract rewriter setup using GET key,
+  # cause rewriters are added like {'GET' => {rewriter: logic_proc}}
   def valid_rewriter_context? overall_setup, request_method
     (request_method == HTTP__DEFAULT_REQUEST_METHOD ||
       request_method == HTTP__HEAD_REQUEST_METHOD)  &&
