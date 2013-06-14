@@ -53,10 +53,10 @@ class EBuilder
   #       common routes goes first and index routes goes last.
   #       index routes are also sub-sorted, see `index_routes`
   def sorted_routes
-    @routes.sort do |a,b|
-      b.first.source.size <=> a.first.source.size # sorting by size, high to low
-    end.sort do |a,b|
-      a.last <=> b.last # sorting by priority, low to high
+    @routes.map(&:last).sort.inject([]) do |routes,priority|
+      routes.concat(@routes.select {|r| r.last == priority}.sort { |a,b|
+        b.first.source.size <=> a.first.source.size # sorting by size, high to low
+      })
     end
   end
 
