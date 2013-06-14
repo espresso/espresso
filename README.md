@@ -463,4 +463,4 @@ Espresso allow to easily skip these expensive operations by keeping compiled tem
 </p>
 
 
-### Author - [Silviu Rusu](https://github.com/slivu).  License - [MIT](https://github.com/espresso/espresso/blob/master/LICENSE).
+### Author - [Walter Smith](https://github.com/waltee).  License - [MIT](https://github.com/espresso/espresso/blob/master/LICENSE).

@@ -5,8 +5,8 @@ Gem::Specification.new do |s|
 
   s.name = 'e'
   s.version = EVersion::FULL
-  s.authors = ['Silviu Rusu']
-  s.email = ['slivuz@gmail.com']
+  s.authors = ['Walter Smith']
+  s.email = ['waltee.smith@gmail.com']
   s.homepage = 'https://github.com/espresso/espresso'
   s.summary = 'e-%s' % EVersion::FULL
   s.description = 'Scalable Framework aimed at Speed and Simplicity'
