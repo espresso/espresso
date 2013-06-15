@@ -145,7 +145,7 @@ class EBuilder
   def not_found env
     [
       STATUS__NOT_FOUND,
-      {'Content-Type' => "text/plain", "X-Cascade" => "pass"},
+      {HEADER__CONTENT_TYPE => CONTENT_TYPE__PLAIN, "X-Cascade" => "pass"},
       ['Not Found: %s' % env[ENV__PATH_INFO]]
     ]
   end
@@ -153,7 +153,7 @@ class EBuilder
   def not_implemented implemented
     [
       STATUS__NOT_IMPLEMENTED,
-      {"Content-Type" => "text/plain"},
+      {HEADER__CONTENT_TYPE => CONTENT_TYPE__PLAIN},
       ["Resource found but it can be accessed only through %s" % implemented]
     ]
   end

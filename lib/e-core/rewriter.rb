@@ -11,8 +11,8 @@ class ERewriter
 
   def call env
     @env, @request = env, ERequest.new(env)
-    @status, @headers, @body =
-      STATUS__NOT_FOUND, {"Content-Type" => "text/plain"}, []
+    @status, @body = STATUS__NOT_FOUND, []
+    @headers = {HEADER__CONTENT_TYPE => CONTENT_TYPE__PLAIN}
 
     catch :__e__rewriter__halt_symbol__ do
       self.instance_exec *@matches, &@proc
@@ -20,16 +20,19 @@ class ERewriter
     [@status, @headers, @body]
   end
 
-  def redirect location
-    @status = STATUS__REDIRECT
-    @headers[HEADER__LOCATION] = location
+  # update status and headers and halt
+  # @param [Array] *args  if first argument is a numeric it is used as status code.
+  #                       otherwise it is used as location.
+  def redirect *args
+    @status = args.first.is_a?(Numeric) ? args.shift : STATUS__REDIRECT
+    @headers[HEADER__LOCATION] = args.first
     throw :__e__rewriter__halt_symbol__
   end
 
+  # shortcut for `redirect 301, location`
+  # @param [String] location
   def permanent_redirect location
-    @status = STATUS__PERMANENT_REDIRECT
-    @headers[HEADER__LOCATION] = location
-    throw :__e__rewriter__halt_symbol__
+    redirect STATUS__PERMANENT_REDIRECT, location
   end
 
   def pass *args

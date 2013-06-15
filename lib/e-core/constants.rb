@@ -13,6 +13,7 @@ module EConstants
   HTTP__REQUEST_METHODS = %w[GET POST PUT HEAD DELETE OPTIONS PATCH TRACE].freeze
 
   CONTENT_TYPE__DEFAULT      = 'text/html'.freeze
+  CONTENT_TYPE__PLAIN        = 'text/plain'.freeze
   CONTENT_TYPE__EVENT_STREAM = 'text/event-stream'.freeze
 
   STATUS__OK                   = 200
