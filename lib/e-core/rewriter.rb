@@ -37,7 +37,7 @@ class ERewriter
 
   def pass *args
     if args.empty?
-      @status = STATUS__PASS
+      @headers[HEADER__X_CASCADE] = X_CASCADE__PASS
       throw :__e__rewriter__halt_symbol__
     end
 

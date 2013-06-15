@@ -165,7 +165,7 @@ class EBuilder
 
       next unless unit = [:controller, :rewriter, :application].find {|u| route_setup[u]}
       response = self.send('call_' + unit.to_s, env, route_setup, matches)
-      return response unless response[0] == STATUS__PASS
+      return response unless response[1][HEADER__X_CASCADE] == X_CASCADE__PASS
       env[ENV__PATH_INFO], env[ENV__SCRIPT_NAME] = path_info, script_name
       env[ENV__ESPRESSO_GATEWAYS].push(route_setup[:action])
       next

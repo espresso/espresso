@@ -24,7 +24,7 @@ class E
   #
   def pass *args, &proc
     if args.empty?
-      response.status = EConstants::STATUS__PASS
+      response[EConstants::HEADER__X_CASCADE] = EConstants::X_CASCADE__PASS
       throw :__e__catch__response__, response
     end
     args << params() unless args.any? {|a| a.is_a?(Hash)}

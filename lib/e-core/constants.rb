@@ -24,7 +24,6 @@ module EConstants
   STATUS__NOT_FOUND            = 404
   STATUS__SERVER_ERROR         = 500
   STATUS__NOT_IMPLEMENTED      = 501
-  STATUS__PASS                 = 600 # not used by any RFC
 
   ENV__SCRIPT_NAME    = 'SCRIPT_NAME'.freeze
   ENV__REQUEST_METHOD = 'REQUEST_METHOD'.freeze
@@ -61,6 +60,9 @@ module EConstants
   HEADER__AUTHENTICATE  = 'WWW-Authenticate'.freeze
   HEADER__TRANSFER_ENCODING   = 'Transfer-Encoding'.freeze
   HEADER__CONTENT_DISPOSITION = 'Content-Disposition'.freeze
+
+  HEADER__X_CASCADE = 'X-Cascade'.freeze
+  X_CASCADE__PASS   = 'pass'.freeze
 
   RACK__WEBSOCKET = 'rack.websocket'.freeze
 
