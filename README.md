@@ -381,11 +381,6 @@ app = Cms.mount do
   # some setup that will run inside each controller
 end
 
-# or
-app = Cms.mount do |ctrl|
-  # some setup that will run inside controllers that match `ctrl` param
-end
-
 app.run
 ```
 
