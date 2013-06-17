@@ -82,7 +82,7 @@ class App < E
   end
 end
 
-# Now `App` will now serve:
+# Now `App` will serve:
 #  -   /      # backed by `:index` action
 #  -   /edit  # backed by `:edit`  action
 ```
